@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../blocs/auth/auth_bloc.dart';
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_textfield.dart';
-import '../../constants/app_constants.dart';
+import 'package:minecraft_compass/router/app_routes.dart';
+import 'bloc/auth_bloc.dart';
+import '../../core/common/widgets/common_button.dart';
+import '../../core/common/widgets/common_textfield.dart';
+import '../../core/common/app_colors.dart';
+import '../../core/common/app_text_styles.dart';
+import '../../core/common/app_spacing.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -40,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background(context),
       body: SafeArea(
         child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
@@ -48,14 +51,14 @@ class _LoginPageState extends State<LoginPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
-                  backgroundColor: AppConstants.errorColor,
+                  backgroundColor: AppColors.error(context),
                 ),
               );
             }
           },
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.md3),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -63,27 +66,31 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Logo/Title
-                    const Icon(
+                    Icon(
                       Icons.explore,
-                      size: 80,
-                      color: AppConstants.primaryColor,
+                      size: AppSpacing.iconXxl + AppSpacing.md,
+                      color: AppColors.primary(context),
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
                       'CompassFriend',
-                      style: AppConstants.titleStyle,
+                      style: AppTextStyles.headlineLarge.copyWith(
+                        color: AppColors.onBackground(context),
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
+                    const SizedBox(height: AppSpacing.xs2),
+                    Text(
                       'Đăng nhập để bắt đầu',
-                      style: AppConstants.subtitleStyle,
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        color: AppColors.onSurfaceVariant(context),
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: AppSpacing.lg3),
 
                     // Email field
-                    CustomTextField(
+                    CommonTextField(
                       labelText: 'Email',
                       hintText: 'Nhập email của bạn',
                       controller: _emailController,
@@ -101,10 +108,10 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.md),
 
                     // Password field
-                    CustomTextField(
+                    CommonTextField(
                       labelText: 'Mật khẩu',
                       hintText: 'Nhập mật khẩu của bạn',
                       controller: _passwordController,
@@ -132,26 +139,28 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.md),
 
                     // Login button
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
-                        return CustomButton(
+                        return CommonButton(
                           text: 'Đăng nhập',
                           onPressed: _login,
                           isLoading: state is AuthLoading,
                         );
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.md),
 
                     // Register link
                     TextButton(
-                      onPressed: () => context.go(AppConstants.registerRoute),
-                      child: const Text(
+                      onPressed: () => context.go(AppRoutes.registerRoute),
+                      child: Text(
                         'Chưa có tài khoản? Đăng ký ngay',
-                        style: TextStyle(color: AppConstants.primaryColor),
+                        style: AppTextStyles.labelLarge.copyWith(
+                          color: AppColors.primary(context),
+                        ),
                       ),
                     ),
                   ],

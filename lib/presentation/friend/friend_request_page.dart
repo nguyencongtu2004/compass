@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../blocs/friend/friend_bloc.dart';
-import '../../blocs/auth/auth_bloc.dart';
-import '../../models/user_model.dart';
-import '../../constants/app_constants.dart';
-import '../../widgets/loading_indicator.dart';
+import 'bloc/friend_bloc.dart';
+import '../auth/bloc/auth_bloc.dart';
+import '../../core/models/user_model.dart';
+import '../../core/common/app_colors.dart';
+import '../../core/common/app_text_styles.dart';
+import '../../core/common/app_spacing.dart';
+import '../../core/common/widgets/loading_indicator.dart';
 
 class FriendRequestPage extends StatefulWidget {
   const FriendRequestPage({super.key});
@@ -31,9 +33,14 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lời mời kết bạn'),
-        backgroundColor: AppConstants.primaryColor,
-        foregroundColor: Colors.white,
+        title: Text(
+          'Lời mời kết bạn',
+          style: AppTextStyles.titleLarge.copyWith(
+            color: AppColors.onPrimary(context),
+          ),
+        ),
+        backgroundColor: AppColors.primary(context),
+        foregroundColor: AppColors.onPrimary(context),
       ),
       body: BlocConsumer<FriendBloc, FriendState>(
         listener: (context, state) {
@@ -41,7 +48,7 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppConstants.errorColor,
+                backgroundColor: AppColors.error(context),
               ),
             );
           }
@@ -53,10 +60,12 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
 
           if (state is FriendRequestLoadSuccess) {
             if (state.requests.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text(
                   'Không có lời mời kết bạn nào',
-                  style: AppConstants.subtitleStyle,
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    color: AppColors.onSurfaceVariant(context),
+                  ),
                 ),
               );
             }
@@ -73,7 +82,14 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
             );
           }
 
-          return const Center(child: Text('Có lỗi xảy ra'));
+          return Center(
+            child: Text(
+              'Có lỗi xảy ra',
+              style: AppTextStyles.bodyLarge.copyWith(
+                color: AppColors.error(context),
+              ),
+            ),
+          );
         },
       ),
     );
@@ -81,28 +97,43 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
 
   Widget _buildRequestTile(UserModel requester) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      margin: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: AppConstants.primaryColor,
+          backgroundColor: AppColors.primary(context),
           child: Text(
             requester.displayName.isNotEmpty
                 ? requester.displayName[0].toUpperCase()
                 : 'U',
-            style: const TextStyle(color: Colors.white),
+            style: AppTextStyles.labelLarge.copyWith(
+              color: AppColors.onPrimary(context),
+            ),
           ),
         ),
-        title: Text(requester.displayName),
-        subtitle: Text(requester.email),
+        title: Text(
+          requester.displayName,
+          style: AppTextStyles.titleMedium.copyWith(
+            color: AppColors.onSurface(context),
+          ),
+        ),
+        subtitle: Text(
+          requester.email,
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.onSurfaceVariant(context),
+          ),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: const Icon(Icons.check, color: AppConstants.successColor),
+              icon: Icon(Icons.check, color: AppColors.success(context)),
               onPressed: () => _acceptRequest(requester.uid),
             ),
             IconButton(
-              icon: const Icon(Icons.close, color: AppConstants.errorColor),
+              icon: Icon(Icons.close, color: AppColors.error(context)),
               onPressed: () => _declineRequest(requester.uid),
             ),
           ],

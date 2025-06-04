@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../repositories/friend_repository.dart';
-import '../../models/user_model.dart';
+import '../../../repositories/friend_repository.dart';
+import '../../../core/models/user_model.dart';
 
 part 'friend_event.dart';
 part 'friend_state.dart';

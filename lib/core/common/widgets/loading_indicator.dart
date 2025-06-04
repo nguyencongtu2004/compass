@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../constants/app_constants.dart';
+import '../app_colors.dart';
+import '../app_text_styles.dart';
+import '../app_spacing.dart';
 
 class LoadingIndicator extends StatelessWidget {
   final String? message;
@@ -7,7 +9,6 @@ class LoadingIndicator extends StatelessWidget {
   final Color? color;
 
   const LoadingIndicator({super.key, this.message, this.size = 50, this.color});
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -18,15 +19,17 @@ class LoadingIndicator extends StatelessWidget {
             width: size,
             height: size,
             child: CircularProgressIndicator(
-              color: color ?? AppConstants.primaryColor,
-              strokeWidth: 3,
+              color: color ?? AppColors.primary(context),
+              strokeWidth: AppSpacing.border3,
             ),
           ),
           if (message != null) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               message!,
-              style: AppConstants.bodyStyle,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.onBackground(context),
+              ),
               textAlign: TextAlign.center,
             ),
           ],

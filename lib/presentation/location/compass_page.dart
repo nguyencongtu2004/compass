@@ -2,11 +2,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_compass/flutter_compass.dart';
-import '../../blocs/location/location_bloc.dart';
-import '../../blocs/auth/auth_bloc.dart';
-import '../../utils/location_utils.dart';
-import '../../constants/app_constants.dart';
-import '../../widgets/loading_indicator.dart';
+import 'bloc/location_bloc.dart';
+import '../auth/bloc/auth_bloc.dart';
+import '../../core/utils/location_utils.dart';
+import '../../core/common/app_colors.dart';
+import '../../core/common/app_text_styles.dart';
+import '../../core/common/app_spacing.dart';
+import '../../core/common/widgets/loading_indicator.dart';
 
 class CompassPage extends StatefulWidget {
   final double targetLat;
@@ -74,11 +76,7 @@ class _CompassPageState extends State<CompassPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('La bàn'),
-        backgroundColor: AppConstants.primaryColor,
-        foregroundColor: Colors.white,
-      ),
+      appBar: AppBar(title: const Text('La bàn')),
       body: BlocListener<LocationBloc, LocationState>(
         listener: (context, state) {
           if (state is LocationLoadSuccess) {
@@ -91,7 +89,7 @@ class _CompassPageState extends State<CompassPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppConstants.errorColor,
+                backgroundColor: AppColors.error(context),
               ),
             );
           }
@@ -102,25 +100,27 @@ class _CompassPageState extends State<CompassPage> {
             children: [
               // Thông tin đích đến
               Container(
-                padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.md),
+                margin: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: AppConstants.primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.primaryContainer(context),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                 ),
                 child: Column(
                   children: [
                     Text(
                       widget.friendName ?? 'Đích đến',
-                      style: AppConstants.titleStyle,
+                      style: AppTextStyles.titleMedium.copyWith(
+                        color: AppColors.onPrimaryContainer(context),
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.xs2),
                     if (_distance != null)
                       Text(
                         'Cách ${_distance!.toStringAsFixed(0)}m',
-                        style: AppConstants.subtitleStyle.copyWith(
-                          color: AppConstants.primaryColor,
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          color: AppColors.primary(context),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -130,34 +130,35 @@ class _CompassPageState extends State<CompassPage> {
 
               // La bàn
               Container(
-                width: 250,
-                height: 250,
+                width: AppSpacing.compassSize,
+                height: AppSpacing.compassSize,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: AppConstants.primaryColor,
-                    width: 3,
+                    color: AppColors.compassRing(context),
+                    width: AppSpacing.compassRingWidth,
                   ),
                 ),
                 child: _buildCompass(),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.md4),
 
               // Thông tin tọa độ
               Container(
-                padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(AppSpacing.md),
+                margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.surfaceVariant(context),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
                 ),
                 child: Column(
                   children: [
                     Text(
                       'Vị trí hiện tại:',
-                      style: AppConstants.subtitleStyle.copyWith(
+                      style: AppTextStyles.bodyMedium.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: AppColors.onSurfaceVariant(context),
                       ),
                     ),
                     Text(
@@ -165,23 +166,30 @@ class _CompassPageState extends State<CompassPage> {
                           ? 'Lat: ${_currentLat!.toStringAsFixed(6)}\nLng: ${_currentLng!.toStringAsFixed(6)}'
                           : 'Đang lấy vị trí...',
                       textAlign: TextAlign.center,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.onSurfaceVariant(context),
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.xs2),
                     Text(
                       'Đích đến:',
-                      style: AppConstants.subtitleStyle.copyWith(
+                      style: AppTextStyles.bodyMedium.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: AppColors.onSurfaceVariant(context),
                       ),
                     ),
                     Text(
                       'Lat: ${widget.targetLat.toStringAsFixed(6)}\nLng: ${widget.targetLng.toStringAsFixed(6)}',
                       textAlign: TextAlign.center,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.onSurfaceVariant(context),
+                      ),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
               ElevatedButton.icon(
                 onPressed: _getCurrentLocation,
                 icon: const Icon(Icons.refresh),
@@ -203,15 +211,19 @@ class _CompassPageState extends State<CompassPage> {
       children: [
         // Mặt la bàn
         Container(
-          width: 250,
-          height: 250,
-          decoration: const BoxDecoration(
+          width: AppSpacing.compassSize,
+          height: AppSpacing.compassSize,
+          decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white,
+            color: AppColors.compassBackground(context),
           ),
           child: CustomPaint(
-            painter: CompassPainter(heading: _heading!, bearing: _bearing),
-            size: const Size(250, 250),
+            painter: CompassPainter(
+              heading: _heading!,
+              bearing: _bearing,
+              context: context,
+            ),
+            size: const Size(AppSpacing.compassSize, AppSpacing.compassSize),
           ),
         ),
       ],
@@ -222,8 +234,9 @@ class _CompassPageState extends State<CompassPage> {
 class CompassPainter extends CustomPainter {
   final double heading;
   final double? bearing;
+  final BuildContext context;
 
-  CompassPainter({required this.heading, this.bearing});
+  CompassPainter({required this.heading, this.bearing, required this.context});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -251,11 +264,10 @@ class CompassPainter extends CustomPainter {
       final angle = (i * 90 - heading) * pi / 180;
       final x = center.dx + (radius - 20) * sin(angle);
       final y = center.dy - (radius - 20) * cos(angle);
-
       textPainter.text = TextSpan(
         text: directions[i],
-        style: const TextStyle(
-          color: Colors.black,
+        style: TextStyle(
+          color: AppColors.onSurface(context),
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
@@ -270,7 +282,7 @@ class CompassPainter extends CustomPainter {
 
   void _drawNorthArrow(Canvas canvas, Offset center, double radius) {
     final paint = Paint()
-      ..color = Colors.red
+      ..color = AppColors.compassNeedle(context)
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.round;
 
@@ -293,7 +305,7 @@ class CompassPainter extends CustomPainter {
 
   void _drawTargetArrow(Canvas canvas, Offset center, double radius) {
     final paint = Paint()
-      ..color = Colors.blue
+      ..color = AppColors.primary(context)
       ..strokeWidth = 6
       ..strokeCap = StrokeCap.round;
 

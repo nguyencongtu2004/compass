@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../blocs/auth/auth_bloc.dart';
-import '../../blocs/location/location_bloc.dart';
-import '../../constants/app_constants.dart';
+import 'package:minecraft_compass/router/app_routes.dart';
+import '../auth/bloc/auth_bloc.dart';
+import '../location/bloc/location_bloc.dart';
+import '../../core/common/app_colors.dart';
+import '../../core/common/app_text_styles.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -61,10 +63,10 @@ class _ProfilePageState extends State<ProfilePage> {
             onPressed: () {
               context.read<AuthBloc>().add(const AuthLogoutRequested());
               Navigator.pop(context);
-              context.go(AppConstants.loginRoute);
+              context.go(AppRoutes.loginRoute);
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppConstants.errorColor,
+              backgroundColor: AppColors.error(context),
               foregroundColor: Colors.white,
             ),
             child: const Text('Đăng xuất'),
@@ -78,8 +80,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Hồ sơ'),
-        backgroundColor: AppConstants.primaryColor,
+        title: Text(
+          'Hồ sơ',
+          style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
+        ),
+        backgroundColor: AppColors.primary(context),
         foregroundColor: Colors.white,
       ),
       body: BlocBuilder<AuthBloc, AuthState>(
@@ -94,14 +99,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: AppConstants.primaryColor.withOpacity(0.1),
+                      color: AppColors.primary(context).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       children: [
                         CircleAvatar(
                           radius: 50,
-                          backgroundColor: AppConstants.primaryColor,
+                          backgroundColor: AppColors.primary(context),
                           child: const Icon(
                             Icons.person,
                             size: 60,
@@ -111,12 +116,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         const SizedBox(height: 16),
                         Text(
                           state.user.displayName ?? 'Người dùng',
-                          style: AppConstants.titleStyle,
+                          style: AppTextStyles.titleLarge,
                         ),
                         const SizedBox(height: 4),
                         Text(
                           state.user.email ?? '',
-                          style: AppConstants.subtitleStyle,
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            color: AppColors.onSurfaceVariant(context),
+                          ),
                         ),
                       ],
                     ),
@@ -150,10 +157,10 @@ class _ProfilePageState extends State<ProfilePage> {
                               context: context,
                               applicationName: 'CompassFriend',
                               applicationVersion: '1.0.0',
-                              applicationIcon: const Icon(
+                              applicationIcon: Icon(
                                 Icons.compass_calibration,
                                 size: 48,
-                                color: AppConstants.primaryColor,
+                                color: AppColors.primaryLight,
                               ),
                               children: [
                                 const Text(
@@ -175,24 +182,24 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppConstants.successColor.withOpacity(0.1),
+                        color: AppColors.success(context).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppConstants.successColor.withOpacity(0.3),
+                          color: AppColors.success(context).withOpacity(0.3),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
                           Icon(
                             Icons.check_circle,
-                            color: AppConstants.successColor,
+                            color: AppColors.success(context),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               'Vị trí của bạn đang được chia sẻ với bạn bè',
                               style: TextStyle(
-                                color: AppConstants.successColor,
+                                color: AppColors.success(context),
                               ),
                             ),
                           ),
@@ -210,7 +217,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       icon: const Icon(Icons.logout),
                       label: const Text('Đăng xuất'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppConstants.errorColor,
+                        backgroundColor: AppColors.error(context),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../blocs/friend/friend_bloc.dart';
-import '../../blocs/auth/auth_bloc.dart';
-import '../../models/user_model.dart';
-import '../../constants/app_constants.dart';
-import '../../widgets/loading_indicator.dart';
+import 'package:minecraft_compass/router/app_routes.dart';
+import 'bloc/friend_bloc.dart';
+import '../auth/bloc/auth_bloc.dart';
+import '../../core/models/user_model.dart';
+import '../../core/common/app_colors.dart';
+import '../../core/common/app_text_styles.dart';
+import '../../core/common/app_spacing.dart';
+import '../../core/common/widgets/loading_indicator.dart';
 
 class FriendListPage extends StatefulWidget {
   const FriendListPage({super.key});
@@ -52,12 +55,10 @@ class _FriendListPageState extends State<FriendListPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Danh sách bạn bè'),
-        backgroundColor: AppConstants.primaryColor,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.person_add),
-            onPressed: () => context.go(AppConstants.friendRequestsRoute),
+            onPressed: () => context.go(AppRoutes.friendRequestsRoute),
           ),
         ],
       ),
@@ -65,24 +66,28 @@ class _FriendListPageState extends State<FriendListPage> {
         children: [
           // Add friend section
           Container(
-            padding: const EdgeInsets.all(16),
-            color: Colors.grey[100],
+            padding: const EdgeInsets.all(AppSpacing.md),
+            color: AppColors.surfaceVariant(context),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       hintText: 'Nhập email để thêm bạn',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusMd,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm2,
+                        vertical: AppSpacing.xs2,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.xs2),
                 ElevatedButton(
                   onPressed: _addFriend,
                   child: const Text('Thêm'),
@@ -99,7 +104,7 @@ class _FriendListPageState extends State<FriendListPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(state.message),
-                      backgroundColor: AppConstants.errorColor,
+                      backgroundColor: AppColors.error(context),
                     ),
                   );
                 }
@@ -116,9 +121,9 @@ class _FriendListPageState extends State<FriendListPage> {
                 }
                 if (state is FriendRequestSent) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Đã gửi lời mời kết bạn'),
-                      backgroundColor: AppConstants.successColor,
+                    SnackBar(
+                      content: const Text('Đã gửi lời mời kết bạn'),
+                      backgroundColor: AppColors.success(context),
                     ),
                   );
                   _emailController.clear();
@@ -132,11 +137,13 @@ class _FriendListPageState extends State<FriendListPage> {
 
                 if (state is FriendLoadSuccess) {
                   if (state.friends.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Text(
                         'Chưa có bạn bè nào\nHãy thêm bạn bằng email',
                         textAlign: TextAlign.center,
-                        style: AppConstants.subtitleStyle,
+                        style: AppTextStyles.bodyLarge.copyWith(
+                          color: AppColors.onSurfaceVariant(context),
+                        ),
                       ),
                     );
                   }
@@ -165,12 +172,12 @@ class _FriendListPageState extends State<FriendListPage> {
   Widget _buildFriendTile(UserModel friend) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: AppConstants.primaryColor,
+        backgroundColor: AppColors.primary(context),
         child: Text(
           friend.displayName.isNotEmpty
               ? friend.displayName[0].toUpperCase()
               : 'U',
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: AppColors.onPrimary(context)),
         ),
       ),
       title: Text(friend.displayName),
@@ -188,7 +195,7 @@ class _FriendListPageState extends State<FriendListPage> {
             onTap: () {
               if (friend.currentLocation != null) {
                 context.go(
-                  '${AppConstants.compassRoute}?lat=${friend.currentLocation!.latitude}&lng=${friend.currentLocation!.longitude}',
+                  '${AppRoutes.compassRoute}?lat=${friend.currentLocation!.latitude}&lng=${friend.currentLocation!.longitude}',
                 );
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(

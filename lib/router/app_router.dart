@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../screens/auth/login_page.dart';
-import '../screens/auth/register_page.dart';
-import '../screens/friend/friend_list_page.dart';
-import '../screens/friend/friend_request_page.dart';
-import '../screens/compass/compass_page.dart';
-import '../screens/profile/profile_page.dart';
-import '../screens/home/home_page.dart';
-import '../blocs/auth/auth_bloc.dart';
-import '../constants/app_constants.dart';
+import 'package:minecraft_compass/router/app_routes.dart';
+import '../presentation/auth/login_page.dart';
+import '../presentation/auth/register_page.dart';
+import '../presentation/friend/friend_list_page.dart';
+import '../presentation/friend/friend_request_page.dart';
+import '../presentation/location/compass_page.dart';
+import '../presentation/profile/profile_page.dart';
+import '../core/common/home_page.dart';
+import '../presentation/auth/bloc/auth_bloc.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
@@ -31,33 +31,33 @@ class GoRouterRefreshStream extends ChangeNotifier {
 class AppRouter {
   static GoRouter router(AuthBloc authBloc) {
     return GoRouter(
-      initialLocation: AppConstants.loginRoute,
+      initialLocation: AppRoutes.loginRoute,
       refreshListenable: GoRouterRefreshStream(authBloc.stream),
       redirect: (context, state) {
         final isLoggedIn = authBloc.state is AuthAuthenticated;
         final goingToLogin =
-            state.uri.toString() == AppConstants.loginRoute ||
-            state.uri.toString() == AppConstants.registerRoute;
+            state.uri.toString() == AppRoutes.loginRoute ||
+            state.uri.toString() == AppRoutes.registerRoute;
 
         if (!isLoggedIn && !goingToLogin) {
-          return AppConstants.loginRoute;
+          return AppRoutes.loginRoute;
         }
         if (isLoggedIn && goingToLogin) {
-          return AppConstants.homeRoute;
+          return AppRoutes.homeRoute;
         }
         return null;
       },
       routes: [
         GoRoute(
-          path: AppConstants.loginRoute,
+          path: AppRoutes.loginRoute,
           builder: (context, state) => const LoginPage(),
         ),
         GoRoute(
-          path: AppConstants.registerRoute,
+          path: AppRoutes.registerRoute,
           builder: (context, state) => const RegisterPage(),
         ),
         GoRoute(
-          path: AppConstants.homeRoute,
+          path: AppRoutes.homeRoute,
           builder: (context, state) => const HomePage(),
           routes: [
             GoRoute(

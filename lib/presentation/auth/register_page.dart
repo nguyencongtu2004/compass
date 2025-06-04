@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../blocs/auth/auth_bloc.dart';
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_textfield.dart';
-import '../../constants/app_constants.dart';
+import 'package:minecraft_compass/router/app_routes.dart';
+import 'bloc/auth_bloc.dart';
+import '../../core/common/widgets/common_button.dart';
+import '../../core/common/widgets/common_textfield.dart';
+import '../../core/common/app_colors.dart';
+import '../../core/common/app_text_styles.dart';
+import '../../core/common/app_spacing.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -46,13 +49,13 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () => context.go(AppConstants.loginRoute),
+          icon: Icon(Icons.arrow_back, color: AppColors.onBackground(context)),
+          onPressed: () => context.go(AppRoutes.loginRoute),
         ),
       ),
       body: SafeArea(
@@ -62,14 +65,14 @@ class _RegisterPageState extends State<RegisterPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
-                  backgroundColor: AppConstants.errorColor,
+                  backgroundColor: AppColors.error(context),
                 ),
               );
             }
           },
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSpacing.md3),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -77,27 +80,31 @@ class _RegisterPageState extends State<RegisterPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // Logo/Title
-                    const Icon(
+                    Icon(
                       Icons.person_add,
-                      size: 80,
-                      color: AppConstants.primaryColor,
+                      size: AppSpacing.iconXxl + AppSpacing.md,
+                      color: AppColors.primary(context),
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
                       'Tạo tài khoản',
-                      style: AppConstants.titleStyle,
+                      style: AppTextStyles.headlineLarge.copyWith(
+                        color: AppColors.onBackground(context),
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
-                    const Text(
+                    const SizedBox(height: AppSpacing.xs2),
+                    Text(
                       'Điền thông tin để đăng ký',
-                      style: AppConstants.subtitleStyle,
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        color: AppColors.onSurfaceVariant(context),
+                      ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: AppSpacing.lg3),
 
                     // Display Name field
-                    CustomTextField(
+                    CommonTextField(
                       labelText: 'Tên hiển thị',
                       hintText: 'Nhập tên hiển thị của bạn',
                       controller: _displayNameController,
@@ -115,7 +122,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 16),
 
                     // Email field
-                    CustomTextField(
+                    CommonTextField(
                       labelText: 'Email',
                       hintText: 'Nhập email của bạn',
                       controller: _emailController,
@@ -136,7 +143,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 16),
 
                     // Password field
-                    CustomTextField(
+                    CommonTextField(
                       labelText: 'Mật khẩu',
                       hintText: 'Nhập mật khẩu (ít nhất 6 ký tự)',
                       controller: _passwordController,
@@ -167,7 +174,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 16),
 
                     // Confirm Password field
-                    CustomTextField(
+                    CommonTextField(
                       labelText: 'Xác nhận mật khẩu',
                       hintText: 'Nhập lại mật khẩu',
                       controller: _confirmPasswordController,
@@ -195,26 +202,28 @@ class _RegisterPageState extends State<RegisterPage> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.md4),
 
                     // Register button
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
-                        return CustomButton(
+                        return CommonButton(
                           text: 'Đăng ký',
                           onPressed: _register,
                           isLoading: state is AuthLoading,
                         );
                       },
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.md),
 
                     // Login link
                     TextButton(
-                      onPressed: () => context.go(AppConstants.loginRoute),
-                      child: const Text(
+                      onPressed: () => context.go(AppRoutes.loginRoute),
+                      child: Text(
                         'Đã có tài khoản? Đăng nhập ngay',
-                        style: TextStyle(color: AppConstants.primaryColor),
+                        style: AppTextStyles.labelLarge.copyWith(
+                          color: AppColors.primary(context),
+                        ),
                       ),
                     ),
                   ],

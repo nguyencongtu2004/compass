@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../repositories/auth_repository.dart';
+import '../../../repositories/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 part 'auth_event.dart';

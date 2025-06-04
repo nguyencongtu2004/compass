@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../blocs/auth/auth_bloc.dart';
-import '../../blocs/friend/friend_bloc.dart';
-import '../../blocs/location/location_bloc.dart';
-import '../../constants/app_constants.dart';
+import 'package:minecraft_compass/core/common/app_colors.dart';
+import 'package:minecraft_compass/router/app_routes.dart';
+import '../../presentation/auth/bloc/auth_bloc.dart';
+import '../../presentation/friend/bloc/friend_bloc.dart';
+import '../../presentation/location/bloc/location_bloc.dart';
 import '../../repositories/friend_repository.dart';
 import '../../repositories/location_repository.dart';
 
@@ -57,13 +58,13 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Chào mừng, ${user.displayName ?? user.email}'),
-          backgroundColor: AppConstants.primaryColor,
+          backgroundColor: AppColors.primary(context),
           foregroundColor: Colors.white,
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),
               onPressed: () {
-                context.read<AuthBloc>().add(const AuthLogoutRequested());
+                context.read<AuthBloc>().add(AuthLogoutRequested());
               },
             ),
           ],
@@ -80,21 +81,21 @@ class _HomePageState extends State<HomePage> {
                 title: 'Danh sách bạn bè',
                 icon: Icons.people,
                 color: Colors.blue,
-                onTap: () => context.go(AppConstants.friendListRoute),
+                onTap: () => context.go(AppRoutes.friendListRoute),
               ),
               _buildMenuCard(
                 context,
                 title: 'Yêu cầu kết bạn',
                 icon: Icons.person_add,
                 color: Colors.green,
-                onTap: () => context.go(AppConstants.friendRequestsRoute),
+                onTap: () => context.go(AppRoutes.friendRequestsRoute),
               ),
               _buildMenuCard(
                 context,
                 title: 'Thông tin cá nhân',
                 icon: Icons.group_add,
                 color: Colors.orange,
-                onTap: () => context.go(AppConstants.profileRoute),
+                onTap: () => context.go(AppRoutes.profileRoute),
               ),
               _buildMenuCard(
                 context,
@@ -194,12 +195,12 @@ class _HomePageState extends State<HomePage> {
 
               if (lat != null && lng != null) {
                 Navigator.pop(context);
-                context.go('${AppConstants.compassRoute}?lat=$lat&lng=$lng');
+                context.go('${AppRoutes.compassRoute}?lat=$lat&lng=$lng');
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content: Text('Vui lòng nhập tọa độ hợp lệ'),
-                    backgroundColor: AppConstants.errorColor,
+                    backgroundColor: AppColors.error(context),
                   ),
                 );
               }

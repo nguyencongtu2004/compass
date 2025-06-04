@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
-import 'firebase_options.dart';
-import 'blocs/auth/auth_bloc.dart';
-import 'blocs/friend/friend_bloc.dart';
-import 'blocs/location/location_bloc.dart';
-import 'router/app_router.dart';
-import 'constants/app_constants.dart';
+import 'package:minecraft_compass/app/minecraft_compass_app.dart';
+import 'package:minecraft_compass/app/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,34 +36,7 @@ void main() async {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
 
-  runApp(const MyApp());
+  runApp(const MinecraftCompassApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final authBloc = AuthBloc();
-
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: authBloc),
-        BlocProvider(create: (context) => FriendBloc()),
-        BlocProvider(create: (context) => LocationBloc()),
-      ],
-      child: MaterialApp.router(
-        title: 'CompassFriend',
-        debugShowCheckedModeBanner: false,
-        routerConfig: AppRouter.router(authBloc),
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: AppConstants.primaryColor,
-          ),
-          useMaterial3: true,
-        ),
-      ),
-    );
-  }
-}

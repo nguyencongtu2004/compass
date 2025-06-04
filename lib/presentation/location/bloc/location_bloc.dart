@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../repositories/location_repository.dart';
-import '../../models/location_model.dart';
-import '../../models/user_model.dart';
+import '../../../repositories/location_repository.dart';
+import '../../../core/models/location_model.dart';
+import '../../../core/models/user_model.dart';
 
 part 'location_event.dart';
 part 'location_state.dart';
