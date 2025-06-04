@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "812751773442",
+    "project_id": "minecraft-compass",
+    "storage_bucket": "minecraft-compass.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:812751773442:android:72f4712a6f6385336a2c1b",
+        "android_client_info": {
+          "package_name": "com.nctu.minecraft_compass"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "812751773442-t0cpsmtgg8uvn3p2p7lkn3usflno1hua.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nctu.minecraft_compass",
+            "certificate_hash": "6906cfcd5be281e68495f0eaf863b9b81706bbb0"
+          }
+        },
+        {
+          "client_id": "812751773442-qlkmt9794hjoker5hircsgdfrqa5v8mh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFAAThd9EHGcKSIP0yAlT-Dju1zXUBUhg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "812751773442-qlkmt9794hjoker5hircsgdfrqa5v8mh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "812751773442-02375spu8b997kiogj2dfk2iaier1a6l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.minecraftCompass"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
