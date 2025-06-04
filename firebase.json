@@ -1,1 +1,29 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"minecraft-compass","appId":"1:812751773442:android:72f4712a6f6385336a2c1b","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"minecraft-compass","configurations":{"android":"1:812751773442:android:72f4712a6f6385336a2c1b","ios":"1:812751773442:ios:6398e9ab5e02191c6a2c1b","macos":"1:812751773442:ios:6398e9ab5e02191c6a2c1b","web":"1:812751773442:web:d71a11339a1738776a2c1b","windows":"1:812751773442:web:8f3eb33edab8808f6a2c1b"}}}}}}
+{
+    "firestore": {
+        "rules": "firestore.rules",
+        "indexes": "firestore.indexes.json"
+    },
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "minecraft-compass",
+                    "appId": "1:812751773442:android:72f4712a6f6385336a2c1b",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "minecraft-compass",
+                    "configurations": {
+                        "android": "1:812751773442:android:72f4712a6f6385336a2c1b",
+                        "ios": "1:812751773442:ios:6398e9ab5e02191c6a2c1b",
+                        "macos": "1:812751773442:ios:6398e9ab5e02191c6a2c1b",
+                        "web": "1:812751773442:web:d71a11339a1738776a2c1b",
+                        "windows": "1:812751773442:web:8f3eb33edab8808f6a2c1b"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Chỉ cho phép user đã đăng nhập đọc/ghi document users/{userId}
+    match /users/{userId} {
+      allow read: if isAuthorizedToRead(userId);
+      allow write: if isAuthorizedToWrite(userId) || canAddFriendRequest(userId);
+    }
+
+    // Hàm kiểm tra quyền đọc document users/{userId}
+    function isAuthorizedToRead(userId) {
+      return request.auth != null
+             && (
+                // Xem chính mình
+                request.auth.uid == userId
+                // Hoặc đã là bạn bè (uid request in friends của userId)
+                || request.auth.uid in get(/databases/$(database)/documents/users/$(userId)).data.friends
+             );
+    }
+
+    // Hàm kiểm tra quyền ghi document users/{userId}
+    function isAuthorizedToWrite(userId) {
+      // Chỉ user chính chủ mới được sửa document của họ
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Hàm cho phép user A gửi friendRequest vào user B
+    function canAddFriendRequest(userId) {
+      // Trường hợp user A (request.auth.uid) muốn đẩy request vào users/{userId}.friendRequests
+      return request.auth != null
+             && request.auth.uid != userId
+             // Chỉ được phép cập nhật riêng mảng friendRequests
+             && request.resource.data.keys().hasOnly(['friendRequests'])
+             // Kiểm tra rằng UID của người gửi được thêm vào mảng friendRequests
+             && request.auth.uid in request.resource.data.friendRequests
+             // Đảm bảo UID chưa tồn tại trong mảng cũ (tránh spam)
+             && !(request.auth.uid in resource.data.get('friendRequests', []));
+    }
+  }
+}
