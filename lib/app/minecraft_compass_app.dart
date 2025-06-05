@@ -4,6 +4,7 @@ import 'package:minecraft_compass/core/common/app_theme.dart';
 import 'package:minecraft_compass/presentation/auth/bloc/auth_bloc.dart';
 import 'package:minecraft_compass/presentation/friend/bloc/friend_bloc.dart';
 import 'package:minecraft_compass/presentation/location/bloc/location_bloc.dart';
+import 'package:minecraft_compass/presentation/location/bloc/compass_bloc.dart';
 import 'package:minecraft_compass/router/app_router.dart';
 
 class MinecraftCompassApp extends StatelessWidget {
@@ -12,12 +13,12 @@ class MinecraftCompassApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authBloc = AuthBloc();
-
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: authBloc),
         BlocProvider(create: (context) => FriendBloc()),
         BlocProvider(create: (context) => LocationBloc()),
+        BlocProvider(create: (context) => CompassBloc()),
       ],
       child: MaterialApp.router(
         title: 'Minecraft Compass',

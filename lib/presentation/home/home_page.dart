@@ -62,7 +62,9 @@ class _HomePageState extends State<HomePage> {
           // Trang 0: Profile (trái)
           KeepAliveWrapper(child: const ProfilePage()),
           // Trang 1: Compass (giữa - mặc định)
-          KeepAliveWrapper(child: CompassPage(targetLat: 0, targetLng: 0)),
+          KeepAliveWrapper(
+            child: CompassPage(targetLat: 21.851398, targetLng: 106.793197),
+          ),
           // Trang 2: Friend List (phải)
           KeepAliveWrapper(child: const FriendListPage()),
         ],

@@ -69,10 +69,10 @@ class LocationUtils {
   /// Format khoảng cách cho hiển thị
   static String formatDistance(double distanceInMeters) {
     if (distanceInMeters < 1000) {
-      return '${distanceInMeters.toStringAsFixed(0)}m';
+      return '${distanceInMeters.toStringAsFixed(0)} m';
     } else {
       final distanceInKm = distanceInMeters / 1000;
-      return '${distanceInKm.toStringAsFixed(1)}km';
+      return '${distanceInKm.toStringAsFixed(1)} km';
     }
   }
 }
