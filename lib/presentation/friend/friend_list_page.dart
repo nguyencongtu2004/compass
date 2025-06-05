@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minecraft_compass/core/common/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import 'bloc/friend_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
@@ -52,7 +53,7 @@ class _FriendListPageState extends State<FriendListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CommonScaffold(
       appBar: AppBar(
         title: const Text('Danh sách bạn bè'),
         actions: [

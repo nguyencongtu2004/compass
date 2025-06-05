@@ -91,7 +91,7 @@ class CommonTextField extends StatelessWidget {
         filled: true,
         fillColor: enabled
             ? AppColors.surface(context)
-            : AppColors.surfaceVariant(context).withOpacity(0.5),
+            : AppColors.surfaceVariant(context).withValues(alpha: 0.5),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
           vertical: AppSpacing.md,

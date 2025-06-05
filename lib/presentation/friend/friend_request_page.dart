@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minecraft_compass/core/common/widgets/common_scaffold.dart';
 import 'bloc/friend_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../../core/models/user_model.dart';
@@ -31,7 +32,7 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CommonScaffold(
       appBar: AppBar(
         title: Text(
           'Lời mời kết bạn',

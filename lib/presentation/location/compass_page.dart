@@ -35,6 +35,12 @@ class _CompassPageState extends State<CompassPage> {
   double? _bearing;
   double? _distance;
 
+  // Biến cho smooth rotation
+  double _preHeading = 0.0;
+  double _turns = 0.0;
+  double _preBearing = 0.0;
+  double _bearingTurns = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -51,16 +57,25 @@ class _CompassPageState extends State<CompassPage> {
 
   void _startCompassStream() {
     FlutterCompass.events?.listen((CompassEvent event) {
-      if (mounted) {
+      if (mounted && event.heading != null) {
         setState(() {
           _heading = event.heading;
+
+          // Tính toán smooth rotation cho heading
+          _updateCompassTurns(event.heading!);
+
           if (_currentLat != null && _currentLng != null) {
-            _bearing = LocationUtils.calculateBearing(
+            final newBearing = LocationUtils.calculateBearing(
               _currentLat!,
               _currentLng!,
               widget.targetLat,
               widget.targetLng,
             );
+
+            // Tính toán smooth rotation cho bearing
+            _updateBearingTurns(newBearing);
+
+            _bearing = newBearing;
             _distance = LocationUtils.calculateDistance(
               _currentLat!,
               _currentLng!,
@@ -71,6 +86,40 @@ class _CompassPageState extends State<CompassPage> {
         });
       }
     });
+  }
+
+  void _updateCompassTurns(double heading) {
+    double direction = heading < 0 ? (360 + heading) : heading;
+    double diff = direction - _preHeading;
+
+    if (diff.abs() > 180) {
+      if (_preHeading > direction) {
+        diff = 360 - (direction - _preHeading).abs();
+      } else {
+        diff = (360 - (_preHeading - direction).abs());
+        diff = diff * -1;
+      }
+    }
+
+    _turns += (diff / 360);
+    _preHeading = direction;
+  }
+
+  void _updateBearingTurns(double bearing) {
+    double direction = bearing < 0 ? (360 + bearing) : bearing;
+    double diff = direction - _preBearing;
+
+    if (diff.abs() > 180) {
+      if (_preBearing > direction) {
+        diff = 360 - (direction - _preBearing).abs();
+      } else {
+        diff = (360 - (_preBearing - direction).abs());
+        diff = diff * -1;
+      }
+    }
+
+    _bearingTurns += (diff / 360);
+    _preBearing = direction;
   }
 
   @override
@@ -209,21 +258,27 @@ class _CompassPageState extends State<CompassPage> {
 
     return Stack(
       children: [
-        // Mặt la bàn
-        Container(
-          width: AppSpacing.compassSize,
-          height: AppSpacing.compassSize,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.compassBackground(context),
-          ),
-          child: CustomPaint(
-            painter: CompassPainter(
-              heading: _heading!,
-              bearing: _bearing,
-              context: context,
+        // Mặt la bàn với smooth rotation
+        AnimatedRotation(
+          turns: -_turns,
+          duration: const Duration(milliseconds: 300),
+          child: Container(
+            width: AppSpacing.compassSize,
+            height: AppSpacing.compassSize,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.compassBackground(context),
             ),
-            size: const Size(AppSpacing.compassSize, AppSpacing.compassSize),
+            child: CustomPaint(
+              painter: CompassPainter(
+                heading: 0, // Luôn set về 0 vì đã xoay bằng AnimatedRotation
+                bearing: _bearing,
+                context: context,
+                compassTurns: _turns,
+                bearingTurns: _bearingTurns,
+              ),
+              size: const Size(AppSpacing.compassSize, AppSpacing.compassSize),
+            ),
           ),
         ),
       ],
@@ -235,8 +290,16 @@ class CompassPainter extends CustomPainter {
   final double heading;
   final double? bearing;
   final BuildContext context;
+  final double? compassTurns;
+  final double? bearingTurns;
 
-  CompassPainter({required this.heading, this.bearing, required this.context});
+  CompassPainter({
+    required this.heading,
+    this.bearing,
+    required this.context,
+    this.compassTurns,
+    this.bearingTurns,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -249,8 +312,8 @@ class CompassPainter extends CustomPainter {
     // Vẽ kim la bàn (luôn chỉ Bắc)
     _drawNorthArrow(canvas, center, radius);
 
-    // Vẽ mũi tên chỉ đích (nếu có bearing)
-    if (bearing != null) {
+    // Vẽ mũi tên chỉ đích (nếu có bearing hoặc bearingTurns)
+    if (bearing != null || bearingTurns != null) {
       _drawTargetArrow(canvas, center, radius);
     }
   }
@@ -309,18 +372,28 @@ class CompassPainter extends CustomPainter {
       ..strokeWidth = 6
       ..strokeCap = StrokeCap.round;
 
-    // Mũi tên chỉ đích
-    final angle = (bearing! - heading) * pi / 180;
-    final tipX = center.dx + (radius - 50) * sin(angle);
-    final tipY = center.dy - (radius - 50) * cos(angle);
+    // Sử dụng bearingTurns để có animation mượt cho mũi tên đích
+    double targetAngle;
+    if (bearingTurns != null && compassTurns != null) {
+      // Sử dụng bearing turns để có animation mượt
+      targetAngle = (bearingTurns! - compassTurns!) * 2 * pi;
+    } else if (bearing != null) {
+      // Fallback về bearing thông thường
+      targetAngle = (bearing! - heading) * pi / 180;
+    } else {
+      return;
+    }
+
+    final tipX = center.dx + (radius - 50) * sin(targetAngle);
+    final tipY = center.dy - (radius - 50) * cos(targetAngle);
 
     canvas.drawLine(center, Offset(tipX, tipY), paint);
 
     // Đầu mũi tên
-    final leftX = center.dx + (radius - 70) * sin(angle - 0.4);
-    final leftY = center.dy - (radius - 70) * cos(angle - 0.4);
-    final rightX = center.dx + (radius - 70) * sin(angle + 0.4);
-    final rightY = center.dy - (radius - 70) * cos(angle + 0.4);
+    final leftX = center.dx + (radius - 70) * sin(targetAngle - 0.4);
+    final leftY = center.dy - (radius - 70) * cos(targetAngle - 0.4);
+    final rightX = center.dx + (radius - 70) * sin(targetAngle + 0.4);
+    final rightY = center.dy - (radius - 70) * cos(targetAngle + 0.4);
 
     canvas.drawLine(Offset(tipX, tipY), Offset(leftX, leftY), paint);
     canvas.drawLine(Offset(tipX, tipY), Offset(rightX, rightY), paint);

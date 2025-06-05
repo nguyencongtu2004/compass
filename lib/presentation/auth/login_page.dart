@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minecraft_compass/core/common/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/core/utils/validator.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import 'bloc/auth_bloc.dart';
 import '../../core/common/widgets/common_button.dart';
@@ -23,6 +26,15 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    if (kDebugMode) {
+      _emailController.text = 'congtu2132004@gmail.com';
+      _passwordController.text = '123456';
+    }
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
@@ -42,8 +54,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background(context),
+    return CommonScaffold(
       body: SafeArea(
         child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
@@ -96,17 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       prefixIcon: Icons.email_outlined,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập email';
-                        }
-                        if (!RegExp(
-                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                        ).hasMatch(value)) {
-                          return 'Email không hợp lệ';
-                        }
-                        return null;
-                      },
+                      validator: (value) => Validator.validateEmail(value),
                     ),
                     const SizedBox(height: AppSpacing.md),
 
@@ -123,21 +124,11 @@ class _LoginPageState extends State<LoginPage> {
                               ? Icons.visibility_off
                               : Icons.visibility,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập mật khẩu';
-                        }
-                        if (value.length < 6) {
-                          return 'Mật khẩu phải có ít nhất 6 ký tự';
-                        }
-                        return null;
-                      },
+                      validator: (value) => Validator.validatePassword(value),
                     ),
                     const SizedBox(height: AppSpacing.md),
 

@@ -4,9 +4,7 @@ import 'app_text_styles.dart';
 import 'app_spacing.dart';
 
 /// Main theme configuration for the app with light and dark mode support
-class AppTheme {
-  // Private constructor to prevent instantiation
-  AppTheme._();
+abstract class AppTheme {
 
   /// Light theme configuration
   static ThemeData get lightTheme {
@@ -33,11 +31,8 @@ class AppTheme {
         onError: Colors.white,
         errorContainer: Color(0xFFFFEBEE),
         onErrorContainer: AppColors.errorLight,
-        background: AppColors.backgroundLight,
-        onBackground: AppColors.onBackgroundLight,
         surface: AppColors.surfaceLight,
         onSurface: AppColors.onSurfaceLight,
-        surfaceVariant: AppColors.surfaceVariantLight,
         onSurfaceVariant: AppColors.onSurfaceVariantLight,
         outline: AppColors.outlineLight,
         outlineVariant: AppColors.borderLight,
@@ -212,17 +207,17 @@ class AppTheme {
 
       // Switch theme
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppColors.primaryLight;
           }
           return AppColors.borderLight;
         }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return AppColors.primaryLight.withOpacity(0.3);
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return AppColors.primaryLight.withValues(alpha: 0.3);
           }
-          return AppColors.borderLight.withOpacity(0.3);
+          return AppColors.borderLight.withValues(alpha: 0.3);
         }),
       ),
 
@@ -263,11 +258,8 @@ class AppTheme {
         onError: Colors.black,
         errorContainer: Color(0xFFB71C1C),
         onErrorContainer: AppColors.errorDark,
-        background: AppColors.backgroundDark,
-        onBackground: AppColors.onBackgroundDark,
         surface: AppColors.surfaceDark,
         onSurface: AppColors.onSurfaceDark,
-        surfaceVariant: AppColors.surfaceVariantDark,
         onSurfaceVariant: AppColors.onSurfaceVariantDark,
         outline: AppColors.outlineDark,
         outlineVariant: AppColors.borderDark,
@@ -442,17 +434,17 @@ class AppTheme {
 
       // Switch theme
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return AppColors.primaryDark;
           }
           return AppColors.borderDark;
         }),
-        trackColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
-            return AppColors.primaryDark.withOpacity(0.3);
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return AppColors.primaryDark.withValues(alpha: 0.3);
           }
-          return AppColors.borderDark.withOpacity(0.3);
+          return AppColors.borderDark.withValues(alpha: 0.3);
         }),
       ),
 

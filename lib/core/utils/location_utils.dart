@@ -59,14 +59,12 @@ class LocationUtils {
   }
 
   /// Chuyển đổi từ độ sang radian
-  static double _degreesToRadians(double degrees) {
-    return degrees * (math.pi / 180.0);
-  }
+  static double _degreesToRadians(double degrees) =>
+      degrees * (math.pi / 180.0);
 
   /// Chuyển đổi từ radian sang độ
-  static double _radiansToDegrees(double radians) {
-    return radians * (180.0 / math.pi);
-  }
+  static double _radiansToDegrees(double radians) =>
+      radians * (180.0 / math.pi);
 
   /// Format khoảng cách cho hiển thị
   static String formatDistance(double distanceInMeters) {

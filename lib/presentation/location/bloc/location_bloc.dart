@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../repositories/location_repository.dart';
 import '../../../core/models/location_model.dart';
 import '../../../core/models/user_model.dart';

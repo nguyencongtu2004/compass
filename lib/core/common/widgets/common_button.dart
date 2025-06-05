@@ -10,7 +10,7 @@ class CommonButton extends StatelessWidget {
   final Color? backgroundColor;
   final Color? textColor;
   final double? width;
-  final double height;
+  final double? height;
 
   const CommonButton({
     super.key,
@@ -20,13 +20,14 @@ class CommonButton extends StatelessWidget {
     this.backgroundColor,
     this.textColor,
     this.width,
-    this.height = AppSpacing.buttonHeight,
+    this.height,
+    // this.height = AppSpacing.buttonHeight,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: width ?? double.infinity,
+      width: width,
       height: height,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,

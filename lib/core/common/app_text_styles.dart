@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'app_colors.dart';
 
 /// Comprehensive text style system for the app
-class AppTextStyles {
+abstract class AppTextStyles {
   // Base font family
   static const String _fontFamily =
       'SF Pro Display'; // iOS style for modern look

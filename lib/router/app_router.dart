@@ -7,8 +7,7 @@ import '../presentation/auth/register_page.dart';
 import '../presentation/friend/friend_list_page.dart';
 import '../presentation/friend/friend_request_page.dart';
 import '../presentation/location/compass_page.dart';
-import '../presentation/profile/profile_page.dart';
-import '../core/common/home_page.dart';
+import '../presentation/home/home_page.dart';
 import '../presentation/auth/bloc/auth_bloc.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
@@ -32,6 +31,7 @@ class AppRouter {
   static GoRouter router(AuthBloc authBloc) {
     return GoRouter(
       initialLocation: AppRoutes.loginRoute,
+      debugLogDiagnostics: true,
       refreshListenable: GoRouterRefreshStream(authBloc.stream),
       redirect: (context, state) {
         final isLoggedIn = authBloc.state is AuthAuthenticated;
@@ -58,19 +58,18 @@ class AppRouter {
         ),
         GoRoute(
           path: AppRoutes.homeRoute,
-          builder: (context, state) => const HomePage(),
+          builder: (context, state) =>
+              const HomePage(initialPage: 1), // Compass page
           routes: [
             GoRoute(
-              path: 'friend_list',
-              builder: (context, state) => const FriendListPage(),
-            ),
-            GoRoute(
-              path: 'friend_requests',
-              builder: (context, state) => const FriendRequestPage(),
+              path: 'profile',
+              builder: (context, state) =>
+                  const HomePage(initialPage: 0), // Profile page
             ),
             GoRoute(
               path: 'compass',
               builder: (context, state) {
+                // Nếu có tham số lat/lng, mở compass trực tiếp
                 final lat = double.tryParse(
                   state.uri.queryParameters['lat'] ?? '',
                 );
@@ -81,22 +80,30 @@ class AppRouter {
                     state.uri.queryParameters['friendName'] ?? '';
                 final mode = state.uri.queryParameters['mode'] ?? 'fixed';
 
-                if (lat == null || lng == null) {
-                  return const Scaffold(
-                    body: Center(child: Text('Thiếu tham số tọa độ')),
+                if (lat != null && lng != null) {
+                  return CompassPage(
+                    targetLat: lat,
+                    targetLng: lng,
+                    friendName: friendName,
+                    mode: mode,
                   );
                 }
-                return CompassPage(
-                  targetLat: lat,
-                  targetLng: lng,
-                  friendName: friendName,
-                  mode: mode,
-                );
+                // Nếu không có tham số, hiện home page với compass tab
+                return const HomePage(initialPage: 1);
               },
             ),
             GoRoute(
-              path: 'profile',
-              builder: (context, state) => const ProfilePage(),
+              path: 'friends',
+              builder: (context, state) =>
+                  const HomePage(initialPage: 2), // Friends page
+            ),
+            GoRoute(
+              path: 'friend_list',
+              builder: (context, state) => const FriendListPage(),
+            ),
+            GoRoute(
+              path: 'friend_requests',
+              builder: (context, state) => const FriendRequestPage(),
             ),
           ],
         ),

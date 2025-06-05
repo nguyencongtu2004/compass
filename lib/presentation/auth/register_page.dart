@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minecraft_compass/core/common/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/core/utils/validator.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import 'bloc/auth_bloc.dart';
 import '../../core/common/widgets/common_button.dart';
@@ -48,8 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background(context),
+    return CommonScaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -109,15 +110,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       hintText: 'Nhập tên hiển thị của bạn',
                       controller: _displayNameController,
                       prefixIcon: Icons.person_outlined,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập tên hiển thị';
-                        }
-                        if (value.length < 2) {
-                          return 'Tên hiển thị phải có ít nhất 2 ký tự';
-                        }
-                        return null;
-                      },
+                      validator: (value) =>
+                          Validator.validateDisplayName(value),
                     ),
                     const SizedBox(height: 16),
 
@@ -128,17 +122,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       prefixIcon: Icons.email_outlined,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập email';
-                        }
-                        if (!RegExp(
-                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                        ).hasMatch(value)) {
-                          return 'Email không hợp lệ';
-                        }
-                        return null;
-                      },
+                      validator: (value) => Validator.validateEmail(value),
                     ),
                     const SizedBox(height: 16),
 
@@ -155,21 +139,11 @@ class _RegisterPageState extends State<RegisterPage> {
                               ? Icons.visibility_off
                               : Icons.visibility,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập mật khẩu';
-                        }
-                        if (value.length < 6) {
-                          return 'Mật khẩu phải có ít nhất 6 ký tự';
-                        }
-                        return null;
-                      },
+                      validator: (value) => Validator.validatePassword(value),
                     ),
                     const SizedBox(height: 16),
 
@@ -186,11 +160,10 @@ class _RegisterPageState extends State<RegisterPage> {
                               ? Icons.visibility_off
                               : Icons.visibility,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
+                        onPressed: () => setState(
+                          () => _obscureConfirmPassword =
+                              !_obscureConfirmPassword,
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {

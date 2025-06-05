@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minecraft_compass/core/common/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../location/bloc/location_bloc.dart';
@@ -78,14 +79,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CommonScaffold(
       appBar: AppBar(
         title: Text(
           'Hồ sơ',
           style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
         ),
-        backgroundColor: AppColors.primary(context),
-        foregroundColor: Colors.white,
       ),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
@@ -99,7 +98,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: AppColors.primary(context).withOpacity(0.1),
+                      color: AppColors.primary(context).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
@@ -182,10 +181,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.success(context).withOpacity(0.1),
+                        color: AppColors.success(
+                          context,
+                        ).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: AppColors.success(context).withOpacity(0.3),
+                          color: AppColors.success(
+                            context,
+                          ).withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(

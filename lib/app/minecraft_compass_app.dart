@@ -20,13 +20,12 @@ class MinecraftCompassApp extends StatelessWidget {
         BlocProvider(create: (context) => LocationBloc()),
       ],
       child: MaterialApp.router(
-        title: 'CompassFriend',
+        title: 'Minecraft Compass',
         debugShowCheckedModeBanner: false,
         routerConfig: AppRouter.router(authBloc),
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode:
-            ThemeMode.system, // Automatically switch based on system preference
+        themeMode: ThemeMode.system,
       ),
     );
   }
