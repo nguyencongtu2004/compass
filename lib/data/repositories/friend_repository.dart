@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../core/models/user_model.dart';
+import '../../models/user_model.dart';
 
 class FriendRepository {
   final FirebaseFirestore _firestore;

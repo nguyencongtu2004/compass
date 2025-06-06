@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:minecraft_compass/core/common/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/presentation/core/common/widgets/common_scaffold.dart';
 import 'bloc/friend_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
-import '../../core/models/user_model.dart';
-import '../../core/common/app_colors.dart';
-import '../../core/common/app_text_styles.dart';
-import '../../core/common/app_spacing.dart';
-import '../../core/common/widgets/loading_indicator.dart';
+import '../../models/user_model.dart';
+import '../core/common/theme/app_colors.dart';
+import '../core/common/theme/app_text_styles.dart';
+import '../core/common/theme/app_spacing.dart';
+import '../core/common/widgets/loading_indicator.dart';
 
 class FriendRequestPage extends StatefulWidget {
   const FriendRequestPage({super.key});

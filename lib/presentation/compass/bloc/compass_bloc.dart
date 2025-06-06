@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_compass/flutter_compass.dart' as compass;
-import '../../../core/utils/location_utils.dart';
+import '../../../utils/location_utils.dart';
 
 part 'compass_event.dart';
 part 'compass_state.dart';
@@ -112,7 +112,7 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     RefreshCurrentLocation event,
     Emitter<CompassState> emit,
   ) {
-    // Event này sẽ được gửi từ UI để trigger việc refresh location từ LocationBloc
+    // Event này sẽ được gửi từ UI để trigger việc refresh location từ FriendBloc
     // Logic thực tế sẽ được xử lý ở UI layer
   }
 

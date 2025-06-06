@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:minecraft_compass/core/common/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/presentation/core/common/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import '../auth/bloc/auth_bloc.dart';
-import '../location/bloc/location_bloc.dart';
-import '../../core/common/app_colors.dart';
-import '../../core/common/app_text_styles.dart';
+import '../friend/bloc/friend_bloc.dart';
+import '../core/common/theme/app_colors.dart';
+import '../core/common/theme/app_text_styles.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -41,7 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (authState is AuthAuthenticated) {
       if (value) {
         // Bật chia sẻ vị trí
-        context.read<LocationBloc>().add(GetCurrentLocation());
+        context.read<FriendBloc>().add(const GetCurrentLocation());
       } else {
         // Tắt chia sẻ vị trí
         // TODO: Implement stop location sharing

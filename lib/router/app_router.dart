@@ -6,7 +6,7 @@ import '../presentation/auth/login_page.dart';
 import '../presentation/auth/register_page.dart';
 import '../presentation/friend/friend_list_page.dart';
 import '../presentation/friend/friend_request_page.dart';
-import '../presentation/location/compass_page.dart';
+import '../presentation/compass/compass_page.dart';
 import '../presentation/home/home_page.dart';
 import '../presentation/auth/bloc/auth_bloc.dart';
 

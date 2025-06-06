@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
-import '../core/models/location_model.dart';
-import '../core/models/user_model.dart';
+import '../../models/location_model.dart';
+import '../../models/user_model.dart';
 
 class LocationRepository {
   final FirebaseFirestore _firestore;

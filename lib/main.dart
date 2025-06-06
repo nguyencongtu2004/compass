@@ -1,9 +1,12 @@
+import 'package:cloudinary_flutter/cloudinary_object.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minecraft_compass/app/minecraft_compass_app.dart';
 import 'package:minecraft_compass/app/firebase_options.dart';
+import 'package:minecraft_compass/config/app_bloc_observer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +39,12 @@ void main() async {
     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
   };
 
+  Bloc.observer = AppBlocObserver();
+
+  final cloudinary = CloudinaryObject.fromCloudName(cloudName: 'dubpgqv5q');
+
   runApp(const MinecraftCompassApp());
 }
+
 
 

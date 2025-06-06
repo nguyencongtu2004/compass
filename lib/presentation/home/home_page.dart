@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:minecraft_compass/core/common/widgets/common_scaffold.dart';
-import 'package:minecraft_compass/core/common/widgets/keep_alive_wrapper.dart';
-import 'package:minecraft_compass/presentation/location/compass_page.dart';
+import 'package:minecraft_compass/presentation/core/common/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/presentation/core/common/widgets/keep_alive_wrapper.dart';
+import 'package:minecraft_compass/presentation/compass/compass_page.dart';
 import '../auth/bloc/auth_bloc.dart';
-import '../location/bloc/location_bloc.dart';
+import '../friend/bloc/friend_bloc.dart';
 import '../profile/profile_page.dart';
 import '../friend/friend_list_page.dart';
 
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       // Sử dụng event mới để lấy vị trí và cập nhật lên Firestore cùng lúc
-      context.read<LocationBloc>().add(
+      context.read<FriendBloc>().add(
         GetCurrentLocationAndUpdate(uid: authState.user.uid),
       );
     }

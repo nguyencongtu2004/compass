@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../app_colors.dart';
-import '../app_text_styles.dart';
-import '../app_spacing.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import '../theme/app_spacing.dart';
 
 class CommonButton extends StatelessWidget {
   final String text;

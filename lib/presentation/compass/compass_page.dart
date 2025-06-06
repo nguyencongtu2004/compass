@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:minecraft_compass/presentation/location/minecraft_compass.dart';
-import 'bloc/location_bloc.dart';
+import 'package:minecraft_compass/presentation/compass/minecraft_compass.dart';
+import '../friend/bloc/friend_bloc.dart';
 import 'bloc/compass_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
-import '../../core/utils/location_utils.dart';
-import '../../core/common/app_colors.dart';
-import '../../core/common/app_text_styles.dart';
-import '../../core/common/app_spacing.dart';
+import '../../utils/location_utils.dart';
+import '../core/common/theme/app_colors.dart';
+import '../core/common/theme/app_text_styles.dart';
+import '../core/common/theme/app_spacing.dart';
 
 class CompassPage extends StatefulWidget {
   final double targetLat;
@@ -45,7 +45,7 @@ class _CompassPageState extends State<CompassPage> {
   void _getCurrentLocation() {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
-      context.read<LocationBloc>().add(GetCurrentLocation());
+      context.read<FriendBloc>().add(GetCurrentLocationAndUpdate(uid: authState.user.uid));
     }
   }
 
@@ -62,7 +62,7 @@ class _CompassPageState extends State<CompassPage> {
       appBar: AppBar(title: const Text('La bàn')),
       body: MultiBlocListener(
         listeners: [
-          BlocListener<LocationBloc, LocationState>(
+          BlocListener<FriendBloc, FriendState>(
             listener: (context, state) {
               if (state is LocationLoadSuccess) {
                 // Cập nhật vị trí hiện tại vào CompassBloc

@@ -2,15 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:minecraft_compass/core/common/widgets/common_scaffold.dart';
-import 'package:minecraft_compass/core/utils/validator.dart';
+import 'package:minecraft_compass/presentation/core/common/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/utils/validator.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import 'bloc/auth_bloc.dart';
-import '../../core/common/widgets/common_button.dart';
-import '../../core/common/widgets/common_textfield.dart';
-import '../../core/common/app_colors.dart';
-import '../../core/common/app_text_styles.dart';
-import '../../core/common/app_spacing.dart';
+import '../core/common/widgets/common_button.dart';
+import '../core/common/widgets/common_textfield.dart';
+import '../core/common/theme/app_colors.dart';
+import '../core/common/theme/app_text_styles.dart';
+import '../core/common/theme/app_spacing.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
