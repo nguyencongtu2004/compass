@@ -1,52 +1,23 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minecraft_compass/models/user_model.dart';
 import 'package:minecraft_compass/presentation/profile/edit_profile_page.dart';
+import 'package:minecraft_compass/presentation/splash/splash_page.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import '../presentation/auth/login_page.dart';
 import '../presentation/auth/register_page.dart';
 import '../presentation/home/home_page.dart';
-import '../presentation/auth/bloc/auth_bloc.dart';
-
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen(
-      (dynamic _) => notifyListeners(),
-    );
-  }
-
-  late final StreamSubscription<dynamic> _subscription;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
+import '../presentation/compass/compass_page.dart';
 
 class AppRouter {
-  static GoRouter router(AuthBloc authBloc) {
+  static GoRouter router() {
     return GoRouter(
-      initialLocation: AppRoutes.homeRoute,
+      initialLocation: AppRoutes.splashRoute,
       debugLogDiagnostics: true,
-      refreshListenable: GoRouterRefreshStream(authBloc.stream),
-      redirect: (context, state) {
-        final isLoggedIn = authBloc.state is AuthAuthenticated;
-        final goingToLogin =
-            state.uri.toString() == AppRoutes.loginRoute ||
-            state.uri.toString() == AppRoutes.registerRoute;
-
-        if (!isLoggedIn && !goingToLogin) {
-          return AppRoutes.loginRoute;
-        }
-        if (isLoggedIn && goingToLogin) {
-          return AppRoutes.compassRoute;
-        }
-        return null;
-      },
       routes: [
+        GoRoute(
+          path: AppRoutes.splashRoute, // splash
+          builder: (context, state) => const SplashPage(),
+        ),
         GoRoute(
           path: AppRoutes.loginRoute, // login
           builder: (context, state) => const LoginPage(),
@@ -55,7 +26,6 @@ class AppRouter {
           path: AppRoutes.registerRoute, // register
           builder: (context, state) => const RegisterPage(),
         ),
-
         GoRoute(
           path: AppRoutes.homeRoute, // home
           builder: (context, state) {
@@ -64,29 +34,37 @@ class AppRouter {
             return HomePage(initialPage: initialPage);
           },
         ),
-
         GoRoute(
           path: AppRoutes.compassRoute, // compass
-          redirect: (context, state) {
-            return '${AppRoutes.homeRoute}?page=1'; // Redirect to home with compass page
+          builder: (context, state) {
+            final targetLat = double.tryParse(
+              state.uri.queryParameters['lat'] ?? '',
+            );
+            final targetLng = double.tryParse(
+              state.uri.queryParameters['lng'] ?? '',
+            );
+            final friendName = state.uri.queryParameters['friend'];
+
+            return CompassPage(
+              targetLat: targetLat,
+              targetLng: targetLng,
+              friendName: friendName,
+            );
           },
         ),
         GoRoute(
           path: AppRoutes.profileRoute, // profile
-          redirect: (context, state) {
-            final user = authBloc.state is AuthAuthenticated
-                ? (authBloc.state as AuthAuthenticated).user
-                : null;
-            if (user != null) {
-              return '${AppRoutes.homeRoute}?page=0'; // Redirect to home with profile page
-            }
-            return null; // No redirect if not authenticated
+          builder: (context, state) {
+            final initialPage = 0; // Profile page index
+            return HomePage(initialPage: initialPage);
           },
         ),
         GoRoute(
           path: AppRoutes.friendListRoute, // friends
-          builder: (context, state) =>
-              const HomePage(initialPage: 2), // Friends page
+          builder: (context, state) {
+            final initialPage = 2; // Friends page index
+            return HomePage(initialPage: initialPage);
+          },
         ),
         GoRoute(
           path: AppRoutes.editProfileRoute,

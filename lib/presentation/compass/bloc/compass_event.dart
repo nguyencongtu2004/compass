@@ -79,3 +79,12 @@ class UpdateTargetLocation extends CompassEvent {
   @override
   List<Object?> get props => [targetLat, targetLng, friendName];
 }
+
+class GetCurrentLocationAndUpdate extends CompassEvent {
+  final String uid;
+
+  const GetCurrentLocationAndUpdate({required this.uid});
+
+  @override
+  List<Object?> get props => [uid];
+}

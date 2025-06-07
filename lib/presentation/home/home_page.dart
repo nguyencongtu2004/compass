@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minecraft_compass/presentation/compass/bloc/compass_bloc.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_appbar.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
@@ -8,7 +9,6 @@ import 'package:minecraft_compass/presentation/core/widgets/keep_alive_wrapper.d
 import 'package:minecraft_compass/presentation/compass/compass_page.dart';
 import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
-import '../friend/bloc/friend_bloc.dart';
 import '../profile/profile_page.dart';
 import '../friend/friend_list_page.dart';
 
@@ -28,12 +28,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late PageController _pageController;
-
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: widget.initialPage);
-    // Cập nhật vị trí ngay khi mở app
+    // Chỉ cập nhật vị trí, không load lại toàn bộ dữ liệu vì đã được khởi tạo trong splash
     _updateLocationOnStart();
   }
 
@@ -47,7 +46,7 @@ class _HomePageState extends State<HomePage> {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       // Sử dụng event mới để lấy vị trí và cập nhật lên Firestore cùng lúc
-      context.read<FriendBloc>().add(
+      context.read<CompassBloc>().add(
         GetCurrentLocationAndUpdate(uid: authState.user.uid),
       );
     }

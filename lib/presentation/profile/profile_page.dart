@@ -19,11 +19,11 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool _isLocationSharing = false;
-
   @override
   void initState() {
     super.initState();
-    context.read<ProfileBloc>().add(const ProfileLoadRequested());
+    // Không cần load lại profile vì đã được khởi tạo trong splash screen
+    // context.read<ProfileBloc>().add(const ProfileLoadRequested());
     _checkLocationPermission();
   }
 
@@ -67,7 +67,7 @@ class _ProfilePageState extends State<ProfilePage> {
             onPressed: () {
               context.read<AuthBloc>().add(const AuthLogoutRequested());
               Navigator.pop(context);
-              context.go(AppRoutes.loginRoute);
+              context.go(AppRoutes.splashRoute);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error(context),

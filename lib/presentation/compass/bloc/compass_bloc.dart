@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_compass/flutter_compass.dart' as compass;
 import '../../../utils/location_utils.dart';
+import '../../../data/repositories/location_repository.dart';
 
 part 'compass_event.dart';
 part 'compass_state.dart';
@@ -12,8 +13,11 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
   StreamSubscription<compass.CompassEvent>? _compassSubscription;
   Timer? _randomCompassTimer;
   double _currentRandomAngle = 0.0; // Lưu góc ngẫu nhiên hiện tại
+  final LocationRepository _locationRepository;
 
-  CompassBloc() : super(CompassInitial()) {
+  CompassBloc({LocationRepository? locationRepository})
+    : _locationRepository = locationRepository ?? LocationRepository(),
+      super(CompassInitial()) {
     on<StartCompass>(_onStartCompass);
     on<StartRandomCompass>(_onStartRandomCompass);
     on<UpdateCompassHeading>(_onUpdateCompassHeading);
@@ -22,6 +26,7 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     on<RefreshCurrentLocation>(_onRefreshCurrentLocation);
     on<StopCompass>(_onStopCompass);
     on<UpdateTargetLocation>(_onUpdateTargetLocation);
+    on<GetCurrentLocationAndUpdate>(_onGetCurrentLocationAndUpdate);
   }
   void _onStartCompass(StartCompass event, Emitter<CompassState> emit) {
     emit(CompassLoading());
@@ -172,6 +177,70 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     // Event này sẽ được gửi từ UI để trigger việc refresh location từ FriendBloc
     // Logic thực tế sẽ được xử lý ở UI layer
   }
+  void _onGetCurrentLocationAndUpdate(
+    GetCurrentLocationAndUpdate event,
+    Emitter<CompassState> emit,
+  ) async {
+    // Lưu state hiện tại
+    final currentState = state;
+
+    try {
+      final position = await _locationRepository.getCurrentPosition();
+
+      // Cập nhật vị trí lên Firestore
+      await _locationRepository.updateLocation(
+        event.uid,
+        position.latitude,
+        position.longitude,
+      );
+
+      // Cập nhật vị trí hiện tại vào state
+      if (currentState is CompassReady) {
+        // Tính toán lại distance và compass angle nếu có đích đến
+        double? distance;
+        double compassAngle = currentState.compassAngle;
+
+        if (currentState.targetLat != null && currentState.targetLng != null) {
+          distance = LocationUtils.calculateDistance(
+            position.latitude,
+            position.longitude,
+            currentState.targetLat!,
+            currentState.targetLng!,
+          );
+
+          if (currentState.heading != null) {
+            compassAngle = _calculateCompassAngle(
+              heading: currentState.heading,
+              currentLat: position.latitude,
+              currentLng: position.longitude,
+              targetLat: currentState.targetLat!,
+              targetLng: currentState.targetLng!,
+            );
+          }
+        }
+
+        emit(
+          currentState.copyWith(
+            currentLat: position.latitude,
+            currentLng: position.longitude,
+            distance: distance,
+            compassAngle: compassAngle,
+          ),
+        );
+      } else {
+        // Nếu chưa có state CompassReady, chỉ phát event UpdateCurrentLocation
+        add(
+          UpdateCurrentLocation(
+            latitude: position.latitude,
+            longitude: position.longitude,
+          ),
+        );
+      }
+    } catch (e) {
+      emit(CompassError('Không thể cập nhật vị trí: ${e.toString()}'));
+    }
+  }
+
   void _onStopCompass(StopCompass event, Emitter<CompassState> emit) {
     _compassSubscription?.cancel();
     _compassSubscription = null;

@@ -69,6 +69,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   backgroundColor: AppColors.error(context),
                 ),
               );
+            } else if (state is AuthAuthenticated) {
+              // Đăng ký thành công, chuyển đến splash để khởi tạo dữ liệu
+              context.go(AppRoutes.splashRoute);
             }
           },
           child: Center(

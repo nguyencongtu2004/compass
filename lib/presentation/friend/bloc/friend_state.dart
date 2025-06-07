@@ -47,25 +47,3 @@ class FriendsLocationsLoadSuccess extends FriendState {
   @override
   List<Object?> get props => [friends];
 }
-
-class LocationLoadInProgress extends FriendState {}
-
-class LocationLoadSuccess extends FriendState {
-  final LocationModel location;
-
-  const LocationLoadSuccess(this.location);
-
-  @override
-  List<Object?> get props => [location];
-}
-
-class LocationUpdateSuccess extends FriendState {}
-
-class LocationFailure extends FriendState {
-  final String message;
-
-  const LocationFailure(this.message);
-
-  @override
-  List<Object?> get props => [message];
-}

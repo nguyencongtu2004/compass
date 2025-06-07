@@ -17,9 +17,21 @@ class UserRepository {
   Future<UserModel?> getUserByUid(String uid) async {
     try {
       final doc = await _firestore.collection('users').doc(uid).get();
-      if (!doc.exists) return null;
-      return UserModel.fromMap(uid, doc.data()!);
-    } catch (e) {
+      if (!doc.exists) {
+        return null;
+      }
+
+      final data = doc.data();
+      if (data == null) {
+        return null;
+      }
+
+      // Add logging to see what data we're getting
+      print('User data for $uid: $data');
+      return UserModel.fromMap(uid, data);
+    } catch (e, stackTrace) {
+      print('Error in getUserByUid for $uid: $e');
+      print('Stack trace: $stackTrace');
       throw Exception('Không thể tải thông tin người dùng: $e');
     }
   }

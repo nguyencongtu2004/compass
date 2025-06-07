@@ -9,7 +9,7 @@ class AppBlocObserver extends BlocObserver {
     if (event is UpdateCompassHeading || event is UpdateRandomAngle) {
       return;
     }
-    debugPrint('[Bloc Event] $event in ${bloc.runtimeType}');
+    debugPrint('[Bloc Event - ${bloc.runtimeType}] $event');
   }
 
   @override
@@ -19,12 +19,12 @@ class AppBlocObserver extends BlocObserver {
         transition.event is UpdateRandomAngle) {
       return;
     }
-    debugPrint('[Bloc Transition] $transition in ${bloc.runtimeType}');
+    debugPrint('[Bloc Transition - ${bloc.runtimeType}] $transition');
   }
 
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);
-    debugPrint('[Bloc Error] $error in ${bloc.runtimeType}');
+    debugPrint('[Bloc Error - ${bloc.runtimeType}] $error');
   }
 }

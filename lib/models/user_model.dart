@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:minecraft_compass/utils/prase_utils.dart';
 import 'location_model.dart';
 
 class UserModel extends Equatable {
@@ -31,7 +32,7 @@ class UserModel extends Equatable {
       username: map['username'] ?? '',
       email: map['email'] ?? '',
       avatarUrl: map['avatarUrl'] ?? '',
-      createdAt: (map['createdAt'] as dynamic)?.toDate(),
+      createdAt: PraseUtils.parseDateTime(map['createdAt']),
       currentLocation: map['currentLocation'] != null
           ? LocationModel.fromMap(
               map['currentLocation'] as Map<String, dynamic>,

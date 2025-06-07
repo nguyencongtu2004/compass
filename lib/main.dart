@@ -3,12 +3,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:minecraft_compass/app/minecraft_compass_app.dart';
 import 'package:minecraft_compass/app/firebase_options.dart';
 import 'package:minecraft_compass/config/app_bloc_observer.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // Giữ native splash screen hiển thị cho đến khi app sẵn sàng
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);

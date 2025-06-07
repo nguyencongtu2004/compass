@@ -65,6 +65,9 @@ class _LoginPageState extends State<LoginPage> {
                   backgroundColor: AppColors.error(context),
                 ),
               );
+            } else if (state is AuthAuthenticated) {
+              // Đăng nhập thành công, chuyển đến splash để khởi tạo dữ liệu
+              context.go(AppRoutes.splashRoute);
             }
           },
           child: Center(

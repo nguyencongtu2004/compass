@@ -29,7 +29,6 @@ class CompassPage extends StatefulWidget {
 
 class _CompassPageState extends State<CompassPage> {
   UserModel? selectingFriend;
-
   @override
   void initState() {
     super.initState();
@@ -55,7 +54,7 @@ class _CompassPageState extends State<CompassPage> {
   void _getCurrentLocation() {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
-      context.read<FriendBloc>().add(
+      context.read<CompassBloc>().add(
         GetCurrentLocationAndUpdate(uid: authState.user.uid),
       );
     }
@@ -99,18 +98,17 @@ class _CompassPageState extends State<CompassPage> {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        BlocListener<FriendBloc, FriendState>(
+        BlocListener<CompassBloc, CompassState>(
           listener: (context, state) {
-            if (state is LocationLoadSuccess) {
-              // Cập nhật vị trí hiện tại vào CompassBloc
-              context.read<CompassBloc>().add(
-                UpdateCurrentLocation(
-                  latitude: state.location.latitude,
-                  longitude: state.location.longitude,
+            if (state is CompassLocationUpdateSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Vị trí đã được cập nhật'),
+                  backgroundColor: AppColors.primary(context),
                 ),
               );
             }
-            if (state is LocationFailure) {
+            if (state is CompassError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
@@ -118,6 +116,11 @@ class _CompassPageState extends State<CompassPage> {
                 ),
               );
             }
+          },
+        ),
+        BlocListener<FriendBloc, FriendState>(
+          listener: (context, state) {
+            // Future: Add any friend-specific listeners here if needed
           },
         ),
       ],

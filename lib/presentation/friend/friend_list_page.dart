@@ -24,11 +24,11 @@ class _FriendListPageState extends State<FriendListPage> {
   // Biến để track trạng thái đang tìm kiếm và gửi lời mời
   bool _isSearching = false;
   bool _isSendingRequest = false;
-
   @override
   void initState() {
     super.initState();
-    _loadFriends();
+    // Không cần load lại friends vì đã được khởi tạo trong splash screen
+    // _loadFriends();
   }
 
   void _loadFriends() {

@@ -74,3 +74,7 @@ class CompassError extends CompassState {
   @override
   List<Object?> get props => [message];
 }
+
+class CompassLocationLoading extends CompassState {}
+
+class CompassLocationUpdateSuccess extends CompassState {}

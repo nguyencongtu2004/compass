@@ -84,10 +84,6 @@ class FriendsLocationsUpdated extends FriendEvent {
   List<Object?> get props => [friends];
 }
 
-class StopListeningToFriendsLocations extends FriendEvent {
-  const StopListeningToFriendsLocations();
-}
-
 class GetCurrentLocation extends FriendEvent {
   const GetCurrentLocation();
 }
@@ -105,15 +101,6 @@ class UpdateLocation extends FriendEvent {
 
   @override
   List<Object?> get props => [uid, latitude, longitude];
-}
-
-class GetCurrentLocationAndUpdate extends FriendEvent {
-  final String uid;
-
-  const GetCurrentLocationAndUpdate({required this.uid});
-
-  @override
-  List<Object?> get props => [uid];
 }
 
 class GetCachedLocation extends FriendEvent {
