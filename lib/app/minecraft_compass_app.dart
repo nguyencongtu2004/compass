@@ -4,6 +4,7 @@ import 'package:minecraft_compass/presentation/core/common/theme/app_theme.dart'
 import 'package:minecraft_compass/presentation/auth/bloc/auth_bloc.dart';
 import 'package:minecraft_compass/presentation/friend/bloc/friend_bloc.dart';
 import 'package:minecraft_compass/presentation/compass/bloc/compass_bloc.dart';
+import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
 import 'package:minecraft_compass/router/app_router.dart';
 
 class MinecraftCompassApp extends StatelessWidget {
@@ -17,6 +18,7 @@ class MinecraftCompassApp extends StatelessWidget {
         BlocProvider.value(value: authBloc),
         BlocProvider(create: (context) => FriendBloc()),
         BlocProvider(create: (context) => CompassBloc()),
+        BlocProvider(create: (context) => ProfileBloc()),
       ],
       child: MaterialApp.router(
         title: 'Minecraft Compass',

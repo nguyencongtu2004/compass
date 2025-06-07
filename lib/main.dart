@@ -1,4 +1,3 @@
-import 'package:cloudinary_flutter/cloudinary_object.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -41,10 +40,5 @@ void main() async {
 
   Bloc.observer = AppBlocObserver();
 
-  final cloudinary = CloudinaryObject.fromCloudName(cloudName: 'dubpgqv5q');
-
   runApp(const MinecraftCompassApp());
 }
-
-
-

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minecraft_compass/presentation/core/common/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../friend/bloc/friend_bloc.dart';
@@ -21,6 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    context.read<ProfileBloc>().add(const ProfileLoadRequested());
     _checkLocationPermission();
   }
 
@@ -85,10 +87,37 @@ class _ProfilePageState extends State<ProfilePage> {
           'Hồ sơ',
           style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
         ),
+        actions: [
+          BlocBuilder<ProfileBloc, ProfileState>(
+            builder: (context, state) {
+              if (state is ProfileLoaded) {
+                return IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    context
+                        .push(AppRoutes.editProfileRoute, extra: state.user)
+                        .then((_) {
+                          // Reload profile after editing
+                          context.read<ProfileBloc>().add(
+                            const ProfileLoadRequested(),
+                          );
+                        });
+                  },
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
       ),
-      body: BlocBuilder<AuthBloc, AuthState>(
+      body: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
-          if (state is AuthAuthenticated) {
+          if (state is ProfileLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is ProfileLoaded) {
+            final user = state.user;
             return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -106,24 +135,33 @@ class _ProfilePageState extends State<ProfilePage> {
                         CircleAvatar(
                           radius: 50,
                           backgroundColor: AppColors.primary(context),
-                          child: const Icon(
-                            Icons.person,
-                            size: 60,
-                            color: Colors.white,
-                          ),
+                          backgroundImage: user.avatarUrl.isNotEmpty
+                              ? NetworkImage(user.avatarUrl)
+                              : null,
+                          child: user.avatarUrl.isEmpty
+                              ? const Icon(
+                                  Icons.person,
+                                  size: 60,
+                                  color: Colors.white,
+                                )
+                              : null,
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          state.user.displayName ?? 'Người dùng',
+                          user.displayName.isNotEmpty
+                              ? user.displayName
+                              : 'Người dùng',
                           style: AppTextStyles.titleLarge,
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          state.user.email ?? '',
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            color: AppColors.onSurfaceVariant(context),
+                        if (user.username.isNotEmpty)
+                          Text(
+                            '@${user.username}',
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              color: AppColors.primary(context),
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -225,6 +263,32 @@ class _ProfilePageState extends State<ProfilePage> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                     ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (state is ProfileError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    state.message,
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: AppColors.error(context),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.read<ProfileBloc>().add(
+                        const ProfileLoadRequested(),
+                      );
+                    },
+                    child: const Text('Thử lại'),
                   ),
                 ],
               ),

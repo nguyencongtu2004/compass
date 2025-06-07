@@ -45,7 +45,9 @@ class _CompassPageState extends State<CompassPage> {
   void _getCurrentLocation() {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
-      context.read<FriendBloc>().add(GetCurrentLocationAndUpdate(uid: authState.user.uid));
+      context.read<FriendBloc>().add(
+        GetCurrentLocationAndUpdate(uid: authState.user.uid),
+      );
     }
   }
 

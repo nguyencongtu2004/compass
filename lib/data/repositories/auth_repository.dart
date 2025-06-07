@@ -10,7 +10,7 @@ class AuthRepository {
       _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Đăng ký mới
-  Future<User?> register({
+  Future<User?> registerByEmail({
     required String email,
     required String password,
     required String displayName,
@@ -24,6 +24,7 @@ class AuthRepository {
       // Tạo document user trong Firestore
       await _firestore.collection('users').doc(user.uid).set({
         'displayName': displayName,
+        'username': '',
         'email': email,
         'avatarUrl': '',
         'createdAt': FieldValue.serverTimestamp(),
@@ -36,7 +37,10 @@ class AuthRepository {
   }
 
   /// Đăng nhập
-  Future<User?> login({required String email, required String password}) async {
+  Future<User?> loginByEmail({
+    required String email,
+    required String password,
+  }) async {
     final cred = await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,

@@ -30,6 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ? AuthAuthenticated(event.user!)
           : AuthUnauthenticated(),
     );
+    print('User changed: ${event.user?.toString() ?? 'No user'}');
   }
 
   void _onLoginRequested(
@@ -38,7 +39,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      await _authRepository.login(email: event.email, password: event.password);
+      await _authRepository.loginByEmail(
+        email: event.email,
+        password: event.password,
+      );
     } catch (e) {
       emit(AuthFailure(e.toString()));
     }
@@ -50,7 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      await _authRepository.register(
+      await _authRepository.registerByEmail(
         email: event.email,
         password: event.password,
         displayName: event.displayName,

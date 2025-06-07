@@ -9,4 +9,5 @@ abstract final class AppRoutes {
   static const String friendRequestsRoute = '/home/friend_requests';
   static const String compassRoute = '/home/compass';
   static const String profileRoute = '/home/profile';
+  static const String editProfileRoute = '/home/edit_profile';
 }

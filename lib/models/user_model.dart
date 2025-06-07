@@ -4,6 +4,7 @@ import 'location_model.dart';
 class UserModel extends Equatable {
   final String uid;
   final String displayName;
+  final String username;
   final String email;
   final String avatarUrl;
   final DateTime createdAt;
@@ -14,6 +15,7 @@ class UserModel extends Equatable {
   const UserModel({
     required this.uid,
     required this.displayName,
+    required this.username,
     required this.email,
     required this.avatarUrl,
     required this.createdAt,
@@ -26,6 +28,7 @@ class UserModel extends Equatable {
     return UserModel(
       uid: uid,
       displayName: map['displayName'] ?? '',
+      username: map['username'] ?? '',
       email: map['email'] ?? '',
       avatarUrl: map['avatarUrl'] ?? '',
       createdAt: (map['createdAt'] as dynamic).toDate(),
@@ -42,6 +45,7 @@ class UserModel extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'displayName': displayName,
+      'username': username,
       'email': email,
       'avatarUrl': avatarUrl,
       'createdAt': createdAt,
@@ -53,6 +57,7 @@ class UserModel extends Equatable {
 
   UserModel copyWith({
     String? displayName,
+    String? username,
     String? email,
     String? avatarUrl,
     DateTime? createdAt,
@@ -63,6 +68,7 @@ class UserModel extends Equatable {
     return UserModel(
       uid: uid,
       displayName: displayName ?? this.displayName,
+      username: username ?? this.username,
       email: email ?? this.email,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       createdAt: createdAt ?? this.createdAt,
@@ -76,6 +82,7 @@ class UserModel extends Equatable {
   List<Object?> get props => [
     uid,
     displayName,
+    username,
     email,
     avatarUrl,
     createdAt,

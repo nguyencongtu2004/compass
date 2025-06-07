@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minecraft_compass/models/user_model.dart';
+import 'package:minecraft_compass/presentation/profile/edit_profile_page.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import '../presentation/auth/login_page.dart';
 import '../presentation/auth/register_page.dart';
@@ -106,6 +108,12 @@ class AppRouter {
               builder: (context, state) => const FriendRequestPage(),
             ),
           ],
+        ),
+        GoRoute(path: AppRoutes.editProfileRoute,
+          builder: (context, state) {
+            final user = state.extra as UserModel;
+            return EditProfilePage(user: user);
+          },
         ),
       ],
     );

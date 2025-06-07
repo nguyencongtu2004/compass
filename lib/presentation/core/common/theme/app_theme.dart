@@ -5,7 +5,6 @@ import 'app_spacing.dart';
 
 /// Main theme configuration for the app with light and dark mode support
 abstract class AppTheme {
-
   /// Light theme configuration
   static ThemeData get lightTheme {
     return ThemeData(

@@ -64,8 +64,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '812751773442',
     projectId: 'minecraft-compass',
     storageBucket: 'minecraft-compass.firebasestorage.app',
-    androidClientId: '812751773442-t0cpsmtgg8uvn3p2p7lkn3usflno1hua.apps.googleusercontent.com',
-    iosClientId: '812751773442-02375spu8b997kiogj2dfk2iaier1a6l.apps.googleusercontent.com',
+    androidClientId:
+        '812751773442-t0cpsmtgg8uvn3p2p7lkn3usflno1hua.apps.googleusercontent.com',
+    iosClientId:
+        '812751773442-02375spu8b997kiogj2dfk2iaier1a6l.apps.googleusercontent.com',
     iosBundleId: 'com.example.minecraftCompass',
   );
 
@@ -75,8 +77,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '812751773442',
     projectId: 'minecraft-compass',
     storageBucket: 'minecraft-compass.firebasestorage.app',
-    androidClientId: '812751773442-t0cpsmtgg8uvn3p2p7lkn3usflno1hua.apps.googleusercontent.com',
-    iosClientId: '812751773442-02375spu8b997kiogj2dfk2iaier1a6l.apps.googleusercontent.com',
+    androidClientId:
+        '812751773442-t0cpsmtgg8uvn3p2p7lkn3usflno1hua.apps.googleusercontent.com',
+    iosClientId:
+        '812751773442-02375spu8b997kiogj2dfk2iaier1a6l.apps.googleusercontent.com',
     iosBundleId: 'com.example.minecraftCompass',
   );
 
@@ -89,5 +93,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'minecraft-compass.firebasestorage.app',
     measurementId: 'G-SX0YR0950B',
   );
-
 }
