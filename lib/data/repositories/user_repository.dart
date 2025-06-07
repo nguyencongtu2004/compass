@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import '../../models/user_model.dart';
 import '../services/cloudinary_service.dart';
 
@@ -26,12 +27,10 @@ class UserRepository {
         return null;
       }
 
-      // Add logging to see what data we're getting
-      print('User data for $uid: $data');
       return UserModel.fromMap(uid, data);
     } catch (e, stackTrace) {
-      print('Error in getUserByUid for $uid: $e');
-      print('Stack trace: $stackTrace');
+      debugPrint('Error in getUserByUid for $uid: $e');
+      debugPrint('Stack trace: $stackTrace');
       throw Exception('Không thể tải thông tin người dùng: $e');
     }
   }

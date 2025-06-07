@@ -32,13 +32,18 @@ class FriendsListView extends StatelessWidget {
           // Friend requests section
           if (state.friendRequests.isNotEmpty) ...[
             SliverToBoxAdapter(
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                color: AppColors.primaryContainer(context),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                ),
                 child: Text(
                   'Lời mời kết bạn (${state.friendRequests.length})',
-                  style: AppTextStyles.titleMedium.copyWith(
-                    color: AppColors.onPrimaryContainer(context),
+                  style: AppTextStyles.headlineSmall.copyWith(
+                    color: AppColors.onSurface(context),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -54,19 +59,22 @@ class FriendsListView extends StatelessWidget {
               }, childCount: state.friendRequests.length),
             ),
             const SliverToBoxAdapter(child: Divider(height: 1)),
-          ],
-
-          // Friends section header
+          ], // Friends section header
           SliverToBoxAdapter(
-            child: Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              color: AppColors.surfaceVariant(context),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.sm,
+              ),
               child: Text(
                 state.friends.isEmpty
                     ? 'Chưa có bạn bè nào'
                     : 'Bạn bè (${state.friends.length})',
-                style: AppTextStyles.titleMedium.copyWith(
-                  color: AppColors.onSurfaceVariant(context),
+                style: AppTextStyles.headlineSmall.copyWith(
+                  color: AppColors.onSurface(context),
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

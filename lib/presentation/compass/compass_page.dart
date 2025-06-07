@@ -239,12 +239,22 @@ class _CompassPageState extends State<CompassPage> {
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: AppSpacing.sm,
                                 ),
-                                child: Text(
-                                  'Danh sách bạn bè:',
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.onSurface(context),
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Danh sách bạn bè',
+                                      style: AppTextStyles.titleLarge,
+                                    ),
+                                    Text(
+                                      'Tip: Chọn một người bạn để tìm họ',
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        color: AppColors.onSurfaceVariant(
+                                          context,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(height: AppSpacing.xs),

@@ -16,43 +16,75 @@ class FriendRequestTile extends StatelessWidget {
     required this.onAccept,
     required this.onDecline,
   });
-
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
-      child: ListTile(
-        leading: CommonAvatar(
-          radius: 20,
-          avatarUrl: requester.avatarUrl,
-          displayName: requester.displayName,
-        ),
-        title: Text(
-          requester.displayName,
-          style: AppTextStyles.titleMedium.copyWith(
-            color: AppColors.onSurface(context),
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.xs),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          gradient: LinearGradient(
+            colors: [
+              AppColors.primaryContainer(context).withValues(alpha: 0.3),
+              AppColors.primaryContainer(context).withValues(alpha: 0.1),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
         ),
-        subtitle: Text(
-          requester.username.isNotEmpty ? '@${requester.username}' : requester.email,
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: AppColors.onSurfaceVariant(context),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm,
+            vertical: AppSpacing.xs,
           ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: Icon(Icons.check, color: AppColors.success(context)),
-              onPressed: onAccept,
-              tooltip: 'Chấp nhận',
+          leading: CommonAvatar(
+            radius: 28,
+            avatarUrl: requester.avatarUrl,
+            displayName: requester.displayName,
+          ),
+          title: Text(
+            requester.displayName,
+            style: AppTextStyles.titleMedium.copyWith(
+              color: AppColors.onSurface(context),
+              fontWeight: FontWeight.w600,
             ),
-            IconButton(
-              icon: Icon(Icons.close, color: AppColors.error(context)),
-              onPressed: onDecline,
-              tooltip: 'Từ chối',
+          ),
+          subtitle: Text(
+            requester.username.isNotEmpty
+                ? '@${requester.username}'
+                : requester.email,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.onSurfaceVariant(context),
             ),
-          ],
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.success(context),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.check, color: Colors.white),
+                  onPressed: onAccept,
+                  tooltip: 'Chấp nhận',
+                ),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.error(context),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white),
+                  onPressed: onDecline,
+                  tooltip: 'Từ chối',
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

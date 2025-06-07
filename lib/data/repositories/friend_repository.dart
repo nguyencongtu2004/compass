@@ -132,14 +132,14 @@ class FriendRepository {
     await batch.commit();
   }
 
-  /// Tìm kiếm user theo email
-  Future<UserModel?> findUserByEmail(String email) async {
-    final searchEmail = email.toLowerCase().trim();
+  /// Tìm kiếm user theo email và username, ưu tiên username
+  Future<UserModel?> findUserByEmailAndUsername(String keyword) async {
+    final searchKeyword = keyword.toLowerCase().trim();
 
-    // Thử tìm chính xác trước
+    // 1. Tìm username chính xác trước (ưu tiên cao nhất)
     QuerySnapshot querySnapshot = await _firestore
         .collection('users')
-        .where('email', isEqualTo: searchEmail)
+        .where('username', isEqualTo: searchKeyword)
         .limit(1)
         .get();
 
@@ -148,25 +148,81 @@ class FriendRepository {
       return UserModel.fromMap(doc.id, doc.data() as Map<String, dynamic>);
     }
 
-    // Nếu không tìm thấy exact match, tìm kiếm partial match
+    // 2. Tìm email chính xác
+    querySnapshot = await _firestore
+        .collection('users')
+        .where('email', isEqualTo: searchKeyword)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      final doc = querySnapshot.docs.first;
+      return UserModel.fromMap(doc.id, doc.data() as Map<String, dynamic>);
+    }
+
+    // 3. Tìm kiếm partial match
     // Do Firestore limitations, ta phải lấy tất cả users và filter
     try {
       querySnapshot = await _firestore.collection('users').get();
+      UserModel? usernameMatch;
+      UserModel? emailMatch;
 
       for (var doc in querySnapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
+        final username = (data['username'] as String?)?.toLowerCase();
         final userEmail = (data['email'] as String?)?.toLowerCase();
 
-        if (userEmail != null && userEmail.contains(searchEmail)) {
-          return UserModel.fromMap(doc.id, data);
+        // Ưu tiên username match trước
+        if (username != null &&
+            username.contains(searchKeyword) &&
+            usernameMatch == null) {
+          usernameMatch = UserModel.fromMap(doc.id, data);
+        }
+
+        // Lưu email match nhưng không return ngay
+        if (userEmail != null &&
+            userEmail.contains(searchKeyword) &&
+            emailMatch == null) {
+          emailMatch = UserModel.fromMap(doc.id, data);
+        }
+
+        // Nếu đã tìm thấy username match, return ngay (ưu tiên cao hơn)
+        if (usernameMatch != null) {
+          return usernameMatch;
         }
       }
+
+      // Nếu không có username match, return email match
+      if (emailMatch != null) {
+        return emailMatch;
+      }
     } catch (e) {
-      // Nếu có lỗi khi lấy tất cả users, thử tìm với prefix
+      // Nếu có lỗi khi lấy tất cả users, thử tìm với prefix cho username trước
+      try {
+        querySnapshot = await _firestore
+            .collection('users')
+            .where('username', isGreaterThanOrEqualTo: searchKeyword)
+            .where('username', isLessThan: searchKeyword + '\uf8ff')
+            .limit(20)
+            .get();
+
+        for (var doc in querySnapshot.docs) {
+          final data = doc.data() as Map<String, dynamic>;
+          final username = (data['username'] as String?)?.toLowerCase();
+
+          if (username != null && username.contains(searchKeyword)) {
+            return UserModel.fromMap(doc.id, data);
+          }
+        }
+      } catch (usernameError) {
+        // Ignore và tiếp tục với email search
+      }
+
+      // Nếu username search thất bại, thử với email
       querySnapshot = await _firestore
           .collection('users')
-          .where('email', isGreaterThanOrEqualTo: searchEmail)
-          .where('email', isLessThan: searchEmail + '\uf8ff')
+          .where('email', isGreaterThanOrEqualTo: searchKeyword)
+          .where('email', isLessThan: searchKeyword + '\uf8ff')
           .limit(20)
           .get();
 
@@ -174,7 +230,7 @@ class FriendRepository {
         final data = doc.data() as Map<String, dynamic>;
         final userEmail = (data['email'] as String?)?.toLowerCase();
 
-        if (userEmail != null && userEmail.contains(searchEmail)) {
+        if (userEmail != null && userEmail.contains(searchKeyword)) {
           return UserModel.fromMap(doc.id, data);
         }
       }

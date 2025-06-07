@@ -111,7 +111,9 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
   ) async {
     // Không emit FriendLoadInProgress để tránh che mất UI hiện tại
     try {
-      final user = await _friendRepository.findUserByEmail(event.email);
+      final user = await _friendRepository.findUserByEmailAndUsername(
+        event.email,
+      );
       emit(UserSearchResult(user)); // Emit dù user có null hay không
     } catch (e) {
       // Emit UserSearchResult(null) thay vì FriendOperationFailure để maintain consistent flow
