@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:minecraft_compass/presentation/core/common/theme/app_theme.dart';
+import 'package:minecraft_compass/presentation/core/theme/app_theme.dart';
 import 'package:minecraft_compass/presentation/auth/bloc/auth_bloc.dart';
 import 'package:minecraft_compass/presentation/friend/bloc/friend_bloc.dart';
 import 'package:minecraft_compass/presentation/compass/bloc/compass_bloc.dart';

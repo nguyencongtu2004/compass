@@ -31,9 +31,9 @@ dependencies:
   # Location & Compass
   geolocator: ^14.0.1
   flutter_compass: ^0.8.0
-
   # Image handling
   image_picker: ^1.1.2
+  cached_network_image: ^3.4.1
 
   # Other utilities
   dio: ^5.8.0+1

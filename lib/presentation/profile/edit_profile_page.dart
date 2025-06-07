@@ -2,12 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:minecraft_compass/presentation/core/common/widgets/common_scaffold.dart';
-import 'package:minecraft_compass/presentation/core/common/widgets/common_button.dart';
-import 'package:minecraft_compass/presentation/core/common/widgets/common_textfield.dart';
-import 'package:minecraft_compass/presentation/core/common/theme/app_colors.dart';
-import 'package:minecraft_compass/presentation/core/common/theme/app_text_styles.dart';
-import 'package:minecraft_compass/presentation/core/common/theme/app_spacing.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_button.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_textfield.dart';
+import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
+import 'package:minecraft_compass/presentation/core/theme/app_text_styles.dart';
+import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/models/user_model.dart';
 import 'package:minecraft_compass/utils/validator.dart';
 import 'bloc/profile_bloc.dart';
@@ -151,24 +152,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 Center(
                   child: Stack(
                     children: [
-                      CircleAvatar(
-                        radius: 60,
-                        backgroundColor: AppColors.primary(context),
-                        backgroundImage: _selectedImage != null
-                            ? FileImage(_selectedImage!)
-                            : (widget.user.avatarUrl.isNotEmpty
-                                  ? NetworkImage(widget.user.avatarUrl)
-                                  : null),
-                        child:
-                            (_selectedImage == null &&
-                                widget.user.avatarUrl.isEmpty)
-                            ? const Icon(
-                                Icons.person,
-                                size: 60,
-                                color: Colors.white,
-                              )
-                            : null,
-                      ),
+                      _selectedImage != null
+                          ? CircleAvatar(
+                              radius: 60,
+                              backgroundColor: AppColors.primary(context),
+                              backgroundImage: FileImage(_selectedImage!),
+                            )
+                          : CommonAvatar(
+                              radius: 60,
+                              avatarUrl: widget.user.avatarUrl,
+                              displayName: widget.user.displayName,
+                              backgroundColor: AppColors.primary(context),
+                              fallbackIcon: Icons.person,
+                            ),
                       Positioned(
                         bottom: 0,
                         right: 0,
@@ -227,21 +223,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                     });
                   },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập tên người dùng';
-                    }
-                    if (value.length < 3) {
-                      return 'Tên người dùng phải có ít nhất 3 ký tự';
-                    }
-                    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) {
-                      return 'Tên người dùng chỉ được chứa chữ cái, số và dấu gạch dưới';
-                    }
-                    if (!_isUsernameAvailable) {
-                      return 'Tên người dùng đã được sử dụng';
-                    }
-                    return null;
-                  },
+                  validator: (value) => Validator.validateUsername(value),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 if (!_isUsernameAvailable)

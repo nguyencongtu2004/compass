@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:minecraft_compass/presentation/core/common/widgets/common_scaffold.dart';
-import 'package:minecraft_compass/presentation/core/common/widgets/keep_alive_wrapper.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/presentation/core/widgets/keep_alive_wrapper.dart';
 import 'package:minecraft_compass/presentation/compass/compass_page.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../friend/bloc/friend_bloc.dart';

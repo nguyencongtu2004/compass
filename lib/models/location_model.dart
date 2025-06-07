@@ -15,7 +15,7 @@ class LocationModel extends Equatable {
     return LocationModel(
       latitude: (map['latitude'] as num).toDouble(),
       longitude: (map['longitude'] as num).toDouble(),
-      updatedAt: (map['updatedAt'] as dynamic).toDate(),
+      updatedAt: (map['updatedAt'] as dynamic)?.toDate(),
     );
   }
 

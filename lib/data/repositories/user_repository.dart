@@ -43,7 +43,12 @@ class UserRepository {
       if (username != null && username.isNotEmpty) {
         await _validateUsername(username, uid);
         updateData['username'] = username;
-      } // Upload và cập nhật avatar
+      } else if (username != null) {
+        // Nếu username là null hoặc rỗng, không cập nhật
+        updateData['username'] = FieldValue.delete();
+      }
+
+      // Upload và cập nhật avatar
       if (avatarFile != null) {
         // Sử dụng method chuyên dụng để upload avatar với public_id cố định
         final avatarUrl = await _cloudinaryService.uploadUserAvatar(

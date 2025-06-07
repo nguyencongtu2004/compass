@@ -31,7 +31,7 @@ class UserModel extends Equatable {
       username: map['username'] ?? '',
       email: map['email'] ?? '',
       avatarUrl: map['avatarUrl'] ?? '',
-      createdAt: (map['createdAt'] as dynamic).toDate(),
+      createdAt: (map['createdAt'] as dynamic)?.toDate(),
       currentLocation: map['currentLocation'] != null
           ? LocationModel.fromMap(
               map['currentLocation'] as Map<String, dynamic>,

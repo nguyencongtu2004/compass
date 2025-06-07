@@ -24,7 +24,7 @@ abstract class Validator {
     if (value == null || value.isEmpty) {
       return 'Display name is required';
     }
-    if (value.length < 2) {
+    if (value.trim().length < 2) {
       return 'Display name must be at least 2 characters long';
     }
     return null;
@@ -32,12 +32,12 @@ abstract class Validator {
 
   static String? validateUsername(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Username là bắt buộc';
+      return null; // Không cần thông báo lỗi nếu không có giá trị
     }
-    if (value.length < 3) {
+    if (value.trim().length < 3) {
       return 'Username phải có ít nhất 3 ký tự';
     }
-    if (value.length > 20) {
+    if (value.trim().length > 20) {
       return 'Username không được vượt quá 20 ký tự';
     }
     // Kiểm tra format: chỉ chữ cái, số và gạch dưới

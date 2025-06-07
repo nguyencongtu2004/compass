@@ -5,9 +5,9 @@ import '../friend/bloc/friend_bloc.dart';
 import 'bloc/compass_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../../utils/location_utils.dart';
-import '../core/common/theme/app_colors.dart';
-import '../core/common/theme/app_text_styles.dart';
-import '../core/common/theme/app_spacing.dart';
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_text_styles.dart';
+import '../core/theme/app_spacing.dart';
 
 class CompassPage extends StatefulWidget {
   final double targetLat;

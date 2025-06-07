@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:minecraft_compass/presentation/core/common/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
 import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../friend/bloc/friend_bloc.dart';
-import '../core/common/theme/app_colors.dart';
-import '../core/common/theme/app_text_styles.dart';
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_text_styles.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -79,37 +81,18 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  void _editProfile(BuildContext context, ProfileLoaded state) {
+    final user = state.user;
+    context.push(AppRoutes.editProfileRoute, extra: user).then((_) {
+      // Reload profile after editing
+      context.read<ProfileBloc>().add(const ProfileLoadRequested());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return CommonScaffold(
-      appBar: AppBar(
-        title: Text(
-          'Hồ sơ',
-          style: AppTextStyles.titleLarge.copyWith(color: Colors.white),
-        ),
-        actions: [
-          BlocBuilder<ProfileBloc, ProfileState>(
-            builder: (context, state) {
-              if (state is ProfileLoaded) {
-                return IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    context
-                        .push(AppRoutes.editProfileRoute, extra: state.user)
-                        .then((_) {
-                          // Reload profile after editing
-                          context.read<ProfileBloc>().add(
-                            const ProfileLoadRequested(),
-                          );
-                        });
-                  },
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text('Hồ sơ', style: AppTextStyles.titleLarge)),
       body: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
           if (state is ProfileLoading) {
@@ -123,46 +106,44 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 children: [
                   // Profile header
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary(context).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: AppColors.primary(context),
-                          backgroundImage: user.avatarUrl.isNotEmpty
-                              ? NetworkImage(user.avatarUrl)
-                              : null,
-                          child: user.avatarUrl.isEmpty
-                              ? const Icon(
-                                  Icons.person,
-                                  size: 60,
-                                  color: Colors.white,
-                                )
-                              : null,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          user.displayName.isNotEmpty
-                              ? user.displayName
-                              : 'Người dùng',
-                          style: AppTextStyles.titleLarge,
-                        ),
-                        const SizedBox(height: 4),
-                        if (user.username.isNotEmpty)
-                          Text(
-                            '@${user.username}',
-                            style: AppTextStyles.bodyLarge.copyWith(
-                              color: AppColors.primary(context),
-                              fontWeight: FontWeight.w500,
-                            ),
+                  GestureDetector(
+                    onTap: () => _editProfile(context, state),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary(
+                          context,
+                        ).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          CommonAvatar(
+                            radius: 50,
+                            avatarUrl: user.avatarUrl,
+                            displayName: user.displayName,
+                            backgroundColor: AppColors.primary(context),
+                            fallbackIcon: Icons.person,
                           ),
-                      ],
+                          const SizedBox(height: AppSpacing.md),
+                          Text(
+                            user.displayName.isNotEmpty
+                                ? user.displayName
+                                : 'Người dùng',
+                            style: AppTextStyles.titleLarge,
+                          ),
+                          const SizedBox(height: 4),
+                          if (user.username.isNotEmpty)
+                            Text(
+                              '@${user.username}',
+                              style: AppTextStyles.bodyLarge.copyWith(
+                                color: AppColors.primary(context),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
 
