@@ -11,6 +11,9 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
   final FriendRepository _friendRepository;
   StreamSubscription<List<UserModel>>? _friendsLocationSubscription;
 
+  // Store current friends and requests state để restore sau khi search
+  FriendAndRequestsLoadSuccess? _currentFriendsState;
+
   FriendBloc({FriendRepository? friendRepository})
     : _friendRepository = friendRepository ?? FriendRepository(),
       super(FriendInitial()) {
@@ -20,6 +23,7 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
     on<DeclineFriendRequest>(_onDeclineFriendRequest);
     on<RemoveFriend>(_onRemoveFriend);
     on<FindUserByEmail>(_onFindUserByEmail);
+    on<ClearSearchResults>(_onClearSearchResults);
   }
 
   void _onSendFriendRequest(
@@ -55,12 +59,15 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
       final friends = results[0];
       final friendRequests = results[1];
 
-      emit(
-        FriendAndRequestsLoadSuccess(
-          friends: friends,
-          friendRequests: friendRequests,
-        ),
+      final newState = FriendAndRequestsLoadSuccess(
+        friends: friends,
+        friendRequests: friendRequests,
       );
+
+      // Update stored state
+      _currentFriendsState = newState;
+
+      emit(newState);
     } catch (e) {
       emit(FriendOperationFailure(e.toString()));
     }
@@ -84,12 +91,15 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
       final friends = results[0];
       final friendRequests = results[1];
 
-      emit(
-        FriendAndRequestsLoadSuccess(
-          friends: friends,
-          friendRequests: friendRequests,
-        ),
+      final newState = FriendAndRequestsLoadSuccess(
+        friends: friends,
+        friendRequests: friendRequests,
       );
+
+      // Update stored state
+      _currentFriendsState = newState;
+
+      emit(newState);
     } catch (e) {
       emit(FriendOperationFailure(e.toString()));
     }
@@ -104,7 +114,18 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
       final user = await _friendRepository.findUserByEmail(event.email);
       emit(UserSearchResult(user)); // Emit dù user có null hay không
     } catch (e) {
-      emit(FriendOperationFailure(e.toString()));
+      // Emit UserSearchResult(null) thay vì FriendOperationFailure để maintain consistent flow
+      emit(UserSearchResult(null));
+    }
+  }
+
+  void _onClearSearchResults(
+    ClearSearchResults event,
+    Emitter<FriendState> emit,
+  ) {
+    // Return to the last successful friends state if available
+    if (_currentFriendsState != null) {
+      emit(_currentFriendsState!);
     }
   }
 
@@ -123,12 +144,15 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
       final friends = results[0];
       final friendRequests = results[1];
 
-      emit(
-        FriendAndRequestsLoadSuccess(
-          friends: friends,
-          friendRequests: friendRequests,
-        ),
+      final newState = FriendAndRequestsLoadSuccess(
+        friends: friends,
+        friendRequests: friendRequests,
       );
+
+      // Update stored state
+      _currentFriendsState = newState;
+
+      emit(newState);
     } catch (e) {
       emit(FriendOperationFailure(e.toString()));
     }
@@ -149,12 +173,15 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
       final friends = results[0];
       final friendRequests = results[1];
 
-      emit(
-        FriendAndRequestsLoadSuccess(
-          friends: friends,
-          friendRequests: friendRequests,
-        ),
+      final newState = FriendAndRequestsLoadSuccess(
+        friends: friends,
+        friendRequests: friendRequests,
       );
+
+      // Store current state for restoration after search
+      _currentFriendsState = newState;
+
+      emit(newState);
     } catch (e) {
       emit(FriendOperationFailure(e.toString()));
     }

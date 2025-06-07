@@ -110,6 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       prefixIcon: Icons.email_outlined,
+                      textInputAction: TextInputAction.next,
                       validator: (value) => Validator.validateEmail(value),
                     ),
                     const SizedBox(height: AppSpacing.md),

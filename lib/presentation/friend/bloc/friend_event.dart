@@ -66,6 +66,10 @@ class FindUserByEmail extends FriendEvent {
   List<Object?> get props => [email];
 }
 
+class ClearSearchResults extends FriendEvent {
+  const ClearSearchResults();
+}
+
 class ListenToFriendsLocations extends FriendEvent {
   final List<String> friendUids;
 

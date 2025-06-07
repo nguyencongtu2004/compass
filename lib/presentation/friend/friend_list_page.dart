@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
 import 'bloc/friend_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../../models/user_model.dart';
 import '../core/theme/app_colors.dart';
-import '../core/theme/app_text_styles.dart';
-import '../core/theme/app_spacing.dart';
 import '../core/widgets/loading_indicator.dart';
+import 'widgets/add_friend_section.dart';
+import 'widgets/friends_list_view.dart';
+import 'widgets/add_friend_dialog.dart';
+import 'widgets/remove_friend_dialog.dart';
 
 class FriendListPage extends StatefulWidget {
   const FriendListPage({super.key});
@@ -18,12 +19,10 @@ class FriendListPage extends StatefulWidget {
 
 class _FriendListPageState extends State<FriendListPage> {
   final _emailController = TextEditingController();
-
   // Lưu trạng thái cuối cùng của danh sách bạn bè để tránh mất UI
   FriendAndRequestsLoadSuccess? _lastSuccessState;
-  // Biến để track trạng thái đang tìm kiếm và gửi lời mời
+  // Biến để track trạng thái đang tìm kiếm
   bool _isSearching = false;
-  bool _isSendingRequest = false;
   @override
   void initState() {
     super.initState();
@@ -66,39 +65,13 @@ class _FriendListPageState extends State<FriendListPage> {
     return Column(
       children: [
         // Add friend section
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          color: AppColors.surfaceVariant(context),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    hintText: 'Nhập email để thêm bạn',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.sm2,
-                      vertical: AppSpacing.xs2,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.xs2),
-              ElevatedButton(
-                onPressed: _isSearching ? null : _addFriend,
-                child: _isSearching
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Text('Thêm'),
-              ),
-            ],
-          ),
+        AddFriendSection(
+          emailController: _emailController,
+          isSearching: _isSearching,
+          onAddFriend: _addFriend,
+          onClear: () {
+            context.read<FriendBloc>().add(const ClearSearchResults());
+          },
         ),
 
         // Friends list
@@ -106,10 +79,8 @@ class _FriendListPageState extends State<FriendListPage> {
           child: BlocConsumer<FriendBloc, FriendState>(
             listener: (context, state) {
               if (state is FriendOperationFailure) {
-                setState(() {
-                  _isSearching = false;
-                  _isSendingRequest = false;
-                });
+                setState(() => _isSearching = false);
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(state.message),
@@ -128,10 +99,10 @@ class _FriendListPageState extends State<FriendListPage> {
                     const SnackBar(content: Text('Không tìm thấy người dùng')),
                   );
                 }
+                context.read<FriendBloc>().add(const ClearSearchResults());
               }
+              
               if (state is FriendRequestSent) {
-                setState(() => _isSendingRequest = false);
-
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text('Đã gửi lời mời kết bạn'),
@@ -139,9 +110,12 @@ class _FriendListPageState extends State<FriendListPage> {
                   ),
                 );
                 _emailController.clear();
+                // Clear search results and return to friends list
+                context.read<FriendBloc>().add(const ClearSearchResults());
                 // Reload để cập nhật danh sách bạn bè mới
                 _loadFriends();
               }
+
               // Thêm xử lý cho các trường hợp khác
               if (state is FriendAndRequestsLoadSuccess) {
                 // Lưu lại state thành công để sử dụng cho các state khác
@@ -157,19 +131,37 @@ class _FriendListPageState extends State<FriendListPage> {
               if (state is FriendLoadInProgress) {
                 // Nếu đang loading mà có state thành công trước đó, hiển thị state đó
                 if (_lastSuccessState != null) {
-                  return _buildFriendsList(_lastSuccessState!);
+                  return FriendsListView(
+                    state: _lastSuccessState!,
+                    onRemoveFriend: _showRemoveFriendDialog,
+                    onAcceptRequest: _acceptRequest,
+                    onDeclineRequest: _declineRequest,
+                    onRefresh: _loadFriends,
+                  );
                 }
                 return const LoadingIndicator();
               }
 
               if (state is FriendAndRequestsLoadSuccess) {
-                return _buildFriendsList(state);
+                return FriendsListView(
+                  state: state,
+                  onRemoveFriend: _showRemoveFriendDialog,
+                  onAcceptRequest: _acceptRequest,
+                  onDeclineRequest: _declineRequest,
+                  onRefresh: _loadFriends,
+                );
               }
 
               // Đối với các state khác (UserSearchResult, FriendRequestSent, etc.),
               // hiển thị UI cuối cùng thành công nếu có
               if (_lastSuccessState != null) {
-                return _buildFriendsList(_lastSuccessState!);
+                return FriendsListView(
+                  state: _lastSuccessState!,
+                  onRemoveFriend: _showRemoveFriendDialog,
+                  onAcceptRequest: _acceptRequest,
+                  onDeclineRequest: _declineRequest,
+                  onRefresh: _loadFriends,
+                );
               }
 
               return const Center(child: Text('Có lỗi xảy ra'));
@@ -177,135 +169,6 @@ class _FriendListPageState extends State<FriendListPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildFriendsList(FriendAndRequestsLoadSuccess state) {
-    return RefreshIndicator(
-      onRefresh: () async => _loadFriends(),
-      child: CustomScrollView(
-        slivers: [
-          // Friend requests section
-          if (state.friendRequests.isNotEmpty) ...[
-            SliverToBoxAdapter(
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                color: AppColors.primaryContainer(context),
-                child: Text(
-                  'Lời mời kết bạn (${state.friendRequests.length})',
-                  style: AppTextStyles.titleMedium.copyWith(
-                    color: AppColors.onPrimaryContainer(context),
-                  ),
-                ),
-              ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final request = state.friendRequests[index];
-                return _buildFriendRequestTile(request);
-              }, childCount: state.friendRequests.length),
-            ),
-            const SliverToBoxAdapter(child: Divider(height: 1)),
-          ],
-
-          // Friends section header
-          SliverToBoxAdapter(
-            child: Container(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              color: AppColors.surfaceVariant(context),
-              child: Text(
-                state.friends.isEmpty
-                    ? 'Chưa có bạn bè nào'
-                    : 'Bạn bè (${state.friends.length})',
-                style: AppTextStyles.titleMedium.copyWith(
-                  color: AppColors.onSurfaceVariant(context),
-                ),
-              ),
-            ),
-          ),
-
-          // Friends list
-          if (state.friends.isEmpty)
-            SliverFillRemaining(
-              child: Center(
-                child: Text(
-                  'Chưa có bạn bè nào\nHãy thêm bạn bằng email',
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    color: AppColors.onSurfaceVariant(context),
-                  ),
-                ),
-              ),
-            )
-          else
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final friend = state.friends[index];
-                return _buildFriendTile(friend);
-              }, childCount: state.friends.length),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFriendTile(UserModel friend) {
-    return ListTile(
-      leading: CommonAvatar(
-        radius: 20,
-        avatarUrl: friend.avatarUrl,
-        displayName: friend.displayName,
-      ),
-      title: Text(friend.displayName),
-      subtitle: Text(friend.email),
-      trailing: IconButton(
-        icon: Icon(Icons.close, color: AppColors.error(context), size: 20),
-        onPressed: () => _showRemoveFriendDialog(friend),
-        tooltip: 'Xóa bạn bè',
-      ),
-    );
-  }
-
-  Widget _buildFriendRequestTile(UserModel requester) {
-    return Card(
-      margin: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.xs,
-      ),
-      child: ListTile(
-        leading: CommonAvatar(
-          radius: 20,
-          avatarUrl: requester.avatarUrl,
-          displayName: requester.displayName,
-        ),
-        title: Text(
-          requester.displayName,
-          style: AppTextStyles.titleMedium.copyWith(
-            color: AppColors.onSurface(context),
-          ),
-        ),
-        subtitle: Text(
-          requester.email,
-          style: AppTextStyles.bodyMedium.copyWith(
-            color: AppColors.onSurfaceVariant(context),
-          ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: Icon(Icons.check, color: AppColors.success(context)),
-              onPressed: () => _acceptRequest(requester.uid),
-              tooltip: 'Chấp nhận',
-            ),
-            IconButton(
-              icon: Icon(Icons.close, color: AppColors.error(context)),
-              onPressed: () => _declineRequest(requester.uid),
-              tooltip: 'Từ chối',
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -347,43 +210,14 @@ class _FriendListPageState extends State<FriendListPage> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Thêm bạn'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Tên: ${user.displayName}'),
-            Text('Email: ${user.email}'),
-            const SizedBox(height: 8),
-            const Text('Bạn có muốn gửi lời mời kết bạn?'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                _isSendingRequest = true;
-              });
-              context.read<FriendBloc>().add(
-                SendFriendRequest(fromUid: authState.user.uid, toUid: user.uid),
-              );
-              Navigator.pop(context);
-            },
-            child: _isSendingRequest
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Gửi lời mời'),
-          ),
-        ],
-      ),
+      builder: (context) => AddFriendDialog(user: user),
+    );
+  }
+
+  void _showRemoveFriendDialog(UserModel friend) {
+    showDialog(
+      context: context,
+      builder: (context) => RemoveFriendDialog(friend: friend),
     );
   }
 
@@ -419,62 +253,6 @@ class _FriendListPageState extends State<FriendListPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Đã từ chối lời mời kết bạn'),
-          backgroundColor: AppColors.primary(context),
-        ),
-      );
-    }
-  }
-
-  void _showRemoveFriendDialog(UserModel friend) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xóa bạn bè'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Bạn có chắc chắn muốn xóa ${friend.displayName} khỏi danh sách bạn bè?',
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Hành động này sẽ xóa bạn khỏi danh sách bạn bè của nhau.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error(context),
-              foregroundColor: AppColors.onError(context),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-              _removeFriend(friend.uid);
-            },
-            child: const Text('Xóa'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _removeFriend(String friendUid) {
-    final authState = context.read<AuthBloc>().state;
-    if (authState is AuthAuthenticated) {
-      context.read<FriendBloc>().add(
-        RemoveFriend(myUid: authState.user.uid, friendUid: friendUid),
-      );
-      // Hiển thị thông báo
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Đã xóa bạn bè'),
           backgroundColor: AppColors.primary(context),
         ),
       );

@@ -134,15 +134,52 @@ class FriendRepository {
 
   /// Tìm kiếm user theo email
   Future<UserModel?> findUserByEmail(String email) async {
-    final querySnapshot = await _firestore
+    final searchEmail = email.toLowerCase().trim();
+
+    // Thử tìm chính xác trước
+    QuerySnapshot querySnapshot = await _firestore
         .collection('users')
-        .where('email', isEqualTo: email)
+        .where('email', isEqualTo: searchEmail)
         .limit(1)
         .get();
 
-    if (querySnapshot.docs.isEmpty) return null;
+    if (querySnapshot.docs.isNotEmpty) {
+      final doc = querySnapshot.docs.first;
+      return UserModel.fromMap(doc.id, doc.data() as Map<String, dynamic>);
+    }
 
-    final doc = querySnapshot.docs.first;
-    return UserModel.fromMap(doc.id, doc.data());
+    // Nếu không tìm thấy exact match, tìm kiếm partial match
+    // Do Firestore limitations, ta phải lấy tất cả users và filter
+    try {
+      querySnapshot = await _firestore.collection('users').get();
+
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final userEmail = (data['email'] as String?)?.toLowerCase();
+
+        if (userEmail != null && userEmail.contains(searchEmail)) {
+          return UserModel.fromMap(doc.id, data);
+        }
+      }
+    } catch (e) {
+      // Nếu có lỗi khi lấy tất cả users, thử tìm với prefix
+      querySnapshot = await _firestore
+          .collection('users')
+          .where('email', isGreaterThanOrEqualTo: searchEmail)
+          .where('email', isLessThan: searchEmail + '\uf8ff')
+          .limit(20)
+          .get();
+
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final userEmail = (data['email'] as String?)?.toLowerCase();
+
+        if (userEmail != null && userEmail.contains(searchEmail)) {
+          return UserModel.fromMap(doc.id, data);
+        }
+      }
+    }
+
+    return null;
   }
 }

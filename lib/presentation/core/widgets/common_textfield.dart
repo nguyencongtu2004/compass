@@ -14,6 +14,7 @@ class CommonTextField extends StatelessWidget {
   final IconData? prefixIcon;
   final Widget? suffixIcon;
   final bool enabled;
+  final TextInputAction textInputAction;
 
   const CommonTextField({
     super.key,
@@ -27,6 +28,7 @@ class CommonTextField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.enabled = true,
+    this.textInputAction = TextInputAction.done,
   });
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class CommonTextField extends StatelessWidget {
       validator: validator,
       onChanged: onChanged,
       enabled: enabled,
+      textInputAction: textInputAction,
       style: AppTextStyles.bodyMedium.copyWith(
         color: enabled
             ? AppColors.onSurface(context)
