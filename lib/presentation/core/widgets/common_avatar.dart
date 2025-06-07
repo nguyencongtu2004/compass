@@ -9,6 +9,8 @@ class CommonAvatar extends StatelessWidget {
   final Color? textColor;
   final Color? iconColor;
   final IconData? fallbackIcon;
+  final Color? borderColor;
+  final double borderWidth;
 
   const CommonAvatar({
     super.key,
@@ -19,6 +21,8 @@ class CommonAvatar extends StatelessWidget {
     this.textColor,
     this.iconColor,
     this.fallbackIcon,
+    this.borderColor,
+    this.borderWidth = 2.0,
   });
 
   String _getInitials(String name) {
@@ -62,7 +66,7 @@ class CommonAvatar extends StatelessWidget {
     final theme = Theme.of(context);
     final defaultBackgroundColor = backgroundColor ?? theme.colorScheme.primary;
 
-    return CircleAvatar(
+    Widget avatarWidget = CircleAvatar(
       radius: radius,
       backgroundColor: defaultBackgroundColor,
       child: avatarUrl != null && avatarUrl!.trim().isNotEmpty
@@ -104,5 +108,20 @@ class CommonAvatar extends StatelessWidget {
             )
           : _buildFallbackContent(context),
     );
+
+    // Nếu có borderColor thì wrap với Container để tạo viền
+    if (borderColor != null) {
+      return Container(
+        width: (radius + borderWidth + 2) * 2,
+        height: (radius + borderWidth + 2) * 2,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: borderColor!, width: borderWidth),
+        ),
+        child: Center(child: avatarWidget),
+      );
+    }
+
+    return avatarWidget;
   }
 }

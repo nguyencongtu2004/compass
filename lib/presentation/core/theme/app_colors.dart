@@ -164,6 +164,12 @@ class AppColors {
         : Color(0xFF4D2C00);
   }
 
+  static Color onError(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.light
+        ? Colors.white
+        : Colors.black;
+  }
+
   static Color primaryContainer(BuildContext context) {
     return Theme.of(context).brightness == Brightness.light
         ? primaryContainerLight

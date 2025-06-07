@@ -20,6 +20,13 @@ class LoadFriendRequests extends FriendEvent {
   List<Object?> get props => [myUid];
 }
 
+class LoadFriendsAndRequests extends FriendEvent {
+  final String myUid;
+  const LoadFriendsAndRequests(this.myUid);
+  @override
+  List<Object?> get props => [myUid];
+}
+
 class SendFriendRequest extends FriendEvent {
   final String fromUid;
   final String toUid;
@@ -42,6 +49,14 @@ class DeclineFriendRequest extends FriendEvent {
   const DeclineFriendRequest({required this.myUid, required this.requesterUid});
   @override
   List<Object?> get props => [myUid, requesterUid];
+}
+
+class RemoveFriend extends FriendEvent {
+  final String myUid;
+  final String friendUid;
+  const RemoveFriend({required this.myUid, required this.friendUid});
+  @override
+  List<Object?> get props => [myUid, friendUid];
 }
 
 class FindUserByEmail extends FriendEvent {

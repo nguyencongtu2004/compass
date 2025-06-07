@@ -50,6 +50,28 @@ class FriendRepository {
     required String fromUid,
     required String toUid,
   }) async {
+    // Kiểm tra trước khi gửi
+    final toUserDoc = await _firestore.collection('users').doc(toUid).get();
+    if (!toUserDoc.exists) {
+      throw Exception('Người dùng không tồn tại');
+    }
+
+    final toUserData = toUserDoc.data()!;
+    final friends = List<String>.from(toUserData['friends'] ?? []);
+    final friendRequests = List<String>.from(
+      toUserData['friendRequests'] ?? [],
+    );
+
+    // Kiểm tra nếu đã là bạn bè
+    if (friends.contains(fromUid)) {
+      throw Exception('Người này đã là bạn bè của bạn');
+    }
+
+    // Kiểm tra nếu đã gửi lời mời
+    if (friendRequests.contains(fromUid)) {
+      throw Exception('Bạn đã gửi lời mời kết bạn cho người này');
+    }
+
     await _firestore.collection('users').doc(toUid).update({
       'friendRequests': FieldValue.arrayUnion([fromUid]),
     });
@@ -86,6 +108,28 @@ class FriendRepository {
     await _firestore.collection('users').doc(myUid).update({
       'friendRequests': FieldValue.arrayRemove([requesterUid]),
     });
+  }
+
+  /// Xóa bạn bè
+  Future<void> removeFriend({
+    required String myUid,
+    required String friendUid,
+  }) async {
+    final batch = _firestore.batch();
+
+    // Xóa khỏi danh sách bạn bè của cả hai
+    final myDoc = _firestore.collection('users').doc(myUid);
+    final friendDoc = _firestore.collection('users').doc(friendUid);
+
+    batch.update(myDoc, {
+      'friends': FieldValue.arrayRemove([friendUid]),
+    });
+
+    batch.update(friendDoc, {
+      'friends': FieldValue.arrayRemove([myUid]),
+    });
+
+    await batch.commit();
   }
 
   /// Tìm kiếm user theo email

@@ -10,15 +10,19 @@ part 'compass_state.dart';
 
 class CompassBloc extends Bloc<CompassEvent, CompassState> {
   StreamSubscription<compass.CompassEvent>? _compassSubscription;
+  Timer? _randomCompassTimer;
+  double _currentRandomAngle = 0.0; // Lưu góc ngẫu nhiên hiện tại
 
   CompassBloc() : super(CompassInitial()) {
     on<StartCompass>(_onStartCompass);
+    on<StartRandomCompass>(_onStartRandomCompass);
     on<UpdateCompassHeading>(_onUpdateCompassHeading);
+    on<UpdateRandomAngle>(_onUpdateRandomAngle);
     on<UpdateCurrentLocation>(_onUpdateCurrentLocation);
     on<RefreshCurrentLocation>(_onRefreshCurrentLocation);
     on<StopCompass>(_onStopCompass);
+    on<UpdateTargetLocation>(_onUpdateTargetLocation);
   }
-
   void _onStartCompass(StartCompass event, Emitter<CompassState> emit) {
     emit(CompassLoading());
 
@@ -36,6 +40,29 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     _startCompassStream();
   }
 
+  void _onStartRandomCompass(
+    StartRandomCompass event,
+    Emitter<CompassState> emit,
+  ) {
+    emit(CompassLoading());
+
+    // Khởi tạo góc ngẫu nhiên ban đầu
+    _currentRandomAngle = Random().nextDouble() * 2 * pi;
+
+    // Khởi tạo state với chế độ random (không có đích đến)
+    emit(
+      CompassReady(
+        targetLat: null,
+        targetLng: null,
+        friendName: event.friendName,
+        compassAngle: _currentRandomAngle,
+      ),
+    );
+
+    // Bắt đầu chế độ quay ngẫu nhiên
+    _startRandomCompassStream();
+  }
+
   void _onUpdateCompassHeading(
     UpdateCompassHeading event,
     Emitter<CompassState> emit,
@@ -43,14 +70,19 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     if (state is CompassReady) {
       final currentState = state as CompassReady;
 
+      // Nếu không có đích đến, bỏ qua việc cập nhật từ cảm biến
+      if (currentState.targetLat == null || currentState.targetLng == null) {
+        return;
+      }
+
       // Tính toán khoảng cách nếu có vị trí hiện tại
       double? distance;
       if (currentState.currentLat != null && currentState.currentLng != null) {
         distance = LocationUtils.calculateDistance(
           currentState.currentLat!,
           currentState.currentLng!,
-          currentState.targetLat,
-          currentState.targetLng,
+          currentState.targetLat!,
+          currentState.targetLng!,
         );
       }
 
@@ -59,8 +91,8 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
         heading: event.heading,
         currentLat: currentState.currentLat,
         currentLng: currentState.currentLng,
-        targetLat: currentState.targetLat,
-        targetLng: currentState.targetLng,
+        targetLat: currentState.targetLat!,
+        targetLng: currentState.targetLng!,
       );
 
       emit(
@@ -73,6 +105,20 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     }
   }
 
+  void _onUpdateRandomAngle(
+    UpdateRandomAngle event,
+    Emitter<CompassState> emit,
+  ) {
+    if (state is CompassReady) {
+      final currentState = state as CompassReady;
+
+      // Chỉ cập nhật góc random nếu không có đích đến
+      if (currentState.targetLat == null || currentState.targetLng == null) {
+        emit(currentState.copyWith(compassAngle: event.angle));
+      }
+    }
+  }
+
   void _onUpdateCurrentLocation(
     UpdateCurrentLocation event,
     Emitter<CompassState> emit,
@@ -80,12 +126,23 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     if (state is CompassReady) {
       final currentState = state as CompassReady;
 
+      // Nếu không có đích đến, bỏ qua việc cập nhật
+      if (currentState.targetLat == null || currentState.targetLng == null) {
+        emit(
+          currentState.copyWith(
+            currentLat: event.latitude,
+            currentLng: event.longitude,
+          ),
+        );
+        return;
+      }
+
       // Tính toán khoảng cách
       final distance = LocationUtils.calculateDistance(
         event.latitude,
         event.longitude,
-        currentState.targetLat,
-        currentState.targetLng,
+        currentState.targetLat!,
+        currentState.targetLng!,
       );
 
       // Tính góc compass
@@ -93,8 +150,8 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
         heading: currentState.heading,
         currentLat: event.latitude,
         currentLng: event.longitude,
-        targetLat: currentState.targetLat,
-        targetLng: currentState.targetLng,
+        targetLat: currentState.targetLat!,
+        targetLng: currentState.targetLng!,
       );
 
       emit(
@@ -115,10 +172,11 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     // Event này sẽ được gửi từ UI để trigger việc refresh location từ FriendBloc
     // Logic thực tế sẽ được xử lý ở UI layer
   }
-
   void _onStopCompass(StopCompass event, Emitter<CompassState> emit) {
     _compassSubscription?.cancel();
     _compassSubscription = null;
+    _randomCompassTimer?.cancel();
+    _randomCompassTimer = null;
     emit(CompassInitial());
   }
 
@@ -131,6 +189,41 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
         add(UpdateCompassHeading(compassEvent.heading!));
       }
     });
+  }
+
+  void _startRandomCompassStream() {
+    _randomCompassTimer?.cancel();
+    _randomCompassTimer = Timer.periodic(const Duration(milliseconds: 200), (
+      timer,
+    ) {
+      // Tạo góc ngẫu nhiên mượt mà
+      final newAngle = _generateSmoothRandomAngle();
+
+      // Gửi event để cập nhật góc ngẫu nhiên
+      add(UpdateRandomAngle(newAngle));
+    });
+  }
+
+  /// Tạo góc ngẫu nhiên mượt mà với delta giới hạn
+  double _generateSmoothRandomAngle() {
+    // Giới hạn độ thay đổi tối đa cho mỗi lần update (tính bằng radian)
+    const double maxDelta = pi / 8; // Khoảng 22.5 độ
+
+    // Tạo delta ngẫu nhiên trong khoảng [-maxDelta, +maxDelta]
+    final double delta = (Random().nextDouble() - 0.5) * 2 * maxDelta;
+
+    // Cập nhật góc hiện tại
+    _currentRandomAngle += delta;
+
+    // Chuẩn hóa góc về khoảng [0, 2π]
+    while (_currentRandomAngle < 0) {
+      _currentRandomAngle += 2 * pi;
+    }
+    while (_currentRandomAngle >= 2 * pi) {
+      _currentRandomAngle -= 2 * pi;
+    }
+
+    return _currentRandomAngle;
   }
 
   /// Tính góc cho MinecraftCompass để hướng kim về đích
@@ -169,9 +262,60 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     return angleDiff * pi / 180;
   }
 
+  void _onUpdateTargetLocation(
+    UpdateTargetLocation event,
+    Emitter<CompassState> emit,
+  ) {
+    if (state is CompassReady) {
+      final currentState = state as CompassReady;
+
+      // Dừng timer random nếu đang chạy
+      _randomCompassTimer?.cancel();
+      _randomCompassTimer = null;
+
+      // Bắt đầu compass stream thật để tính toán hướng chính xác
+      _startCompassStream();
+
+      // Tính toán góc compass ngay lập tức nếu có đủ thông tin
+      double compassAngle = 0.0;
+      double? distance;
+
+      if (currentState.heading != null &&
+          currentState.currentLat != null &&
+          currentState.currentLng != null) {
+        // Tính khoảng cách
+        distance = LocationUtils.calculateDistance(
+          currentState.currentLat!,
+          currentState.currentLng!,
+          event.targetLat,
+          event.targetLng,
+        );
+
+        // Tính góc compass
+        compassAngle = _calculateCompassAngle(
+          heading: currentState.heading,
+          currentLat: currentState.currentLat,
+          currentLng: currentState.currentLng,
+          targetLat: event.targetLat,
+          targetLng: event.targetLng,
+        );
+      } // Cập nhật vị trí đích đến và thông tin tính toán
+      emit(
+        currentState.copyWith(
+          targetLat: event.targetLat,
+          targetLng: event.targetLng,
+          friendName: event.friendName,
+          distance: distance,
+          compassAngle: compassAngle,
+        ),
+      );
+    }
+  }
+
   @override
   Future<void> close() {
     _compassSubscription?.cancel();
+    _randomCompassTimer?.cancel();
     return super.close();
   }
 }

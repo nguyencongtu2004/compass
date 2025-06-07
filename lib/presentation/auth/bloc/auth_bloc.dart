@@ -30,7 +30,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ? AuthAuthenticated(event.user!)
           : AuthUnauthenticated(),
     );
-    print('User changed: ${event.user?.toString() ?? 'No user'}');
   }
 
   void _onLoginRequested(

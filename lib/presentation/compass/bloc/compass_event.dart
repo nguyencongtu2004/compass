@@ -7,15 +7,11 @@ abstract class CompassEvent extends Equatable {
 }
 
 class StartCompass extends CompassEvent {
-  final double targetLat;
-  final double targetLng;
+  final double? targetLat;
+  final double? targetLng;
   final String? friendName;
 
-  const StartCompass({
-    required this.targetLat,
-    required this.targetLng,
-    this.friendName,
-  });
+  const StartCompass({this.targetLat, this.targetLng, this.friendName});
 
   @override
   List<Object?> get props => [targetLat, targetLng, friendName];
@@ -49,4 +45,37 @@ class RefreshCurrentLocation extends CompassEvent {
 
 class StopCompass extends CompassEvent {
   const StopCompass();
+}
+
+class StartRandomCompass extends CompassEvent {
+  final String? friendName;
+
+  const StartRandomCompass({this.friendName});
+
+  @override
+  List<Object?> get props => [friendName];
+}
+
+class UpdateRandomAngle extends CompassEvent {
+  final double angle;
+
+  const UpdateRandomAngle(this.angle);
+
+  @override
+  List<Object?> get props => [angle];
+}
+
+class UpdateTargetLocation extends CompassEvent {
+  final double targetLat;
+  final double targetLng;
+  final String? friendName;
+
+  const UpdateTargetLocation({
+    required this.targetLat,
+    required this.targetLng,
+    this.friendName,
+  });
+
+  @override
+  List<Object?> get props => [targetLat, targetLng, friendName];
 }

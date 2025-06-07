@@ -10,18 +10,17 @@ class FriendInitial extends FriendState {}
 
 class FriendLoadInProgress extends FriendState {}
 
-class FriendLoadSuccess extends FriendState {
+class FriendAndRequestsLoadSuccess extends FriendState {
   final List<UserModel> friends;
-  const FriendLoadSuccess(this.friends);
-  @override
-  List<Object?> get props => [friends];
-}
+  final List<UserModel> friendRequests;
 
-class FriendRequestLoadSuccess extends FriendState {
-  final List<UserModel> requests;
-  const FriendRequestLoadSuccess(this.requests);
+  const FriendAndRequestsLoadSuccess({
+    required this.friends,
+    required this.friendRequests,
+  });
+
   @override
-  List<Object?> get props => [requests];
+  List<Object?> get props => [friends, friendRequests];
 }
 
 class FriendOperationFailure extends FriendState {

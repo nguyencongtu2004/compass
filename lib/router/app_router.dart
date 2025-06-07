@@ -7,7 +7,6 @@ import 'package:minecraft_compass/router/app_routes.dart';
 import '../presentation/auth/login_page.dart';
 import '../presentation/auth/register_page.dart';
 import '../presentation/friend/friend_list_page.dart';
-import '../presentation/friend/friend_request_page.dart';
 import '../presentation/compass/compass_page.dart';
 import '../presentation/home/home_page.dart';
 import '../presentation/auth/bloc/auth_bloc.dart';
@@ -102,10 +101,6 @@ class AppRouter {
             GoRoute(
               path: 'friend_list',
               builder: (context, state) => const FriendListPage(),
-            ),
-            GoRoute(
-              path: 'friend_requests',
-              builder: (context, state) => const FriendRequestPage(),
             ),
           ],
         ),

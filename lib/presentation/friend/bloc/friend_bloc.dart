@@ -20,41 +20,14 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
   }) : _friendRepository = friendRepository ?? FriendRepository(),
        _locationRepository = locationRepository ?? LocationRepository(),
        super(FriendInitial()) {
-    on<LoadFriends>(_onLoadFriends);
-    on<LoadFriendRequests>(_onLoadFriendRequests);
+    on<LoadFriendsAndRequests>(_onLoadFriendsAndRequests);
     on<SendFriendRequest>(_onSendFriendRequest);
     on<AcceptFriendRequest>(_onAcceptFriendRequest);
     on<DeclineFriendRequest>(_onDeclineFriendRequest);
+    on<RemoveFriend>(_onRemoveFriend);
     on<FindUserByEmail>(_onFindUserByEmail);
-    on<ListenToFriendsLocations>(_onListenToFriendsLocations);
-    on<FriendsLocationsUpdated>(_onFriendsLocationsUpdated);
     on<StopListeningToFriendsLocations>(_onStopListeningToFriendsLocations);
-    on<GetCurrentLocation>(_onGetCurrentLocation);
-    on<UpdateLocation>(_onUpdateLocation);
     on<GetCurrentLocationAndUpdate>(_onGetCurrentLocationAndUpdate);
-  }
-
-  void _onLoadFriends(LoadFriends event, Emitter<FriendState> emit) async {
-    emit(FriendLoadInProgress());
-    try {
-      final friends = await _friendRepository.getFriends(event.myUid);
-      emit(FriendLoadSuccess(friends));
-    } catch (e) {
-      emit(FriendOperationFailure(e.toString()));
-    }
-  }
-
-  void _onLoadFriendRequests(
-    LoadFriendRequests event,
-    Emitter<FriendState> emit,
-  ) async {
-    emit(FriendLoadInProgress());
-    try {
-      final requests = await _friendRepository.getFriendRequests(event.myUid);
-      emit(FriendRequestLoadSuccess(requests));
-    } catch (e) {
-      emit(FriendOperationFailure(e.toString()));
-    }
   }
 
   void _onSendFriendRequest(
@@ -81,8 +54,21 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
         myUid: event.myUid,
         requesterUid: event.requesterUid,
       );
-      // Reload friend requests
-      add(LoadFriendRequests(event.myUid));
+      // Reload both friends and friend requests without showing loading
+      final results = await Future.wait([
+        _friendRepository.getFriends(event.myUid),
+        _friendRepository.getFriendRequests(event.myUid),
+      ]);
+
+      final friends = results[0];
+      final friendRequests = results[1];
+
+      emit(
+        FriendAndRequestsLoadSuccess(
+          friends: friends,
+          friendRequests: friendRequests,
+        ),
+      );
     } catch (e) {
       emit(FriendOperationFailure(e.toString()));
     }
@@ -97,8 +83,21 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
         myUid: event.myUid,
         requesterUid: event.requesterUid,
       );
-      // Reload friend requests
-      add(LoadFriendRequests(event.myUid));
+      // Reload both friends and friend requests without showing loading
+      final results = await Future.wait([
+        _friendRepository.getFriends(event.myUid),
+        _friendRepository.getFriendRequests(event.myUid),
+      ]);
+
+      final friends = results[0];
+      final friendRequests = results[1];
+
+      emit(
+        FriendAndRequestsLoadSuccess(
+          friends: friends,
+          friendRequests: friendRequests,
+        ),
+      );
     } catch (e) {
       emit(FriendOperationFailure(e.toString()));
     }
@@ -108,32 +107,13 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
     FindUserByEmail event,
     Emitter<FriendState> emit,
   ) async {
-    emit(FriendLoadInProgress());
+    // Không emit FriendLoadInProgress để tránh che mất UI hiện tại
     try {
       final user = await _friendRepository.findUserByEmail(event.email);
-      emit(UserSearchResult(user));
+      emit(UserSearchResult(user)); // Emit dù user có null hay không
     } catch (e) {
       emit(FriendOperationFailure(e.toString()));
     }
-  }
-
-  void _onListenToFriendsLocations(
-    ListenToFriendsLocations event,
-    Emitter<FriendState> emit,
-  ) {
-    _friendsLocationSubscription?.cancel();
-    _friendsLocationSubscription = _locationRepository
-        .listenToFriendsLocations(event.friendUids)
-        .listen((friends) {
-          add(FriendsLocationsUpdated(friends));
-        });
-  }
-
-  void _onFriendsLocationsUpdated(
-    FriendsLocationsUpdated event,
-    Emitter<FriendState> emit,
-  ) {
-    emit(FriendsLocationsLoadSuccess(event.friends));
   }
 
   void _onStopListeningToFriendsLocations(
@@ -142,40 +122,6 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
   ) {
     _friendsLocationSubscription?.cancel();
     _friendsLocationSubscription = null;
-  }
-
-  void _onGetCurrentLocation(
-    GetCurrentLocation event,
-    Emitter<FriendState> emit,
-  ) async {
-    emit(LocationLoadInProgress());
-    try {
-      final position = await _locationRepository.getCurrentPosition();
-      final location = LocationModel(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        updatedAt: DateTime.now(),
-      );
-      emit(LocationLoadSuccess(location));
-    } catch (e) {
-      emit(LocationFailure(e.toString()));
-    }
-  }
-
-  void _onUpdateLocation(
-    UpdateLocation event,
-    Emitter<FriendState> emit,
-  ) async {
-    try {
-      await _locationRepository.updateLocation(
-        event.uid,
-        event.latitude,
-        event.longitude,
-      );
-      emit(LocationUpdateSuccess());
-    } catch (e) {
-      emit(LocationFailure(e.toString()));
-    }
   }
 
   void _onGetCurrentLocationAndUpdate(
@@ -202,6 +148,58 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
       emit(LocationUpdateSuccess());
     } catch (e) {
       emit(LocationFailure(e.toString()));
+    }
+  }
+
+  void _onRemoveFriend(RemoveFriend event, Emitter<FriendState> emit) async {
+    try {
+      await _friendRepository.removeFriend(
+        myUid: event.myUid,
+        friendUid: event.friendUid,
+      );
+      // Reload both friends and friend requests without showing loading
+      final results = await Future.wait([
+        _friendRepository.getFriends(event.myUid),
+        _friendRepository.getFriendRequests(event.myUid),
+      ]);
+
+      final friends = results[0];
+      final friendRequests = results[1];
+
+      emit(
+        FriendAndRequestsLoadSuccess(
+          friends: friends,
+          friendRequests: friendRequests,
+        ),
+      );
+    } catch (e) {
+      emit(FriendOperationFailure(e.toString()));
+    }
+  }
+
+  void _onLoadFriendsAndRequests(
+    LoadFriendsAndRequests event,
+    Emitter<FriendState> emit,
+  ) async {
+    emit(FriendLoadInProgress());
+    try {
+      // Load both friends and friend requests concurrently
+      final results = await Future.wait([
+        _friendRepository.getFriends(event.myUid),
+        _friendRepository.getFriendRequests(event.myUid),
+      ]);
+
+      final friends = results[0];
+      final friendRequests = results[1];
+
+      emit(
+        FriendAndRequestsLoadSuccess(
+          friends: friends,
+          friendRequests: friendRequests,
+        ),
+      );
+    } catch (e) {
+      emit(FriendOperationFailure(e.toString()));
     }
   }
 

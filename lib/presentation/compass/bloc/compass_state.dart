@@ -14,8 +14,8 @@ class CompassReady extends CompassState {
   final double? heading;
   final double? currentLat;
   final double? currentLng;
-  final double targetLat;
-  final double targetLng;
+  final double? targetLat;
+  final double? targetLng;
   final String? friendName;
   final double? distance;
   final double compassAngle;
@@ -24,8 +24,8 @@ class CompassReady extends CompassState {
     this.heading,
     this.currentLat,
     this.currentLng,
-    required this.targetLat,
-    required this.targetLng,
+    this.targetLat,
+    this.targetLng,
     this.friendName,
     this.distance,
     required this.compassAngle,
