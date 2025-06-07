@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_appbar.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_button.dart';
@@ -10,6 +12,7 @@ import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_text_styles.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/models/user_model.dart';
+import 'package:minecraft_compass/router/app_routes.dart';
 import 'package:minecraft_compass/utils/validator.dart';
 import 'bloc/profile_bloc.dart';
 
@@ -31,6 +34,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   File? _selectedImage;
   bool _isUsernameAvailable = true;
   bool _isCheckingUsername = false;
+  bool _isDeletingImage = false;
 
   @override
   void initState() {
@@ -46,19 +50,53 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.dispose();
   }
 
+  void _onAvatarTap() {
+    // lựa chọn xóa hoặc thay đổi ảnh đại diện
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Ảnh đại diện'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Chọn ảnh từ thư viện'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete),
+                title: const Text('Xóa ảnh đại diện'),
+                onTap: () {
+                  Navigator.pop(context);
+                  setState(() {
+                    _selectedImage = null;
+                    _isDeletingImage = true;
+                  });
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _pickImage() async {
     try {
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
-        maxWidth: 800,
-        maxHeight: 800,
-        imageQuality: 80,
+        maxWidth: 500,
+        maxHeight: 500,
+        imageQuality: 90,
       );
 
       if (image != null) {
-        setState(() {
-          _selectedImage = File(image.path);
-        });
+        setState(() => _selectedImage = File(image.path));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,9 +117,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       return;
     }
 
-    setState(() {
-      _isCheckingUsername = true;
-    });
+    setState(() => _isCheckingUsername = true);
 
     context.read<ProfileBloc>().add(UsernameAvailabilityCheck(username));
   }
@@ -95,17 +131,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final hasDisplayNameChanged = displayName != widget.user.displayName;
       final hasUsernameChanged = username != widget.user.username;
       final hasImageChanged = _selectedImage != null;
+      final hasImageRemoved = _isDeletingImage;
 
-      if (hasDisplayNameChanged || hasUsernameChanged || hasImageChanged) {
+      if (hasDisplayNameChanged ||
+          hasUsernameChanged ||
+          hasImageChanged ||
+          hasImageRemoved) {
         context.read<ProfileBloc>().add(
           ProfileUpdateRequested(
             displayName: hasDisplayNameChanged ? displayName : null,
             username: hasUsernameChanged ? username : null,
             avatarFile: _selectedImage,
+            isAvatarRemoved: _isDeletingImage,
           ),
         );
       } else {
-        Navigator.pop(context);
+        context.go(AppRoutes.profileRoute);
       }
     }
   }
@@ -113,10 +154,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return CommonScaffold(
-      appBar: AppBar(
-        title: const Text('Chỉnh sửa hồ sơ'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: CommonAppbar(
+        title: 'Chỉnh sửa hồ sơ',
+        leftWidget: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: const Icon(Icons.arrow_back, size: AppSpacing.md4),
+        ),
       ),
       body: BlocListener<ProfileBloc, ProfileState>(
         listener: (context, state) {
@@ -150,39 +193,43 @@ class _EditProfilePageState extends State<EditProfilePage> {
               children: [
                 // Avatar section
                 Center(
-                  child: Stack(
-                    children: [
-                      _selectedImage != null
-                          ? CircleAvatar(
-                              radius: 60,
-                              backgroundColor: AppColors.primary(context),
-                              backgroundImage: FileImage(_selectedImage!),
-                            )
-                          : CommonAvatar(
-                              radius: 60,
-                              avatarUrl: widget.user.avatarUrl,
-                              displayName: widget.user.displayName,
-                              backgroundColor: AppColors.primary(context),
-                              fallbackIcon: Icons.person,
+                  child: GestureDetector(
+                    onTap: _onAvatarTap,
+                    child: Stack(
+                      children: [
+                        _selectedImage != null
+                            ? CircleAvatar(
+                                radius: 60,
+                                backgroundColor: AppColors.primary(context),
+                                backgroundImage: FileImage(_selectedImage!),
+                              )
+                            : CommonAvatar(
+                                radius: 60,
+                                avatarUrl: _isDeletingImage
+                                    ? null
+                                    : widget.user.avatarUrl,
+                                displayName: widget.user.displayName,
+                                backgroundColor: AppColors.primary(context),
+                                fallbackIcon: Icons.person,
+                              ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary(context),
+                              shape: BoxShape.circle,
                             ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.primary(context),
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
+                            child: const Icon(
                               Icons.camera_alt,
                               color: Colors.white,
                             ),
-                            onPressed: _pickImage,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg3),

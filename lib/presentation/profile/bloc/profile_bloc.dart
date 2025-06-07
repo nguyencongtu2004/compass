@@ -25,7 +25,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     ProfileLoadRequested event,
     Emitter<ProfileState> emit,
   ) async {
-    emit(ProfileLoading());
+    if (event.showLoading) {
+      emit(ProfileLoading());
+    }
     try {
       final currentUser = _auth.currentUser;
       if (currentUser != null) {
@@ -56,10 +58,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           displayName: event.displayName,
           username: event.username,
           avatarFile: event.avatarFile,
+          isAvatarRemoved: event.isAvatarRemoved,
         );
         emit(ProfileUpdateSuccess());
         // Reload profile after update
-        add(const ProfileLoadRequested());
+        add(const ProfileLoadRequested(showLoading: false));
       } else {
         emit(const ProfileError('Người dùng chưa đăng nhập'));
       }

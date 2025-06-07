@@ -8,18 +8,25 @@ sealed class ProfileEvent extends Equatable {
 }
 
 final class ProfileLoadRequested extends ProfileEvent {
-  const ProfileLoadRequested();
+  final bool showLoading;
+
+  const ProfileLoadRequested({this.showLoading = true});
+
+  @override
+  List<Object> get props => [showLoading];
 }
 
 final class ProfileUpdateRequested extends ProfileEvent {
   final String? displayName;
   final String? username;
   final File? avatarFile;
+  final bool isAvatarRemoved;
 
   const ProfileUpdateRequested({
     this.displayName,
     this.username,
     this.avatarFile,
+    this.isAvatarRemoved = false,
   });
 
   @override
@@ -27,6 +34,7 @@ final class ProfileUpdateRequested extends ProfileEvent {
     displayName ?? '',
     username ?? '',
     avatarFile?.path ?? '',
+    isAvatarRemoved,
   ];
 }
 

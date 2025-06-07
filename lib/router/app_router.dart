@@ -6,8 +6,6 @@ import 'package:minecraft_compass/presentation/profile/edit_profile_page.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import '../presentation/auth/login_page.dart';
 import '../presentation/auth/register_page.dart';
-import '../presentation/friend/friend_list_page.dart';
-import '../presentation/compass/compass_page.dart';
 import '../presentation/home/home_page.dart';
 import '../presentation/auth/bloc/auth_bloc.dart';
 
@@ -31,7 +29,7 @@ class GoRouterRefreshStream extends ChangeNotifier {
 class AppRouter {
   static GoRouter router(AuthBloc authBloc) {
     return GoRouter(
-      initialLocation: AppRoutes.loginRoute,
+      initialLocation: AppRoutes.homeRoute,
       debugLogDiagnostics: true,
       refreshListenable: GoRouterRefreshStream(authBloc.stream),
       redirect: (context, state) {
@@ -44,67 +42,54 @@ class AppRouter {
           return AppRoutes.loginRoute;
         }
         if (isLoggedIn && goingToLogin) {
-          return AppRoutes.homeRoute;
+          return AppRoutes.compassRoute;
         }
         return null;
       },
       routes: [
         GoRoute(
-          path: AppRoutes.loginRoute,
+          path: AppRoutes.loginRoute, // login
           builder: (context, state) => const LoginPage(),
         ),
         GoRoute(
-          path: AppRoutes.registerRoute,
+          path: AppRoutes.registerRoute, // register
           builder: (context, state) => const RegisterPage(),
         ),
-        GoRoute(
-          path: AppRoutes.homeRoute,
-          builder: (context, state) =>
-              const HomePage(initialPage: 1), // Compass page
-          routes: [
-            GoRoute(
-              path: 'profile',
-              builder: (context, state) =>
-                  const HomePage(initialPage: 0), // Profile page
-            ),
-            GoRoute(
-              path: 'compass',
-              builder: (context, state) {
-                // Nếu có tham số lat/lng, mở compass trực tiếp
-                final lat = double.tryParse(
-                  state.uri.queryParameters['lat'] ?? '',
-                );
-                final lng = double.tryParse(
-                  state.uri.queryParameters['lng'] ?? '',
-                );
-                final friendName =
-                    state.uri.queryParameters['friendName'] ?? '';
-                final mode = state.uri.queryParameters['mode'] ?? 'fixed';
 
-                if (lat != null && lng != null) {
-                  return CompassPage(
-                    targetLat: lat,
-                    targetLng: lng,
-                    friendName: friendName,
-                    mode: mode,
-                  );
-                }
-                // Nếu không có tham số, hiện home page với compass tab
-                return const HomePage(initialPage: 1);
-              },
-            ),
-            GoRoute(
-              path: 'friends',
-              builder: (context, state) =>
-                  const HomePage(initialPage: 2), // Friends page
-            ),
-            GoRoute(
-              path: 'friend_list',
-              builder: (context, state) => const FriendListPage(),
-            ),
-          ],
+        GoRoute(
+          path: AppRoutes.homeRoute, // home
+          builder: (context, state) {
+            final initialPage =
+                int.tryParse(state.uri.queryParameters['page'] ?? '1') ?? 1;
+            return HomePage(initialPage: initialPage);
+          },
         ),
-        GoRoute(path: AppRoutes.editProfileRoute,
+
+        GoRoute(
+          path: AppRoutes.compassRoute, // compass
+          redirect: (context, state) {
+            return '${AppRoutes.homeRoute}?page=1'; // Redirect to home with compass page
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.profileRoute, // profile
+          redirect: (context, state) {
+            final user = authBloc.state is AuthAuthenticated
+                ? (authBloc.state as AuthAuthenticated).user
+                : null;
+            if (user != null) {
+              return '${AppRoutes.homeRoute}?page=0'; // Redirect to home with profile page
+            }
+            return null; // No redirect if not authenticated
+          },
+        ),
+        GoRoute(
+          path: AppRoutes.friendListRoute, // friends
+          builder: (context, state) =>
+              const HomePage(initialPage: 2), // Friends page
+        ),
+        GoRoute(
+          path: AppRoutes.editProfileRoute,
           builder: (context, state) {
             final user = state.extra as UserModel;
             return EditProfilePage(user: user);

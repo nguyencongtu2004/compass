@@ -30,6 +30,7 @@ class UserRepository {
     String? displayName,
     String? username,
     File? avatarFile,
+    bool isAvatarRemoved = false,
   }) async {
     try {
       final Map<String, dynamic> updateData = {};
@@ -58,6 +59,11 @@ class UserRepository {
         if (avatarUrl != null) {
           updateData['avatarUrl'] = avatarUrl;
         }
+      }
+
+      // Xóa avatar nếu isAvatarRemoved là true
+      if (isAvatarRemoved) {
+        updateData['avatarUrl'] = FieldValue.delete();
       }
 
       // Cập nhật vào Firestore

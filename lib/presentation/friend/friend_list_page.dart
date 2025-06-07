@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
-import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
 import 'bloc/friend_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../../models/user_model.dart';
@@ -64,127 +63,120 @@ class _FriendListPageState extends State<FriendListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CommonScaffold(
-      appBar: AppBar(title: const Text('Danh sách bạn bè')),
-      body: Column(
-        children: [
-          // Add friend section
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            color: AppColors.surfaceVariant(context),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _emailController,
-                    decoration: InputDecoration(
-                      hintText: 'Nhập email để thêm bạn',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusMd,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm2,
-                        vertical: AppSpacing.xs2,
-                      ),
+    return Column(
+      children: [
+        // Add friend section
+        Container(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          color: AppColors.surfaceVariant(context),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    hintText: 'Nhập email để thêm bạn',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm2,
+                      vertical: AppSpacing.xs2,
                     ),
                   ),
                 ),
-                const SizedBox(width: AppSpacing.xs2),
-                ElevatedButton(
-                  onPressed: _isSearching ? null : _addFriend,
-                  child: _isSearching
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Thêm'),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: AppSpacing.xs2),
+              ElevatedButton(
+                onPressed: _isSearching ? null : _addFriend,
+                child: _isSearching
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Thêm'),
+              ),
+            ],
           ),
+        ),
 
-          // Friends list
-          Expanded(
-            child: BlocConsumer<FriendBloc, FriendState>(
-              listener: (context, state) {
-                if (state is FriendOperationFailure) {
-                  setState(() {
-                    _isSearching = false;
-                    _isSendingRequest = false;
-                  });
+        // Friends list
+        Expanded(
+          child: BlocConsumer<FriendBloc, FriendState>(
+            listener: (context, state) {
+              if (state is FriendOperationFailure) {
+                setState(() {
+                  _isSearching = false;
+                  _isSendingRequest = false;
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: AppColors.error(context),
+                  ),
+                );
+              }
+
+              if (state is UserSearchResult) {
+                setState(() => _isSearching = false);
+
+                if (state.user != null) {
+                  _showAddFriendDialog(state.user!);
+                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.message),
-                      backgroundColor: AppColors.error(context),
-                    ),
+                    const SnackBar(content: Text('Không tìm thấy người dùng')),
                   );
                 }
+              }
+              if (state is FriendRequestSent) {
+                setState(() => _isSendingRequest = false);
 
-                if (state is UserSearchResult) {
-                  setState(() => _isSearching = false);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Đã gửi lời mời kết bạn'),
+                    backgroundColor: AppColors.success(context),
+                  ),
+                );
+                _emailController.clear();
+                // Reload để cập nhật danh sách bạn bè mới
+                _loadFriends();
+              }
+              // Thêm xử lý cho các trường hợp khác
+              if (state is FriendAndRequestsLoadSuccess) {
+                // Lưu lại state thành công để sử dụng cho các state khác
+                _lastSuccessState = state;
+              }
+            },
+            builder: (context, state) {
+              // Lưu lại state thành công cuối cùng
+              if (state is FriendAndRequestsLoadSuccess) {
+                _lastSuccessState = state;
+              }
 
-                  if (state.user != null) {
-                    _showAddFriendDialog(state.user!);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Không tìm thấy người dùng'),
-                      ),
-                    );
-                  }
-                }
-                if (state is FriendRequestSent) {
-                  setState(() => _isSendingRequest = false);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Đã gửi lời mời kết bạn'),
-                      backgroundColor: AppColors.success(context),
-                    ),
-                  );
-                  _emailController.clear();
-                  // Reload để cập nhật danh sách bạn bè mới
-                  _loadFriends();
-                }
-                // Thêm xử lý cho các trường hợp khác
-                if (state is FriendAndRequestsLoadSuccess) {
-                  // Lưu lại state thành công để sử dụng cho các state khác
-                  _lastSuccessState = state;
-                }
-              },
-              builder: (context, state) {
-                // Lưu lại state thành công cuối cùng
-                if (state is FriendAndRequestsLoadSuccess) {
-                  _lastSuccessState = state;
-                }
-
-                if (state is FriendLoadInProgress) {
-                  // Nếu đang loading mà có state thành công trước đó, hiển thị state đó
-                  if (_lastSuccessState != null) {
-                    return _buildFriendsList(_lastSuccessState!);
-                  }
-                  return const LoadingIndicator();
-                }
-
-                if (state is FriendAndRequestsLoadSuccess) {
-                  return _buildFriendsList(state);
-                }
-
-                // Đối với các state khác (UserSearchResult, FriendRequestSent, etc.),
-                // hiển thị UI cuối cùng thành công nếu có
+              if (state is FriendLoadInProgress) {
+                // Nếu đang loading mà có state thành công trước đó, hiển thị state đó
                 if (_lastSuccessState != null) {
                   return _buildFriendsList(_lastSuccessState!);
                 }
+                return const LoadingIndicator();
+              }
 
-                return const Center(child: Text('Có lỗi xảy ra'));
-              },
-            ),
+              if (state is FriendAndRequestsLoadSuccess) {
+                return _buildFriendsList(state);
+              }
+
+              // Đối với các state khác (UserSearchResult, FriendRequestSent, etc.),
+              // hiển thị UI cuối cùng thành công nếu có
+              if (_lastSuccessState != null) {
+                return _buildFriendsList(_lastSuccessState!);
+              }
+
+              return const Center(child: Text('Có lỗi xảy ra'));
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

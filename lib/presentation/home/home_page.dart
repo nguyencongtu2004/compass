@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_appbar.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/presentation/core/widgets/keep_alive_wrapper.dart';
 import 'package:minecraft_compass/presentation/compass/compass_page.dart';
+import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../friend/bloc/friend_bloc.dart';
 import '../profile/profile_page.dart';
@@ -10,10 +14,12 @@ import '../friend/friend_list_page.dart';
 
 class HomePage extends StatefulWidget {
   final int initialPage;
+  final Map<String, String>? queryParams;
 
   const HomePage({
     super.key,
     this.initialPage = 1, // Mặc định mở trang compass (giữa)
+    this.queryParams,
   });
 
   @override
@@ -47,26 +53,87 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _goToPage(int page) {
+    if (page < 0 || page > 2) return; // Giới hạn trang từ 0 đến 2
+    _pageController.animateToPage(
+      page,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = context.read<AuthBloc>().state;
     if (authState is! AuthAuthenticated) {
-      return const CommonScaffold(
+      return const Scaffold(
         body: Center(child: Text('Không thể tải trang chủ')),
       );
     }
-    return CommonScaffold(
+    return Scaffold(
       body: PageView(
         controller: _pageController,
         children: [
           // Trang 0: Profile (trái)
-          KeepAliveWrapper(child: const ProfilePage()),
+          KeepAliveWrapper(
+            child: CommonScaffold(
+              appBar: CommonAppbar(
+                title: 'Hồ sơ',
+                rightWidget: GestureDetector(
+                  onTap: () => _goToPage(1),
+                  child: const Icon(Icons.arrow_forward, size: AppSpacing.md4),
+                ),
+              ),
+              body: const ProfilePage(),
+            ),
+          ),
+
           // Trang 1: Compass (giữa - mặc định)
           KeepAliveWrapper(
-            child: CompassPage(),
+            child: CommonScaffold(
+              appBar: CommonAppbar(
+                title: 'La bàn',
+                leftWidget: GestureDetector(
+                  onTap: () => _goToPage(0),
+                  child: BlocBuilder<ProfileBloc, ProfileState>(
+                    builder: (context, state) {
+                      if (state is ProfileLoaded) {
+                        return CommonAvatar(
+                          radius: AppSpacing.md2,
+                          avatarUrl: state.user.avatarUrl,
+                          displayName: state.user.displayName,
+                        );
+                      }
+                      return CommonAvatar(radius: AppSpacing.md2);
+                    },
+                  ),
+                ),
+                rightWidget: GestureDetector(
+                  onTap: () => _goToPage(2),
+                  child: const Icon(Icons.people_alt, size: AppSpacing.md4),
+                ),
+              ),
+              body: CompassPage(
+                targetLat: double.tryParse(widget.queryParams?['lat'] ?? ''),
+                targetLng: double.tryParse(widget.queryParams?['lng'] ?? ''),
+                friendName: widget.queryParams?['friendName'],
+              ),
+            ),
           ),
+
           // Trang 2: Friend List (phải)
-          KeepAliveWrapper(child: const FriendListPage()),
+          KeepAliveWrapper(
+            child: CommonScaffold(
+              appBar: CommonAppbar(
+                title: 'Bạn bè',
+                leftWidget: GestureDetector(
+                  onTap: () => _goToPage(1),
+                  child: const Icon(Icons.arrow_back, size: AppSpacing.md4),
+                ),
+              ),
+              body: const FriendListPage(),
+            ),
+          ),
         ],
       ),
     );

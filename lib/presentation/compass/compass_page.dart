@@ -15,14 +15,12 @@ class CompassPage extends StatefulWidget {
   final double? targetLat;
   final double? targetLng;
   final String? friendName;
-  final String? mode;
 
   const CompassPage({
     super.key,
     this.targetLat,
     this.targetLng,
     this.friendName,
-    this.mode,
   });
 
   @override
@@ -99,257 +97,250 @@ class _CompassPageState extends State<CompassPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('La bàn')),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<FriendBloc, FriendState>(
-            listener: (context, state) {
-              if (state is LocationLoadSuccess) {
-                // Cập nhật vị trí hiện tại vào CompassBloc
-                context.read<CompassBloc>().add(
-                  UpdateCurrentLocation(
-                    latitude: state.location.latitude,
-                    longitude: state.location.longitude,
-                  ),
-                );
-              }
-              if (state is LocationFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: AppColors.error(context),
-                  ),
-                );
-              }
-            },
-          ),
-        ],
-        child: BlocBuilder<CompassBloc, CompassState>(
-          builder: (context, compassState) {
-            if (compassState is CompassLoading) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (compassState is CompassError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Lỗi: ${compassState.message}'),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (widget.targetLat != null &&
-                            widget.targetLng != null) {
-                          // Có đích đến - khởi động lại compass bình thường
-                          context.read<CompassBloc>().add(
-                            StartCompass(
-                              targetLat: widget.targetLat,
-                              targetLng: widget.targetLng,
-                              friendName: widget.friendName,
-                            ),
-                          );
-                        } else {
-                          // Không có đích đến - khởi động lại chế độ random
-                          context.read<CompassBloc>().add(
-                            StartRandomCompass(friendName: widget.friendName),
-                          );
-                        }
-                      },
-                      child: const Text('Thử lại'),
-                    ),
-                  ],
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<FriendBloc, FriendState>(
+          listener: (context, state) {
+            if (state is LocationLoadSuccess) {
+              // Cập nhật vị trí hiện tại vào CompassBloc
+              context.read<CompassBloc>().add(
+                UpdateCurrentLocation(
+                  latitude: state.location.latitude,
+                  longitude: state.location.longitude,
                 ),
               );
             }
-
-            if (compassState is! CompassReady) {
-              return const Center(child: CircularProgressIndicator());
+            if (state is LocationFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AppColors.error(context),
+                ),
+              );
             }
+          },
+        ),
+      ],
+      child: BlocBuilder<CompassBloc, CompassState>(
+        builder: (context, compassState) {
+          if (compassState is CompassLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            return SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Thông tin đích đến
-                    Container(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      margin: const EdgeInsets.all(AppSpacing.md),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryContainer(context),
-                        borderRadius: BorderRadius.circular(
-                          AppSpacing.radiusLg,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            compassState.friendName ??
-                                (compassState.targetLat != null
-                                    ? 'Đích đến'
-                                    : 'Chế độ ngẫu nhiên'),
-                            style: AppTextStyles.titleMedium.copyWith(
-                              color: AppColors.onPrimaryContainer(context),
-                            ),
-                            textAlign: TextAlign.center,
+          if (compassState is CompassError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Lỗi: ${compassState.message}'),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (widget.targetLat != null &&
+                          widget.targetLng != null) {
+                        // Có đích đến - khởi động lại compass bình thường
+                        context.read<CompassBloc>().add(
+                          StartCompass(
+                            targetLat: widget.targetLat,
+                            targetLng: widget.targetLng,
+                            friendName: widget.friendName,
                           ),
-                          const SizedBox(height: AppSpacing.xs2),
-                          if (compassState.distance != null)
-                            Text(
-                              'Cách ${LocationUtils.formatDistance(compassState.distance!)}',
-                              style: AppTextStyles.bodyLarge.copyWith(
-                                color: AppColors.primary(context),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                          else if (compassState.targetLat == null)
-                            Text(
-                              'Kim la bàn đang quay ngẫu nhiên',
-                              style: AppTextStyles.bodyLarge.copyWith(
-                                color: AppColors.primary(context),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                        ],
-                      ),
+                        );
+                      } else {
+                        // Không có đích đến - khởi động lại chế độ random
+                        context.read<CompassBloc>().add(
+                          StartRandomCompass(friendName: widget.friendName),
+                        );
+                      }
+                    },
+                    child: const Text('Thử lại'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          if (compassState is! CompassReady) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return SingleChildScrollView(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Thông tin đích đến
+                  Container(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    margin: const EdgeInsets.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryContainer(context),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                     ),
-
-                    // MinecraftCompass với góc hướng về đích
-                    MinecraftCompass(
-                      width: AppSpacing.compassSize,
-                      height: AppSpacing.compassSize,
-                      angle: compassState.compassAngle,
+                    child: Column(
+                      children: [
+                        Text(
+                          compassState.friendName ??
+                              (compassState.targetLat != null
+                                  ? 'Đích đến'
+                                  : 'Chế độ ngẫu nhiên'),
+                          style: AppTextStyles.titleMedium.copyWith(
+                            color: AppColors.onPrimaryContainer(context),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSpacing.xs2),
+                        if (compassState.distance != null)
+                          Text(
+                            'Cách ${LocationUtils.formatDistance(compassState.distance!)}',
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              color: AppColors.primary(context),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        else if (compassState.targetLat == null)
+                          Text(
+                            'Kim la bàn đang quay ngẫu nhiên',
+                            style: AppTextStyles.bodyLarge.copyWith(
+                              color: AppColors.primary(context),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                      ],
                     ),
+                  ),
 
-                    const SizedBox(height: AppSpacing.md4),
+                  // MinecraftCompass với góc hướng về đích
+                  MinecraftCompass(
+                    width: AppSpacing.compassSize,
+                    height: AppSpacing.compassSize,
+                    angle: compassState.compassAngle,
+                  ),
 
-                    // Danh sách các bạn bè (nếu có)
-                    BlocBuilder<FriendBloc, FriendState>(
-                      builder: (context, state) {
-                        if (state is FriendAndRequestsLoadSuccess) {
-                          if (state.friends.isEmpty) {
-                            return Container();
-                          }
-                          return Container(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: AppSpacing.sm,
-                                  ),
-                                  child: Text(
-                                    'Danh sách bạn bè:',
-                                    style: AppTextStyles.bodyMedium.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.onSurface(context),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: AppSpacing.xs),
-                                SizedBox(
-                                  height: 120,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: AppSpacing.sm,
-                                    ),
-                                    itemCount: state.friends.length,
-                                    itemBuilder: (context, index) {
-                                      final friend = state.friends[index];
-                                      return GestureDetector(
-                                        onTap: () => _onSelectFriend(friend),
-                                        child: Container(
-                                          width: 80,
-                                          margin: const EdgeInsets.only(
-                                            right: AppSpacing.md,
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              // Avatar sử dụng CommonAvatar
-                                              CommonAvatar(
-                                                radius: 35,
-                                                avatarUrl: friend.avatarUrl,
-                                                displayName: friend.displayName,
-                                                backgroundColor:
-                                                    AppColors.primary(context),
-                                                textColor: AppColors.onPrimary(
-                                                  context,
-                                                ),
-                                                borderColor:
-                                                    selectingFriend?.uid ==
-                                                        friend.uid
-                                                    ? AppColors.primary(context)
-                                                    : null,
-                                              ),
-                                              const SizedBox(
-                                                height: AppSpacing.xs2,
-                                              ),
-                                              // Tên hiển thị
-                                              Text(
-                                                friend.displayName,
-                                                style: AppTextStyles.bodySmall
-                                                    .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      color:
-                                                          AppColors.onSurface(
-                                                            context,
-                                                          ),
-                                                    ),
-                                                textAlign: TextAlign.center,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
+                  const SizedBox(height: AppSpacing.md4),
+
+                  // Danh sách các bạn bè (nếu có)
+                  BlocBuilder<FriendBloc, FriendState>(
+                    builder: (context, state) {
+                      if (state is FriendAndRequestsLoadSuccess) {
+                        if (state.friends.isEmpty) {
+                          return Container();
                         }
-
                         return Container(
-                          padding: const EdgeInsets.all(AppSpacing.md),
                           margin: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.md,
                           ),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceVariant(context),
-                            borderRadius: BorderRadius.circular(
-                              AppSpacing.radiusMd,
-                            ),
-                          ),
-                          child: const Text(
-                            'Đang tải danh sách bạn bè...',
-                            textAlign: TextAlign.center,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: AppSpacing.sm,
+                                ),
+                                child: Text(
+                                  'Danh sách bạn bè:',
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.onSurface(context),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
+                              SizedBox(
+                                height: 120,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: AppSpacing.sm,
+                                  ),
+                                  itemCount: state.friends.length,
+                                  itemBuilder: (context, index) {
+                                    final friend = state.friends[index];
+                                    return GestureDetector(
+                                      onTap: () => _onSelectFriend(friend),
+                                      child: Container(
+                                        width: 80,
+                                        margin: const EdgeInsets.only(
+                                          right: AppSpacing.md,
+                                        ),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            // Avatar sử dụng CommonAvatar
+                                            CommonAvatar(
+                                              radius: 35,
+                                              avatarUrl: friend.avatarUrl,
+                                              displayName: friend.displayName,
+                                              backgroundColor:
+                                                  AppColors.primary(context),
+                                              textColor: AppColors.onPrimary(
+                                                context,
+                                              ),
+                                              borderColor:
+                                                  selectingFriend?.uid ==
+                                                      friend.uid
+                                                  ? AppColors.primary(context)
+                                                  : null,
+                                            ),
+                                            const SizedBox(
+                                              height: AppSpacing.xs2,
+                                            ),
+                                            // Tên hiển thị
+                                            Text(
+                                              friend.displayName,
+                                              style: AppTextStyles.bodySmall
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.w500,
+                                                    color: AppColors.onSurface(
+                                                      context,
+                                                    ),
+                                                  ),
+                                              textAlign: TextAlign.center,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         );
-                      },
-                    ),
+                      }
 
-                    const SizedBox(height: AppSpacing.md),
-                    ElevatedButton.icon(
-                      onPressed: _getCurrentLocation,
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Cập nhật vị trí'),
-                    ),
-                  ],
-                ),
+                      return Container(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceVariant(context),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusMd,
+                          ),
+                        ),
+                        child: const Text(
+                          'Đang tải danh sách bạn bè...',
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: AppSpacing.md),
+                  ElevatedButton.icon(
+                    onPressed: _getCurrentLocation,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Cập nhật vị trí'),
+                  ),
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
