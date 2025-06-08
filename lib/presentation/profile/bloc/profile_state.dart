@@ -29,8 +29,6 @@ final class ProfileError extends ProfileState {
   List<Object> get props => [message];
 }
 
-final class ProfileUpdateSuccess extends ProfileState {}
-
 final class ProfileUpdateLoading extends ProfileState {}
 
 final class UsernameAvailable extends ProfileState {

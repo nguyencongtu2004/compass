@@ -202,7 +202,7 @@ class FriendRepository {
         querySnapshot = await _firestore
             .collection('users')
             .where('username', isGreaterThanOrEqualTo: searchKeyword)
-            .where('username', isLessThan: searchKeyword + '\uf8ff')
+            .where('username', isLessThan: '$searchKeyword\uf8ff')
             .limit(20)
             .get();
 
@@ -222,7 +222,7 @@ class FriendRepository {
       querySnapshot = await _firestore
           .collection('users')
           .where('email', isGreaterThanOrEqualTo: searchKeyword)
-          .where('email', isLessThan: searchKeyword + '\uf8ff')
+          .where('email', isLessThan: '$searchKeyword\uf8ff')
           .limit(20)
           .get();
 

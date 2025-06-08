@@ -46,3 +46,7 @@ final class UsernameAvailabilityCheck extends ProfileEvent {
   @override
   List<Object> get props => [username];
 }
+
+final class ProfileResetRequested extends ProfileEvent {
+  const ProfileResetRequested();
+}

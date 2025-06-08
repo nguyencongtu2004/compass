@@ -110,3 +110,7 @@ class UpdateLocation extends FriendEvent {
 class GetCachedLocation extends FriendEvent {
   const GetCachedLocation();
 }
+
+class FriendResetRequested extends FriendEvent {
+  const FriendResetRequested();
+}

@@ -5,6 +5,7 @@ import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
 import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
+import 'package:minecraft_compass/utils/app_initialization.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../friend/bloc/friend_bloc.dart';
 import '../core/theme/app_colors.dart';
@@ -65,9 +66,12 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           ElevatedButton(
             onPressed: () {
+              // Reset user data first
+              AppInitialization.resetUserData(context);
+              // Then logout
               context.read<AuthBloc>().add(const AuthLogoutRequested());
               Navigator.pop(context);
-              context.go(AppRoutes.splashRoute);
+              context.go(AppRoutes.loginRoute);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error(context),

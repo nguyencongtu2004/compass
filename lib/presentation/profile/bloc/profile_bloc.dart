@@ -19,6 +19,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<ProfileLoadRequested>(_onProfileLoadRequested);
     on<ProfileUpdateRequested>(_onProfileUpdateRequested);
     on<UsernameAvailabilityCheck>(_onUsernameAvailabilityCheck);
+    on<ProfileResetRequested>(_onProfileResetRequested);
   }
 
   void _onProfileLoadRequested(
@@ -60,9 +61,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           avatarFile: event.avatarFile,
           isAvatarRemoved: event.isAvatarRemoved,
         );
-        emit(ProfileUpdateSuccess());
-        // Reload profile after update
-        add(const ProfileLoadRequested(showLoading: false));
+
+        // Load updated profile data immediately and emit ProfileLoaded
+        final updatedUser = await _userRepository.getUserByUid(currentUser.uid);
+        if (updatedUser != null) {
+          emit(ProfileLoaded(updatedUser));
+        } else {
+          emit(
+            const ProfileError(
+              'Không thể tải thông tin người dùng đã cập nhật',
+            ),
+          );
+        }
       } else {
         emit(const ProfileError('Người dùng chưa đăng nhập'));
       }
@@ -83,5 +93,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     } catch (e) {
       emit(UsernameAvailable(false));
     }
+  }
+
+  void _onProfileResetRequested(
+    ProfileResetRequested event,
+    Emitter<ProfileState> emit,
+  ) {
+    emit(ProfileInitial());
+  }
+
+  void reset() {
+    add(ProfileResetRequested());
   }
 }

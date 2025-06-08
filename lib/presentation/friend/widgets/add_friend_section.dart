@@ -46,11 +46,11 @@ class _AddFriendSectionState extends State<AddFriendSection> {
           color: AppColors.surface(context),
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
-            color: AppColors.outline(context).withOpacity(0.3),
+            color: AppColors.outline(context).withValues(alpha: 0.3),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -61,7 +61,7 @@ class _AddFriendSectionState extends State<AddFriendSection> {
           decoration: InputDecoration(
             hintText: 'Tìm kiếm bạn bè qua email...',
             hintStyle: TextStyle(
-              color: AppColors.onSurfaceVariant(context).withOpacity(0.7),
+              color: AppColors.onSurfaceVariant(context).withValues(alpha: 0.7),
             ),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(
@@ -70,7 +70,7 @@ class _AddFriendSectionState extends State<AddFriendSection> {
             ),
             prefixIcon: Icon(
               Icons.search,
-              color: AppColors.onSurfaceVariant(context).withOpacity(0.7),
+              color: AppColors.onSurfaceVariant(context).withValues(alpha: 0.7),
             ),
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,

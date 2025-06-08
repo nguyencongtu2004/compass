@@ -24,6 +24,7 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
     on<RemoveFriend>(_onRemoveFriend);
     on<FindUserByEmail>(_onFindUserByEmail);
     on<ClearSearchResults>(_onClearSearchResults);
+    on<FriendResetRequested>(_onFriendResetRequested);
   }
 
   void _onSendFriendRequest(
@@ -187,6 +188,14 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
     } catch (e) {
       emit(FriendOperationFailure(e.toString()));
     }
+  }
+
+  void _onFriendResetRequested(
+    FriendResetRequested event,
+    Emitter<FriendState> emit,
+  ) {
+    // Emit initial state to reset the friend list and requests
+    emit(FriendInitial());
   }
 
   @override

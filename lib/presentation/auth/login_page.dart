@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/utils/validator.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
+import 'package:minecraft_compass/utils/app_initialization.dart';
 import 'bloc/auth_bloc.dart';
 import '../core/widgets/common_button.dart';
 import '../core/widgets/common_textfield.dart';
@@ -66,8 +67,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               );
             } else if (state is AuthAuthenticated) {
-              // Đăng nhập thành công, chuyển đến splash để khởi tạo dữ liệu
-              context.go(AppRoutes.splashRoute);
+              // Đăng nhập thành công, khởi tạo dữ liệu và chuyển đến home
+              AppInitialization.initializeUserData(context, state.user);
+              context.go(AppRoutes.homeRoute);
             }
           },
           child: Center(
@@ -87,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
-                      'CompassFriend',
+                      'Compass',
                       style: AppTextStyles.headlineLarge.copyWith(
                         color: AppColors.onBackground(context),
                       ),

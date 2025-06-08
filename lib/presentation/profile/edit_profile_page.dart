@@ -35,6 +35,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _isUsernameAvailable = true;
   bool _isCheckingUsername = false;
   bool _isDeletingImage = false;
+  bool _isUpdating = false;
 
   @override
   void initState() {
@@ -137,6 +138,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
           hasUsernameChanged ||
           hasImageChanged ||
           hasImageRemoved) {
+        setState(() => _isUpdating = true);
+
         context.read<ProfileBloc>().add(
           ProfileUpdateRequested(
             displayName: hasDisplayNameChanged ? displayName : null,
@@ -163,7 +166,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
       body: BlocListener<ProfileBloc, ProfileState>(
         listener: (context, state) {
-          if (state is ProfileUpdateSuccess) {
+          if (state is ProfileLoaded && _isUpdating) {
+            // Profile updated successfully - now showing updated data
+            setState(() => _isUpdating = false);
+            
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Text('Cập nhật hồ sơ thành công!'),
@@ -172,6 +178,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             );
             Navigator.pop(context);
           } else if (state is ProfileError) {
+            setState(() => _isUpdating = false);
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),

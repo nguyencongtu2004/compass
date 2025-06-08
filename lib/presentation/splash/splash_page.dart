@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
+import 'package:minecraft_compass/utils/app_initialization.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../profile/bloc/profile_bloc.dart';
 import '../friend/bloc/friend_bloc.dart';
@@ -79,11 +80,8 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
           BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
               if (state is AuthAuthenticated) {
-                // Đã đăng nhập, khởi tạo dữ liệu
-                context.read<ProfileBloc>().add(const ProfileLoadRequested());
-                context.read<FriendBloc>().add(
-                  LoadFriendsAndRequests(state.user.uid),
-                );
+                // Đã đăng nhập khi mở app, khởi tạo dữ liệu
+                AppInitialization.initializeUserData(context, state.user);
               } else if (state is AuthUnauthenticated) {
                 // Chưa đăng nhập, chờ một chút để đảm bảo Firebase đã hoàn tất kiểm tra
                 Future.delayed(const Duration(seconds: 1), () {
@@ -122,7 +120,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
               end: Alignment.bottomCenter,
               colors: [
                 AppColors.primary(context),
-                AppColors.primary(context).withOpacity(0.8),
+                AppColors.primary(context).withValues(alpha: 0.8),
               ],
             ),
           ),
@@ -148,7 +146,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(60),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withValues(alpha: 0.2),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -177,7 +175,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                         Text(
                           'Kết nối và định hướng với bạn bè',
                           style: AppTextStyles.bodyLarge.copyWith(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                           ),
                         ),
                       ],
@@ -199,7 +197,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                       Text(
                         'Đang khởi tạo...',
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -231,7 +229,9 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
                                   return Text(
                                     status,
                                     style: AppTextStyles.bodySmall.copyWith(
-                                      color: Colors.white.withOpacity(0.7),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.7,
+                                      ),
                                     ),
                                     textAlign: TextAlign.center,
                                   );
