@@ -28,9 +28,12 @@ dependencies:
   flutter_bloc: ^9.0.0
   equatable: ^2.0.7
 
-  # Location & Compass
+  # Map & Location & Compass
   geolocator: ^14.0.1
   flutter_compass: ^0.8.0
+  flutter_map: ^8.1.1
+  latlong2: ^0.9.1
+  flutter_map_animations: ^0.9.0
 
   # Image handling
   image_picker: ^1.1.2

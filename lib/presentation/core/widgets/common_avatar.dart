@@ -11,6 +11,7 @@ class CommonAvatar extends StatelessWidget {
   final IconData? fallbackIcon;
   final Color? borderColor;
   final double borderWidth;
+  final double borderSpacing;
 
   const CommonAvatar({
     super.key,
@@ -23,6 +24,7 @@ class CommonAvatar extends StatelessWidget {
     this.fallbackIcon,
     this.borderColor,
     this.borderWidth = 2.0,
+    this.borderSpacing = 2.0,
   });
 
   String _getInitials(String name) {
@@ -112,8 +114,8 @@ class CommonAvatar extends StatelessWidget {
     // Nếu có borderColor thì wrap với Container để tạo viền
     if (borderColor != null) {
       return Container(
-        width: (radius + borderWidth + 2) * 2,
-        height: (radius + borderWidth + 2) * 2,
+        width: (radius + borderWidth + borderSpacing) * 2,
+        height: (radius + borderWidth + borderSpacing) * 2,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(color: borderColor!, width: borderWidth),
