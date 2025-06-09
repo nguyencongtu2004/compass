@@ -131,7 +131,7 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     if (state is CompassReady) {
       final currentState = state as CompassReady;
 
-      // Nếu không có đích đến, bỏ qua việc cập nhật
+      // Nếu không có đích đến, chỉ cập nhật vị trí
       if (currentState.targetLat == null || currentState.targetLng == null) {
         emit(
           currentState.copyWith(
@@ -167,16 +167,125 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
           compassAngle: compassAngle,
         ),
       );
+    } else {
+      // Nếu chưa có state CompassReady, tạo state mới với vị trí hiện tại
+      emit(
+        CompassReady(
+          currentLat: event.latitude,
+          currentLng: event.longitude,
+          compassAngle: 0.0,
+        ),
+      );
     }
   }
 
   void _onRefreshCurrentLocation(
     RefreshCurrentLocation event,
     Emitter<CompassState> emit,
-  ) {
-    // Event này sẽ được gửi từ UI để trigger việc refresh location từ FriendBloc
-    // Logic thực tế sẽ được xử lý ở UI layer
+  ) async {
+    try {
+      final position = await _locationRepository.getCurrentPosition();
+
+      if (state is CompassReady) {
+        final currentState = state as CompassReady;
+
+        // Tính toán lại distance và compass angle nếu có đích đến
+        double? distance;
+        double compassAngle = currentState.compassAngle;
+
+        if (currentState.targetLat != null && currentState.targetLng != null) {
+          distance = LocationUtils.calculateDistance(
+            position.latitude,
+            position.longitude,
+            currentState.targetLat!,
+            currentState.targetLng!,
+          );
+
+          if (currentState.heading != null) {
+            compassAngle = _calculateCompassAngle(
+              heading: currentState.heading,
+              currentLat: position.latitude,
+              currentLng: position.longitude,
+              targetLat: currentState.targetLat!,
+              targetLng: currentState.targetLng!,
+            );
+          }
+        }
+
+        emit(
+          currentState.copyWith(
+            currentLat: position.latitude,
+            currentLng: position.longitude,
+            distance: distance,
+            compassAngle: compassAngle,
+          ),
+        );
+      } else {
+        // Nếu chưa có state CompassReady, tạo state mới với vị trí hiện tại
+        emit(
+          CompassReady(
+            currentLat: position.latitude,
+            currentLng: position.longitude,
+            compassAngle: 0.0,
+          ),
+        );
+      }
+    } catch (e) {
+      // Try to use cached location as fallback
+      try {
+        final cachedPosition = await _locationRepository.getCachedPosition();
+        if (cachedPosition != null) {
+          if (state is CompassReady) {
+            final currentState = state as CompassReady;
+            double? distance;
+            double compassAngle = currentState.compassAngle;
+
+            if (currentState.targetLat != null &&
+                currentState.targetLng != null) {
+              distance = LocationUtils.calculateDistance(
+                cachedPosition.latitude,
+                cachedPosition.longitude,
+                currentState.targetLat!,
+                currentState.targetLng!,
+              );
+
+              if (currentState.heading != null) {
+                compassAngle = _calculateCompassAngle(
+                  heading: currentState.heading,
+                  currentLat: cachedPosition.latitude,
+                  currentLng: cachedPosition.longitude,
+                  targetLat: currentState.targetLat!,
+                  targetLng: currentState.targetLng!,
+                );
+              }
+            }
+
+            emit(
+              currentState.copyWith(
+                currentLat: cachedPosition.latitude,
+                currentLng: cachedPosition.longitude,
+                distance: distance,
+                compassAngle: compassAngle,
+              ),
+            );
+          } else {
+            emit(
+              CompassReady(
+                currentLat: cachedPosition.latitude,
+                currentLng: cachedPosition.longitude,
+                compassAngle: 0.0,
+              ),
+            );
+          }
+        } else {
+          emit(CompassError('Không thể lấy vị trí hiện tại: ${e.toString()}'));
+        }
+      } catch (cacheError) {
+        emit(CompassError('Không thể lấy vị trí hiện tại: ${e.toString()}'));
+      }
+    }
   }
+
   void _onGetCurrentLocationAndUpdate(
     GetCurrentLocationAndUpdate event,
     Emitter<CompassState> emit,
@@ -218,7 +327,6 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
             );
           }
         }
-
         emit(
           currentState.copyWith(
             currentLat: position.latitude,
@@ -228,16 +336,66 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
           ),
         );
       } else {
-        // Nếu chưa có state CompassReady, chỉ phát event UpdateCurrentLocation
-        add(
-          UpdateCurrentLocation(
-            latitude: position.latitude,
-            longitude: position.longitude,
+        // Nếu chưa có state CompassReady, tạo state mới với vị trí hiện tại
+        emit(
+          CompassReady(
+            currentLat: position.latitude,
+            currentLng: position.longitude,
+            compassAngle: 0.0,
           ),
         );
       }
     } catch (e) {
-      emit(CompassError('Không thể cập nhật vị trí: ${e.toString()}'));
+      // Try to use cached location as fallback (without updating Firebase)
+      try {
+        final cachedPosition = await _locationRepository.getCachedPosition();
+        if (cachedPosition != null) {
+          if (currentState is CompassReady) {
+            double? distance;
+            double compassAngle = currentState.compassAngle;
+
+            if (currentState.targetLat != null &&
+                currentState.targetLng != null) {
+              distance = LocationUtils.calculateDistance(
+                cachedPosition.latitude,
+                cachedPosition.longitude,
+                currentState.targetLat!,
+                currentState.targetLng!,
+              );
+
+              if (currentState.heading != null) {
+                compassAngle = _calculateCompassAngle(
+                  heading: currentState.heading,
+                  currentLat: cachedPosition.latitude,
+                  currentLng: cachedPosition.longitude,
+                  targetLat: currentState.targetLat!,
+                  targetLng: currentState.targetLng!,
+                );
+              }
+            }
+            emit(
+              currentState.copyWith(
+                currentLat: cachedPosition.latitude,
+                currentLng: cachedPosition.longitude,
+                distance: distance,
+                compassAngle: compassAngle,
+              ),
+            );
+          } else {
+            emit(
+              CompassReady(
+                currentLat: cachedPosition.latitude,
+                currentLng: cachedPosition.longitude,
+                compassAngle: 0.0,
+              ),
+            );
+          }
+        } else {
+          emit(CompassError('Không thể cập nhật vị trí: ${e.toString()}'));
+        }
+      } catch (cacheError) {
+        emit(CompassError('Không thể cập nhật vị trí: ${e.toString()}'));
+      }
     }
   }
 

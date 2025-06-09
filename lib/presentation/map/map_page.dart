@@ -5,12 +5,18 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:minecraft_compass/presentation/compass/bloc/compass_bloc.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
-import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
-import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
+import 'package:minecraft_compass/presentation/map/widgets/map_back_button.dart';
+import 'package:minecraft_compass/presentation/map/widgets/map_bloc_listeners.dart';
+import 'package:minecraft_compass/presentation/map/widgets/map_create_post_button.dart';
+import 'package:minecraft_compass/presentation/map/widgets/map_floating_action_buttons.dart';
+import 'package:minecraft_compass/presentation/map/widgets/map_toggle_switch.dart';
+import 'package:minecraft_compass/presentation/map/widgets/map_widget.dart';
 import 'package:minecraft_compass/presentation/friend/bloc/friend_bloc.dart';
+import 'package:minecraft_compass/presentation/newfeed/bloc/newsfeed_bloc.dart';
+import 'package:minecraft_compass/presentation/auth/bloc/auth_bloc.dart';
 import 'package:minecraft_compass/models/user_model.dart';
-import '../core/theme/app_colors.dart';
-import '../core/theme/app_text_styles.dart';
+import 'package:minecraft_compass/models/newsfeed_post_model.dart';
+import 'package:minecraft_compass/data/services/shared_preferences_service.dart';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key, required this.onBackPressed});
@@ -23,15 +29,57 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
   late final AnimatedMapController _mapController;
   LatLng? _currentLocation;
-  final LatLng _defaultLocation = const LatLng(21.0285, 105.8542); // Hà Nội
+  late LatLng _defaultLocation;
   List<UserModel> _friends = [];
+  List<NewsfeedPost> _feedPosts = [];
+  bool _showFriends = true; // true: hiển thị bạn bè, false: hiển thị feeds
 
   @override
   void initState() {
     super.initState();
     _mapController = AnimatedMapController(vsync: this);
     _initializeLocation();
+    _loadDefaultLocation();
     _loadFriends();
+    _loadFeedPosts();
+  }
+
+  void _loadFeedPosts() {
+    final newsfeedState = context.read<NewsfeedBloc>().state;
+    if (newsfeedState is PostsLoaded) {
+      setState(() {
+        _feedPosts = newsfeedState.posts
+            .where((post) => post.location != null)
+            .toList();
+      });
+    } else {
+      // Load posts if not already loaded
+      context.read<NewsfeedBloc>().add(const LoadPosts());
+    }
+  }
+
+  Future<void> _loadDefaultLocation() async {
+    try {
+      final cachedLocation = await SharedPreferencesService.getCachedLocation();
+      if (cachedLocation != null) {
+        setState(() {
+          _defaultLocation = LatLng(
+            cachedLocation['latitude']!,
+            cachedLocation['longitude']!,
+          );
+        });
+      } else {
+        // Fallback to Hanoi coordinates if no cached location
+        setState(() {
+          _defaultLocation = const LatLng(21.0285, 105.8542);
+        });
+      }
+    } catch (e) {
+      // Fallback to Hanoi coordinates on error
+      setState(() {
+        _defaultLocation = const LatLng(21.0285, 105.8542);
+      });
+    }
   }
 
   void _loadFriends() {
@@ -60,21 +108,51 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
           compassState.currentLng!,
         );
       });
+    } else {
+      // Yêu cầu lấy vị trí hiện tại nếu chưa có hoặc state không phải CompassReady
+      context.read<CompassBloc>().add(const RefreshCurrentLocation());
+
+      // Nếu có thông tin user, cũng trigger GetCurrentLocationAndUpdate để đảm bảo
+      final authState = context.read<AuthBloc>();
+      if (authState.state is AuthAuthenticated) {
+        final user = (authState.state as AuthAuthenticated).user;
+        context.read<CompassBloc>().add(
+          GetCurrentLocationAndUpdate(uid: user.uid),
+        );
+      }
     }
   }
 
   // Xử lý khi ấn nút fit bounds
   void _onFitBoundsPressed() {
+    final allPoints = <LatLng>[];
+
+    // Thêm vị trí hiện tại
     if (_currentLocation != null) {
-      final allPoints = [
-        _currentLocation!,
-        ..._friends.map(
+      allPoints.add(_currentLocation!);
+    }
+
+    // Thêm vị trí dựa trên chế độ hiện tại
+    if (_showFriends) {
+      // Thêm vị trí bạn bè
+      allPoints.addAll(
+        _friends.map(
           (friend) => LatLng(
             friend.currentLocation!.latitude,
             friend.currentLocation!.longitude,
           ),
         ),
-      ];
+      );
+    } else {
+      // Thêm vị trí feed posts
+      allPoints.addAll(
+        _feedPosts.map(
+          (post) => LatLng(post.location!.latitude, post.location!.longitude),
+        ),
+      );
+    }
+
+    if (allPoints.isNotEmpty) {
       _fitBounds(allPoints);
     }
   }
@@ -85,247 +163,93 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
       // Di chuyển đến vị trí hiện tại với animation mượt
       _mapController.animateTo(dest: _currentLocation!, zoom: 16.0);
     } else {
-      // Yêu cầu lấy vị trí hiện tại
+      // Yêu cầu lấy vị trí hiện tại và sẽ tự động di chuyển camera khi có vị trí
       context.read<CompassBloc>().add(const RefreshCurrentLocation());
+
+      // Nếu có thông tin user, cũng trigger GetCurrentLocationAndUpdate
+      final authState = context.read<AuthBloc>();
+      if (authState.state is AuthAuthenticated) {
+        final user = (authState.state as AuthAuthenticated).user;
+        context.read<CompassBloc>().add(
+          GetCurrentLocationAndUpdate(uid: user.uid),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<CompassBloc, CompassState>(
-          listener: (context, state) {
-            if (state is CompassReady &&
-                state.currentLat != null &&
-                state.currentLng != null) {
-              final newLocation = LatLng(state.currentLat!, state.currentLng!);
+    return MapBlocListeners(
+      onLocationChanged: (location) {
+        final bool isFirstLocation = _currentLocation == null;
+        setState(() => _currentLocation = location);
 
-              setState(() {
-                _currentLocation = newLocation;
-              });
-            }
-          },
-        ),
-        BlocListener<FriendBloc, FriendState>(
-          listener: (context, state) {
-            if (state is FriendAndRequestsLoadSuccess) {
-              setState(() {
-                _friends = state.friends
-                    .where(
-                      (friend) =>
-                          friend.currentLocation?.latitude != null &&
-                          friend.currentLocation?.longitude != null,
-                    )
-                    .toList();
-              });
-            }
-          },
-        ),
-      ],
+        // Tự động di chuyển camera đến vị trí hiện tại khi lần đầu lấy được vị trí
+        if (isFirstLocation && location != null) {
+          Future.delayed(const Duration(milliseconds: 300), () {
+            _mapController.animateTo(dest: location, zoom: 16.0);
+          });
+        }
+      },
+      onFriendsChanged: (friends) {
+        setState(() => _friends = friends);
+      },
+      onFeedPostsChanged: (feedPosts) {
+        setState(() => _feedPosts = feedPosts);
+      },
       child: Stack(
         children: [
           // Map widget
-          Positioned.fill(
-            child: FlutterMap(
-              mapController: _mapController.mapController,
-              options: MapOptions(
-                initialCenter: _currentLocation ?? _defaultLocation,
-                initialZoom: 15.0,
-                minZoom: 5.0,
-                maxZoom: 30.0,
-                interactionOptions: const InteractionOptions(
-                  flags: InteractiveFlag.all,
-                ),
-                keepAlive: true,
-              ),
-              children: [
-                // Tile layer - thay đổi theo theme
-                _buildTileLayer(),
-
-                // Marker layer hiển thị avatar người dùng và bạn bè
-                MarkerLayer(markers: _buildMarkers()),
-
-                // Floating action buttons
-                _buildFloatingActionButtons(),
-              ],
-            ),
+          MapWidget(
+            mapController: _mapController,
+            currentLocation: _currentLocation ?? _defaultLocation,
+            defaultLocation: _defaultLocation,
+            friends: _friends,
+            feedPosts: _feedPosts,
+            showFriends: _showFriends,
           ),
 
           // Nút quay lại
+          // MapBackButton(onPressed: () => widget.onBackPressed()),
+
+          // Toggle switch ở giữa top
           Positioned(
-            top: 16,
-            left: 16,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.surface(context),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.onSurface(context).withValues(alpha: 0.2),
-                    blurRadius: 8,
-                    spreadRadius: 1,
-                  ),
-                ],
+            top: AppSpacing.md,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: MapToggleSwitch(
+                showFriends: _showFriends,
+                onToggleToFriends: () {
+                  if (!_showFriends) {
+                    setState(() => _showFriends = true);
+                  }
+                },
+                onToggleToFeeds: () {
+                  if (_showFriends) {
+                    setState(() => _showFriends = false);
+                    _loadFeedPosts();
+                  }
+                },
               ),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_upward, size: 30),
-                onPressed: () => widget.onBackPressed(),
-                color: AppColors.onSurface(context),
-              ),
             ),
           ),
-        ],
-      ),
-    );
-  }
 
-  // Tạo tile layer với theme support
-  Widget _buildTileLayer() {
-    return TileLayer(
-      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-      userAgentPackageName: 'com.nctu.minecraft_compass',
-      maxZoom: 19,
-      minZoom: 5,
-      tileBuilder: Theme.of(context).brightness == Brightness.dark
-          ? (context, tileWidget, tile) {
-              return ColorFiltered(
-                colorFilter: const ColorFilter.matrix(<double>[
-                  // Đảo màu
-                  -1, 0, 0, 0, 255,
-                  0, -1, 0, 0, 255,
-                  0, 0, -1, 0, 255,
-                  0, 0, 0, 1, 0,
-                ]),
-                child: tileWidget,
-              );
-            }
-          : null,
-    );
-  }
-
-  // Tạo danh sách markers
-  List<Marker> _buildMarkers() {
-    final markers = <Marker>[]; // Marker cho người dùng hiện tại
-    if (_currentLocation != null) {
-      markers.add(
-        Marker(
-          point: _currentLocation!,
-          width: 50,
-          height: 50,
-          rotate: true,
-          alignment: Alignment.center,
-          child: _buildCurrentUserMarker(),
-        ),
-      );
-    }
-
-    // Marker cho bạn bè
-    for (final friend in _friends) {
-      final friendLocation = LatLng(
-        friend.currentLocation!.latitude,
-        friend.currentLocation!.longitude,
-      );
-      markers.add(
-        Marker(
-          point: friendLocation,
-          width: 200,
-          height: 90,
-          rotate: true,
-          alignment: Alignment.center,
-          child: _buildFriendMarker(friend),
-        ),
-      );
-    }
-
-    return markers;
-  }
-
-  // Tạo marker cho người dùng hiện tại
-  Widget _buildCurrentUserMarker() {
-    return BlocBuilder<ProfileBloc, ProfileState>(
-      builder: (context, profileState) => profileState is ProfileLoaded
-          ? CommonAvatar(
-              radius: 50,
-              avatarUrl: profileState.user.avatarUrl,
-              displayName: profileState.user.displayName,
-              borderSpacing: 0,
-              borderColor: AppColors.primary(context),
-            )
-          : const CommonAvatar(radius: 25),
-    );
-  }
-
-  // Tạo marker cho bạn bè
-  Widget _buildFriendMarker(UserModel friend) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Avatar bạn bè
-        CommonAvatar(
-          radius: 25,
-          avatarUrl: friend.avatarUrl,
-          displayName: friend.displayName,
-          borderSpacing: 0,
-          borderColor: AppColors.secondary(context),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-
-        // Tên bạn bè
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: AppColors.surface(context),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.outline(context).withValues(alpha: 0.2),
-            ),
+          // Floating action buttons
+          MapFloatingActionButtons(
+            showFitBoundsButton:
+                (_showFriends && _friends.isNotEmpty) ||
+                (!_showFriends && _feedPosts.isNotEmpty),
+            onFitBoundsPressed: _onFitBoundsPressed,
+            onMyLocationPressed: _onMyLocationPressed,
           ),
-          child: Text(
-            friend.displayName,
-            style: AppTextStyles.bodySmall.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.onSurface(context),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
-    );
-  }
 
-  // Tạo floating action buttons
-  Widget _buildFloatingActionButtons() {
-    return Positioned(
-      bottom: 20,
-      right: 20,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Button zoom to fit all markers
-          if (_friends.isNotEmpty)
-            FloatingActionButton(
-              mini: true,
-              heroTag: "fit_bounds",
-              backgroundColor: AppColors.secondary(context),
-              foregroundColor: AppColors.onSecondary(context),
-              elevation: 6,
-              onPressed: _onFitBoundsPressed,
-              child: const Icon(Icons.fit_screen, size: 20),
-            ),
-
-          if (_friends.isNotEmpty) const SizedBox(height: 12),
-
-          // Button về vị trí hiện tại
-          FloatingActionButton(
-            mini: true,
-            heroTag: "my_location",
-            backgroundColor: AppColors.primary(context),
-            foregroundColor: AppColors.onPrimary(context),
-            elevation: 6,
-            onPressed: _onMyLocationPressed,
-            child: const Icon(Icons.my_location, size: 20),
+          // Create post button
+          Positioned(
+            bottom: AppSpacing.md,
+            left: 0,
+            right: 0,
+            child: const MapCreatePostButton(),
           ),
         ],
       ),

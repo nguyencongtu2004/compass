@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:crypto/crypto.dart'; 
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:minecraft_compass/config/cloudinary_config.dart';
@@ -13,6 +13,7 @@ class CloudinaryService {
   Future<String?> uploadImageToCloudinary(
     File imageFile, {
     String? publicId,
+    required String uploadPreset,
   }) async {
     try {
       // URL endpoint upload của Cloudinary (unsigned)
@@ -24,7 +25,7 @@ class CloudinaryService {
       // Tạo các parameters cho signature (không bao gồm file, api_key, cloud_name)
       final signatureParams = <String, String>{
         'timestamp': timeStamp,
-        'upload_preset': CloudinaryConfig.avatarUploadPreset,
+        'upload_preset': uploadPreset,
         'overwrite': 'true',
       };
 
@@ -40,11 +41,14 @@ class CloudinaryService {
           filename: imageFile.path.split('/').last,
         ),
         'timestamp': timeStamp,
-        'upload_preset': CloudinaryConfig.avatarUploadPreset,
+        'upload_preset': uploadPreset,
         'overwrite': true,
         if (publicId != null) 'public_id': publicId,
         'api_key': CloudinaryConfig.apiKey,
-        'signature': computeCloudinarySignature(signatureParams, CloudinaryConfig.apiSecret),
+        'signature': computeCloudinarySignature(
+          signatureParams,
+          CloudinaryConfig.apiSecret,
+        ),
       });
 
       // Gửi request POST
@@ -83,7 +87,21 @@ class CloudinaryService {
   /// Hàm upload avatar cho user với public_id cố định để ghi đè
   Future<String?> uploadUserAvatar(File imageFile, String userId) async {
     final publicId = 'avatars/$userId';
-    return await uploadImageToCloudinary(imageFile, publicId: publicId);
+    return await uploadImageToCloudinary(
+      imageFile,
+      publicId: publicId,
+      uploadPreset: CloudinaryConfig.avatarUploadPreset,
+    );
+  }
+
+  /// Hàm upload ảnh cho user với public_id cố định để ghi đè
+  Future<String?> uploadUserImage(File imageFile, String userId) async {
+    final publicId = 'images/$userId-${DateTime.now().millisecondsSinceEpoch}';
+    return await uploadImageToCloudinary(
+      imageFile,
+      publicId: publicId,
+      uploadPreset: CloudinaryConfig.imageUploadPreset,
+    );
   }
 
   /// Dispose Dio instance khi không cần thiết nữa

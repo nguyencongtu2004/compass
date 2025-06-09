@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../models/location_model.dart';
 import '../../models/user_model.dart';
+import '../services/shared_preferences_service.dart';
 
 class LocationRepository {
   final FirebaseFirestore _firestore;
@@ -32,16 +33,51 @@ class LocationRepository {
         'Location permissions are permanently denied, we cannot request permissions.',
       );
     }
-
     return await Geolocator.getCurrentPosition();
   }
 
-  /// Cập nhật vị trí lên Firestore
+  /// Lấy vị trí cache từ local storage
+  Future<Position?> getCachedPosition() async {
+    final cachedLocation = await SharedPreferencesService.getCachedLocation();
+    if (cachedLocation != null) {
+      return Position(
+        latitude: cachedLocation['latitude']!,
+        longitude: cachedLocation['longitude']!,
+        timestamp:
+            await SharedPreferencesService.getCachedLocationTimestamp() ??
+            DateTime.now(),
+        accuracy: 0, // Unknown accuracy for cached location
+        altitude: 0,
+        altitudeAccuracy: 0,
+        heading: 0,
+        headingAccuracy: 0,
+        speed: 0,
+        speedAccuracy: 0,
+      );
+    }
+    return null;
+  }
+
+  /// Lấy vị trí hiện tại hoặc cached location nếu GPS thất bại
+  Future<Position> getCurrentOrCachedPosition() async {
+    try {
+      return await getCurrentPosition();
+    } catch (e) {
+      final cachedPosition = await getCachedPosition();
+      if (cachedPosition != null) {
+        return cachedPosition;
+      }
+      rethrow; // Re-throw the original error if no cached location
+    }
+  }
+
+  /// Cập nhật vị trí lên Firestore và cache locally
   Future<void> updateLocation(
     String uid,
     double latitude,
     double longitude,
   ) async {
+    // Update Firebase
     await _firestore.collection('users').doc(uid).update({
       'currentLocation': {
         'latitude': latitude,
@@ -49,6 +85,9 @@ class LocationRepository {
         'updatedAt': FieldValue.serverTimestamp(),
       },
     });
+
+    // Cache location locally
+    await SharedPreferencesService.cacheLocation(latitude, longitude);
   }
 
   /// Lắng nghe vị trí của một user

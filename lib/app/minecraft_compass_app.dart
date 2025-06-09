@@ -6,6 +6,7 @@ import 'package:minecraft_compass/presentation/auth/bloc/auth_bloc.dart';
 import 'package:minecraft_compass/presentation/friend/bloc/friend_bloc.dart';
 import 'package:minecraft_compass/presentation/compass/bloc/compass_bloc.dart';
 import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
+import 'package:minecraft_compass/presentation/newfeed/bloc/newsfeed_bloc.dart';
 import 'package:minecraft_compass/data/repositories/location_repository.dart';
 import 'package:minecraft_compass/router/app_router.dart';
 
@@ -15,7 +16,6 @@ class MinecraftCompassApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // Tắt native splash screen sau khi app đã build xong
     FlutterNativeSplash.remove();
-
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => AuthBloc()),
@@ -25,6 +25,10 @@ class MinecraftCompassApp extends StatelessWidget {
               CompassBloc(locationRepository: LocationRepository()),
         ),
         BlocProvider(create: (context) => ProfileBloc()),
+        BlocProvider(
+          create: (context) =>
+              NewsfeedBloc(profileBloc: context.read<ProfileBloc>()),
+        ),
       ],
       child: MaterialApp.router(
         title: 'Minecraft Compass',

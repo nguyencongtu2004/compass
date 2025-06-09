@@ -207,7 +207,7 @@ class _CompassPageState extends State<CompassPage> {
 
                     // Thông tin đích đến với avatar
                     Container(
-                      padding: const EdgeInsets.all(AppSpacing.lg),
+                      padding: const EdgeInsets.all(AppSpacing.md),
                       margin: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.md,
                       ),
@@ -219,7 +219,7 @@ class _CompassPageState extends State<CompassPage> {
                             AppColors.primaryContainer(context),
                             AppColors.primaryContainer(
                               context,
-                            ).withOpacity(0.8),
+                            ).withValues(alpha: 0.8),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(
@@ -227,7 +227,9 @@ class _CompassPageState extends State<CompassPage> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary(context).withOpacity(0.2),
+                            color: AppColors.primary(
+                              context,
+                            ).withValues(alpha: 0.2),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -251,7 +253,7 @@ class _CompassPageState extends State<CompassPage> {
                               decoration: BoxDecoration(
                                 color: AppColors.primary(
                                   context,
-                                ).withOpacity(0.2),
+                                ).withValues(alpha: 0.2),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(

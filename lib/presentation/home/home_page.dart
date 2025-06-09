@@ -8,6 +8,7 @@ import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart
 import 'package:minecraft_compass/presentation/core/widgets/keep_alive_wrapper.dart';
 import 'package:minecraft_compass/presentation/compass/compass_page.dart';
 import 'package:minecraft_compass/presentation/map/map_page.dart';
+import 'package:minecraft_compass/presentation/newfeed/newfeed_page.dart';
 import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../profile/profile_page.dart';
@@ -30,8 +31,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late PageController _pageController;
   late PageController _midPageController;
-  String page1Title = 'La bàn';
-
+  String page1Title = 'Bản tin';
   @override
   void initState() {
     super.initState();
@@ -40,9 +40,9 @@ class _HomePageState extends State<HomePage> {
     _midPageController.addListener(() {
       // Cập nhật tiêu đề khi cuộn trang giữa
       if (_midPageController.page == 0) {
-        page1Title = 'La bàn';
-      } else if (_midPageController.page == 1) {
         page1Title = 'Bản đồ';
+      } else if (_midPageController.page == 1) {
+        page1Title = 'Bản tin';
       }
       setState(() {});
     });
@@ -75,7 +75,6 @@ class _HomePageState extends State<HomePage> {
       curve: Curves.easeInOutCubic,
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -132,27 +131,28 @@ class _HomePageState extends State<HomePage> {
                 controller: _midPageController,
                 scrollDirection: Axis.vertical,
                 children: [
-                  KeepAliveWrapper(
-                    child: CompassPage(
-                      targetLat: double.tryParse(
-                        widget.queryParams?['lat'] ?? '',
-                      ),
-                      targetLng: double.tryParse(
-                        widget.queryParams?['lng'] ?? '',
-                      ),
-                      friendName: widget.queryParams?['friendName'],
-                    ),
-                  ),
                   MapPage(
                     onBackPressed: () {
                       // Quay lại trang la bàn
                       _midPageController.animateToPage(
-                        0,
+                        1,
                         duration: const Duration(milliseconds: 250),
                         curve: Curves.easeInOutCubic,
                       );
                     },
                   ),
+                  KeepAliveWrapper(child: NewFeedPage()),
+                  // KeepAliveWrapper(
+                  //   child: CompassPage(
+                  //     targetLat: double.tryParse(
+                  //       widget.queryParams?['lat'] ?? '',
+                  //     ),
+                  //     targetLng: double.tryParse(
+                  //       widget.queryParams?['lng'] ?? '',
+                  //     ),
+                  //     friendName: widget.queryParams?['friendName'],
+                  //   ),
+                  // ),
                 ],
               ),
             ),

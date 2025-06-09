@@ -6,8 +6,8 @@ abstract final class AppRoutes {
   static const String profileRoute = '/profile';
   static const String friendListRoute = '/friends';
   static const String editProfileRoute = '/profile/edit';
-
   static const String homeRoute = '/home';
+  static const String createPostRoute = '/create-post';
 
   // static const String homeCompassRoute = '/home/compass';
   // static const String homeFriendsRoute = '/home/friends';
