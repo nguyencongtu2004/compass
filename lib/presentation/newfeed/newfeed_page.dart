@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/newsfeed_post_model.dart';
 import '../auth/bloc/auth_bloc.dart';
+import '../friend/bloc/friend_bloc.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_text_styles.dart';
@@ -20,8 +21,29 @@ class _NewFeedPageState extends State<NewFeedPage> {
   @override
   void initState() {
     super.initState();
-    // Load posts when page initializes
-    context.read<NewsfeedBloc>().add(const LoadPosts());
+    // Load posts for Feed mode (mình + bạn bè)
+    _loadFeedPosts();
+  }
+
+  void _loadFeedPosts() {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      final currentUserId = authState.user.uid;
+
+      // Lấy danh sách bạn bè
+      final friendState = context.read<FriendBloc>().state;
+      List<String> friendUids = [];
+      if (friendState is FriendAndRequestsLoadSuccess) {
+        friendUids = friendState.friends.map((friend) => friend.uid).toList();
+      }
+
+      context.read<NewsfeedBloc>().add(
+        LoadFeedPosts(currentUserId: currentUserId, friendUids: friendUids),
+      );
+    } else {
+      // Fallback nếu chưa authenticated
+      context.read<NewsfeedBloc>().add(const LoadPosts());
+    }
   }
 
   void _showCreatePostDialog() {

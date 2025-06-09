@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
+enum MapDisplayMode { locations, friends, explore }
+
 class MapToggleSwitch extends StatelessWidget {
-  final bool showFriends;
+  final MapDisplayMode currentMode;
+  final VoidCallback onToggleToLocations;
   final VoidCallback onToggleToFriends;
-  final VoidCallback onToggleToFeeds;
+  final VoidCallback onToggleToExplore;
 
   const MapToggleSwitch({
     super.key,
-    required this.showFriends,
+    required this.currentMode,
+    required this.onToggleToLocations,
     required this.onToggleToFriends,
-    required this.onToggleToFeeds,
+    required this.onToggleToExplore,
   });
 
   @override
@@ -32,16 +36,22 @@ class MapToggleSwitch extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _MapToggleOption(
-            icon: Icons.people,
-            label: 'Friends',
-            isSelected: showFriends,
+            icon: Icons.location_on,
+            label: 'Vị trí',
+            isSelected: currentMode == MapDisplayMode.locations,
+            onTap: onToggleToLocations,
+          ),
+          _MapToggleOption(
+            icon: Icons.group,
+            label: 'Bạn bè',
+            isSelected: currentMode == MapDisplayMode.friends,
             onTap: onToggleToFriends,
           ),
           _MapToggleOption(
-            icon: Icons.feed,
-            label: 'Feeds',
-            isSelected: !showFriends,
-            onTap: onToggleToFeeds,
+            icon: Icons.explore,
+            label: 'Khám phá',
+            isSelected: currentMode == MapDisplayMode.explore,
+            onTap: onToggleToExplore,
           ),
         ],
       ),
@@ -69,7 +79,7 @@ class _MapToggleOption extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           color: isSelected ? AppColors.primary(context) : Colors.transparent,
@@ -82,9 +92,9 @@ class _MapToggleOption extends StatelessWidget {
               color: isSelected
                   ? AppColors.onPrimary(context)
                   : AppColors.onSurface(context).withValues(alpha: 0.7),
-              size: 20,
+              size: 18,
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
@@ -92,7 +102,7 @@ class _MapToggleOption extends StatelessWidget {
                     ? AppColors.onPrimary(context)
                     : AppColors.onSurface(context).withValues(alpha: 0.7),
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                fontSize: 14,
+                fontSize: 13,
               ),
             ),
           ],

@@ -33,6 +33,9 @@ class NewsfeedBloc extends Bloc<NewsfeedEvent, NewsfeedState> {
     on<LoadMorePosts>(_onLoadMorePosts);
     on<DeletePost>(_onDeletePost);
     on<NewsfeedResetRequested>(_onNewsfeedResetRequested);
+    on<LoadPostsByLocation>(_onLoadPostsByLocation);
+    on<LoadPostsFromFriends>(_onLoadPostsFromFriends);
+    on<LoadFeedPosts>(_onLoadFeedPosts);
   }
   void _onLoadPosts(LoadPosts event, Emitter<NewsfeedState> emit) async {
     emit(NewsfeedLoading());
@@ -171,5 +174,91 @@ class NewsfeedBloc extends Bloc<NewsfeedEvent, NewsfeedState> {
     _allPosts.clear();
     _hasMorePosts = true;
     emit(NewsfeedInitial());
+  }
+
+  void _onLoadPostsByLocation(
+    LoadPostsByLocation event,
+    Emitter<NewsfeedState> emit,
+  ) async {
+    emit(NewsfeedLoading());
+    try {
+      // Reset pagination
+      _allPosts.clear();
+      _hasMorePosts = true;
+
+      // Load posts gần vị trí hiện tại (loại trừ bạn bè nếu được cung cấp)
+      final posts = await _newsfeedRepository.getPostsByLocation(
+        currentLat: event.currentLat,
+        currentLng: event.currentLng,
+        radiusInMeters: event.radiusInMeters,
+        excludeFriendUids: event.excludeFriendUids,
+        currentUserId: event.currentUserId,
+        limit: 10,
+      );
+
+      _allPosts = List.from(posts);
+      _hasMorePosts = posts.length == 10;
+
+      emit(
+        PostsLoaded(posts: List.from(_allPosts), hasMorePosts: _hasMorePosts),
+      );
+    } catch (e) {
+      emit(NewsfeedError(message: e.toString()));
+    }
+  }
+
+  void _onLoadPostsFromFriends(
+    LoadPostsFromFriends event,
+    Emitter<NewsfeedState> emit,
+  ) async {
+    emit(NewsfeedLoading());
+    try {
+      // Reset pagination
+      _allPosts.clear();
+      _hasMorePosts = true;
+
+      // Load posts từ bạn bè
+      final posts = await _newsfeedRepository.getPostsFromFriends(
+        friendUids: event.friendUids,
+        limit: 10,
+      );
+
+      _allPosts = List.from(posts);
+      _hasMorePosts = posts.length == 10;
+
+      emit(
+        PostsLoaded(posts: List.from(_allPosts), hasMorePosts: _hasMorePosts),
+      );
+    } catch (e) {
+      emit(NewsfeedError(message: e.toString()));
+    }
+  }
+
+  void _onLoadFeedPosts(
+    LoadFeedPosts event,
+    Emitter<NewsfeedState> emit,
+  ) async {
+    emit(NewsfeedLoading());
+    try {
+      // Reset pagination
+      _allPosts.clear();
+      _hasMorePosts = true;
+
+      // Load posts từ mình và bạn bè
+      final posts = await _newsfeedRepository.getPostsFromSelfAndFriends(
+        currentUserId: event.currentUserId,
+        friendUids: event.friendUids,
+        limit: 10,
+      );
+
+      _allPosts = List.from(posts);
+      _hasMorePosts = posts.length == 10;
+
+      emit(
+        PostsLoaded(posts: List.from(_allPosts), hasMorePosts: _hasMorePosts),
+      );
+    } catch (e) {
+      emit(NewsfeedError(message: e.toString()));
+    }
   }
 }

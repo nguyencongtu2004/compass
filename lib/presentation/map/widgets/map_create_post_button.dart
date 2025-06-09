@@ -16,7 +16,7 @@ class MapCreatePostButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.shadow.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.3),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),

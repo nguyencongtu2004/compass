@@ -12,6 +12,7 @@ import '../../core/theme/app_text_styles.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/widgets/common_avatar.dart';
 import '../../profile/bloc/profile_bloc.dart';
+import 'map_toggle_switch.dart';
 
 class MapMarkersBuilder {
   static List<Marker> buildMarkers({
@@ -19,7 +20,7 @@ class MapMarkersBuilder {
     required LatLng? currentLocation,
     required List<UserModel> friends,
     required List<NewsfeedPost> feedPosts,
-    required bool showFriends,
+    required MapDisplayMode currentMode,
   }) {
     final markers = <Marker>[];
 
@@ -35,45 +36,49 @@ class MapMarkersBuilder {
           child: _CurrentUserMarker(),
         ),
       );
-    }
-
+    } 
+    
     // Hiển thị markers dựa trên chế độ hiện tại
-    if (showFriends) {
-      // Marker cho bạn bè
-      for (final friend in friends) {
-        final friendLocation = LatLng(
-          friend.currentLocation!.latitude,
-          friend.currentLocation!.longitude,
-        );
-        markers.add(
-          Marker(
-            point: friendLocation,
-            width: 200,
-            height: 90,
-            rotate: true,
-            alignment: Alignment.center,
-            child: _FriendMarker(friend: friend),
-          ),
-        );
-      }
-    } else {
-      // Marker cho feed posts
-      for (final post in feedPosts) {
-        final postLocation = LatLng(
-          post.location!.latitude,
-          post.location!.longitude,
-        );
-        markers.add(
-          Marker(
-            point: postLocation,
-            width: 200,
-            height: 160,
-            rotate: true,
-            alignment: Alignment.center,
-            child: _FeedMarker(post: post),
-          ),
-        );
-      }
+    switch (currentMode) {
+      case MapDisplayMode.locations:
+        // Marker cho bạn bè
+        for (final friend in friends) {
+          final friendLocation = LatLng(
+            friend.currentLocation!.latitude,
+            friend.currentLocation!.longitude,
+          );
+          markers.add(
+            Marker(
+              point: friendLocation,
+              width: 200,
+              height: 90,
+              rotate: true,
+              alignment: Alignment.center,
+              child: _FriendMarker(friend: friend),
+            ),
+          );
+        }
+        break;
+      case MapDisplayMode.friends:
+      case MapDisplayMode.explore:
+        // Marker cho feed posts
+        for (final post in feedPosts) {
+          final postLocation = LatLng(
+            post.location!.latitude,
+            post.location!.longitude,
+          );
+          markers.add(
+            Marker(
+              point: postLocation,
+              width: 200,
+              height: 160,
+              rotate: true,
+              alignment: Alignment.center,
+              child: _FeedMarker(post: post),
+            ),
+          );
+        }
+        break;
     }
 
     return markers;

@@ -42,3 +42,47 @@ class DeletePost extends NewsfeedEvent {
 class NewsfeedResetRequested extends NewsfeedEvent {
   const NewsfeedResetRequested();
 }
+
+class LoadPostsByLocation extends NewsfeedEvent {
+  final double currentLat;
+  final double currentLng;
+  final double radiusInMeters;
+  final List<String>? excludeFriendUids;
+  final String? currentUserId;
+
+  const LoadPostsByLocation({
+    required this.currentLat,
+    required this.currentLng,
+    required this.radiusInMeters,
+    this.excludeFriendUids,
+    this.currentUserId,
+  });
+
+  @override
+  List<Object?> get props => [
+    currentLat,
+    currentLng,
+    radiusInMeters,
+    excludeFriendUids,
+    currentUserId,
+  ];
+}
+
+class LoadPostsFromFriends extends NewsfeedEvent {
+  final List<String> friendUids;
+
+  const LoadPostsFromFriends({required this.friendUids});
+
+  @override
+  List<Object?> get props => [friendUids];
+}
+
+class LoadFeedPosts extends NewsfeedEvent {
+  final String currentUserId;
+  final List<String> friendUids;
+
+  const LoadFeedPosts({required this.currentUserId, required this.friendUids});
+
+  @override
+  List<Object?> get props => [currentUserId, friendUids];
+}

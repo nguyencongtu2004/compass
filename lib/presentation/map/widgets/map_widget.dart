@@ -6,6 +6,7 @@ import 'package:minecraft_compass/models/newsfeed_post_model.dart';
 import 'package:minecraft_compass/models/user_model.dart';
 
 import 'map_markers.dart';
+import 'map_toggle_switch.dart';
 
 class MapWidget extends StatelessWidget {
   final AnimatedMapController mapController;
@@ -13,7 +14,8 @@ class MapWidget extends StatelessWidget {
   final LatLng defaultLocation;
   final List<UserModel> friends;
   final List<NewsfeedPost> feedPosts;
-  final bool showFriends;
+  final MapDisplayMode currentMode;
+  final Function(LatLng center, double zoom)? onMapPositionChanged;
 
   const MapWidget({
     super.key,
@@ -22,7 +24,8 @@ class MapWidget extends StatelessWidget {
     required this.defaultLocation,
     required this.friends,
     required this.feedPosts,
-    required this.showFriends,
+    required this.currentMode,
+    this.onMapPositionChanged,
   });
 
   @override
@@ -39,6 +42,13 @@ class MapWidget extends StatelessWidget {
           interactionOptions: const InteractionOptions(
             flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
           ),
+          onPositionChanged: onMapPositionChanged != null
+              ? (camera, hasGesture) {
+                  if (hasGesture) {
+                    onMapPositionChanged!(camera.center, camera.zoom);
+                  }
+                }
+              : null,
         ),
         children: [
           _buildTileLayer(context),
@@ -48,7 +58,7 @@ class MapWidget extends StatelessWidget {
               currentLocation: currentLocation,
               friends: friends,
               feedPosts: feedPosts,
-              showFriends: showFriends,
+              currentMode: currentMode,
             ),
           ),
         ],

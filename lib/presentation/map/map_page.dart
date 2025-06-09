@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -5,7 +7,6 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:minecraft_compass/presentation/compass/bloc/compass_bloc.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
-import 'package:minecraft_compass/presentation/map/widgets/map_back_button.dart';
 import 'package:minecraft_compass/presentation/map/widgets/map_bloc_listeners.dart';
 import 'package:minecraft_compass/presentation/map/widgets/map_create_post_button.dart';
 import 'package:minecraft_compass/presentation/map/widgets/map_floating_action_buttons.dart';
@@ -32,7 +33,12 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
   late LatLng _defaultLocation;
   List<UserModel> _friends = [];
   List<NewsfeedPost> _feedPosts = [];
-  bool _showFriends = true; // true: hiển thị bạn bè, false: hiển thị feeds
+  MapDisplayMode _currentMode =
+      MapDisplayMode.locations; // Chế độ hiển thị hiện tại
+  bool _firstTimeLoadExplore =
+      true; // Biến để kiểm tra lần đầu vào chế độ Explore
+
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -42,6 +48,44 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
     _loadDefaultLocation();
     _loadFriends();
     _loadFeedPosts();
+  }
+
+  // Callback khi người dùng thay đổi vị trí map (cho chế độ explore)
+  void _onMapPositionChanged(LatLng center, double zoom) {
+    if (_currentMode == MapDisplayMode.explore && _currentLocation != null) {
+      // Debounce để tránh quá nhiều requests
+      _debounceTimer?.cancel();
+      _debounceTimer = Timer(const Duration(milliseconds: 1000), () {
+        // Tính bán kính dựa trên zoom level thực tế từ map
+        final radius = _calculateRadiusFromZoom(customZoom: zoom);
+
+        // Lấy danh sách friend UIDs để loại trừ + current user ID
+        List<String>? excludeFriendUids;
+        String? currentUserId;
+
+        final authState = context.read<AuthBloc>().state;
+        if (authState is AuthAuthenticated) {
+          currentUserId = authState.user.uid;
+        }
+
+        final friendState = context.read<FriendBloc>().state;
+        if (friendState is FriendAndRequestsLoadSuccess) {
+          excludeFriendUids = friendState.friends
+              .map((friend) => friend.uid)
+              .toList();
+        }
+
+        context.read<NewsfeedBloc>().add(
+          LoadPostsByLocation(
+            currentLat: center.latitude,
+            currentLng: center.longitude,
+            radiusInMeters: radius,
+            excludeFriendUids: excludeFriendUids,
+            currentUserId: currentUserId,
+          ),
+        );
+      });
+    }
   }
 
   void _loadFeedPosts() {
@@ -55,6 +99,176 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
     } else {
       // Load posts if not already loaded
       context.read<NewsfeedBloc>().add(const LoadPosts());
+    }
+  }
+
+  // Tính bán kính từ zoom level thực tế của map
+  double _calculateRadiusFromZoom({double? customZoom}) {
+    // Lấy zoom level thực tế từ map controller hoặc sử dụng giá trị được truyền vào
+    final double currentZoom =
+        customZoom ?? _mapController.mapController.camera.zoom;
+
+    // Tính toán bán kính dựa trên zoom level thực tế
+    // Công thức: bán kính tỉ lệ nghịch với zoom level
+    // Zoom level càng cao (zoom in) thì bán kính càng nhỏ
+    const double baseRadius = 1000; // 1000m tại zoom level 15
+    const double baseZoom = 15.0;
+
+    // Tính bán kính theo công thức exponential
+    final double radius = baseRadius * math.pow(2, baseZoom - currentZoom);
+
+    // Đối với explore mode, sử dụng bán kính lớn hơn để tìm nhiều posts hơn
+    if (_currentMode == MapDisplayMode.explore) {
+      // Gấp đôi bán kính cho explore mode
+      final double exploreRadius = radius * 2;
+      // Tối thiểu 2km cho explore mode
+      return exploreRadius.clamp(2000, 1650000);
+    }
+
+    // Giới hạn từ 100m đến 1650km cho friends/feeds mode
+    return radius.clamp(100, 1650000);
+  }
+
+  // Lấy danh sách friend UIDs
+  List<String> _getFriendUids() {
+    final friendState = context.read<FriendBloc>().state;
+    if (friendState is FriendAndRequestsLoadSuccess) {
+      return friendState.friends.map((friend) => friend.uid).toList();
+    }
+    return [];
+  } // Xử lý chuyển đổi sang chế độ Friends
+
+  void _onToggleToFriends() {
+    if (_currentMode != MapDisplayMode.locations) {
+      setState(() => _currentMode = MapDisplayMode.locations);
+      _loadFriends();
+      // Load posts từ bạn bè nếu cần
+      final friendUids = _getFriendUids();
+      if (friendUids.isNotEmpty) {
+        context.read<NewsfeedBloc>().add(
+          LoadPostsFromFriends(friendUids: friendUids),
+        );
+      }
+    } else {
+      // Nếu đã ở chế độ Friends, chỉ cần auto fit bounds
+      _autoFitBoundsAfterDataLoad();
+    }
+  }
+
+  // Xử lý chuyển đổi sang chế độ Feeds
+  void _onToggleToFeeds() {
+    if (_currentMode != MapDisplayMode.friends) {
+      setState(() => _currentMode = MapDisplayMode.friends);
+
+      // Load posts từ mình và bạn bè
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthAuthenticated) {
+        final currentUserId = authState.user.uid;
+        final friendUids = _getFriendUids();
+
+        context.read<NewsfeedBloc>().add(
+          LoadFeedPosts(currentUserId: currentUserId, friendUids: friendUids),
+        );
+      }
+    } else {
+      // Nếu đã ở chế độ Feeds, chỉ cần auto fit bounds
+      _autoFitBoundsAfterDataLoad();
+    }
+  }
+
+  // Xử lý chuyển đổi sang chế độ Explore
+  void _onToggleToExplore() {
+    if (_currentMode != MapDisplayMode.explore) {
+      setState(() => _currentMode = MapDisplayMode.explore);
+      _loadPostsByLocation();
+    } else {
+      // Nếu đã ở chế độ Explore, chỉ cần auto fit bounds
+      _autoFitBoundsAfterDataLoad();
+    }
+  }
+
+  // Auto fit bounds sau khi load thành công data hoặc đổi chế độ
+  void _autoFitBoundsAfterDataLoad() {
+    // Delay một chút để đảm bảo data đã được update
+    final allPoints = <LatLng>[];
+
+    // Thêm vị trí hiện tại
+    if (_currentLocation != null) {
+      allPoints.add(_currentLocation!);
+    }
+
+    // Thêm vị trí dựa trên chế độ hiện tại
+    switch (_currentMode) {
+      case MapDisplayMode.locations:
+        // Thêm vị trí bạn bè (chỉ khi có bạn bè)
+        if (_friends.isNotEmpty) {
+          allPoints.addAll(
+            _friends
+                .where((friend) => friend.currentLocation != null)
+                .map(
+                  (friend) => LatLng(
+                    friend.currentLocation!.latitude,
+                    friend.currentLocation!.longitude,
+                  ),
+                ),
+          );
+        }
+        break;
+      case MapDisplayMode.friends:
+      case MapDisplayMode.explore:
+        // Thêm vị trí feed posts (chỉ khi có posts)
+        if (_feedPosts.isNotEmpty) {
+          allPoints.addAll(
+            _feedPosts
+                .where((post) => post.location != null)
+                .map(
+                  (post) =>
+                      LatLng(post.location!.latitude, post.location!.longitude),
+                ),
+          );
+        }
+        break;
+    }
+
+    // Chỉ fit bounds khi có ít nhất 2 điểm (để có bounds hợp lý)
+    if (allPoints.length >= 2) {
+      _fitBounds(allPoints);
+    }
+  }
+
+  // Load posts theo vị trí hiện tại
+  void _loadPostsByLocation() {
+    if (_currentLocation != null) {
+      // Tính bán kính dựa trên zoom level thực tế từ map controller
+      final radius = _calculateRadiusFromZoom();
+
+      // Nếu ở chế độ explore, lấy danh sách friend UIDs để loại trừ + current user ID
+      List<String>? excludeFriendUids;
+      String? currentUserId;
+
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthAuthenticated) {
+        currentUserId = authState.user.uid;
+      }
+
+      if (_currentMode == MapDisplayMode.explore) {
+        final friendState = context.read<FriendBloc>().state;
+        if (friendState is FriendAndRequestsLoadSuccess) {
+          excludeFriendUids = friendState.friends
+              .map((friend) => friend.uid)
+              .toList();
+        }
+      }
+
+      context.read<NewsfeedBloc>().add(
+        LoadPostsByLocation(
+          currentLat: _currentLocation!.latitude,
+          currentLng: _currentLocation!.longitude,
+          radiusInMeters: radius,
+          excludeFriendUids: excludeFriendUids,
+          currentUserId: currentUserId,
+        ),
+      );
     }
   }
 
@@ -123,40 +337,6 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
     }
   }
 
-  // Xử lý khi ấn nút fit bounds
-  void _onFitBoundsPressed() {
-    final allPoints = <LatLng>[];
-
-    // Thêm vị trí hiện tại
-    if (_currentLocation != null) {
-      allPoints.add(_currentLocation!);
-    }
-
-    // Thêm vị trí dựa trên chế độ hiện tại
-    if (_showFriends) {
-      // Thêm vị trí bạn bè
-      allPoints.addAll(
-        _friends.map(
-          (friend) => LatLng(
-            friend.currentLocation!.latitude,
-            friend.currentLocation!.longitude,
-          ),
-        ),
-      );
-    } else {
-      // Thêm vị trí feed posts
-      allPoints.addAll(
-        _feedPosts.map(
-          (post) => LatLng(post.location!.latitude, post.location!.longitude),
-        ),
-      );
-    }
-
-    if (allPoints.isNotEmpty) {
-      _fitBounds(allPoints);
-    }
-  }
-
   // Xử lý khi ấn nút my location
   void _onMyLocationPressed() {
     if (_currentLocation != null) {
@@ -177,6 +357,12 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
     }
   }
 
+  // Xử lý khi ấn nút reset rotation - xoay bản đồ về hướng Bắc
+  void _onResetRotationPressed() {
+    // Reset rotation về 0 (hướng Bắc) với animation
+    _mapController.animatedRotateReset();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MapBlocListeners(
@@ -187,15 +373,33 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
         // Tự động di chuyển camera đến vị trí hiện tại khi lần đầu lấy được vị trí
         if (isFirstLocation && location != null) {
           Future.delayed(const Duration(milliseconds: 300), () {
-            _mapController.animateTo(dest: location, zoom: 16.0);
+            _autoFitBoundsAfterDataLoad();
           });
         }
       },
       onFriendsChanged: (friends) {
         setState(() => _friends = friends);
+        // Auto fit bounds sau khi load thành công friends
+        _autoFitBoundsAfterDataLoad();
       },
       onFeedPostsChanged: (feedPosts) {
         setState(() => _feedPosts = feedPosts);
+        switch (_currentMode) {
+          case MapDisplayMode.locations:
+          case MapDisplayMode.friends:
+            // Khi ở chế độ locations hoặc friends, chỉ cần fit bounds nếu có friends
+            if (_friends.isNotEmpty) {
+              _autoFitBoundsAfterDataLoad();
+            }
+            break;
+          case MapDisplayMode.explore:
+            // Khi ở chế độ explore, fit bounds với feed posts
+            if (_feedPosts.isNotEmpty && _firstTimeLoadExplore) {
+              _firstTimeLoadExplore = false; // Chỉ fit bounds lần đầu
+              _autoFitBoundsAfterDataLoad();
+            }
+            break;
+        }
       },
       child: Stack(
         children: [
@@ -206,7 +410,8 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
             defaultLocation: _defaultLocation,
             friends: _friends,
             feedPosts: _feedPosts,
-            showFriends: _showFriends,
+            currentMode: _currentMode,
+            onMapPositionChanged: _onMapPositionChanged,
           ),
 
           // Nút quay lại
@@ -219,28 +424,16 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
             right: 0,
             child: Center(
               child: MapToggleSwitch(
-                showFriends: _showFriends,
-                onToggleToFriends: () {
-                  if (!_showFriends) {
-                    setState(() => _showFriends = true);
-                  }
-                },
-                onToggleToFeeds: () {
-                  if (_showFriends) {
-                    setState(() => _showFriends = false);
-                    _loadFeedPosts();
-                  }
-                },
+                currentMode: _currentMode,
+                onToggleToLocations: _onToggleToFriends,
+                onToggleToFriends: _onToggleToFeeds,
+                onToggleToExplore: _onToggleToExplore,
               ),
             ),
           ),
-
           // Floating action buttons
           MapFloatingActionButtons(
-            showFitBoundsButton:
-                (_showFriends && _friends.isNotEmpty) ||
-                (!_showFriends && _feedPosts.isNotEmpty),
-            onFitBoundsPressed: _onFitBoundsPressed,
+            onResetRotationPressed: _onResetRotationPressed,
             onMyLocationPressed: _onMyLocationPressed,
           ),
 
@@ -287,6 +480,7 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _mapController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
   }
 }

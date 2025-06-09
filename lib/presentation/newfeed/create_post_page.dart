@@ -12,7 +12,7 @@ import '../core/widgets/common_appbar.dart';
 import '../core/widgets/common_button.dart';
 import '../core/widgets/common_scaffold.dart';
 import '../core/widgets/common_textfield.dart';
-import '../newfeed/bloc/newsfeed_bloc.dart';
+import 'bloc/newsfeed_bloc.dart';
 
 class CreatePostPage extends StatefulWidget {
   const CreatePostPage({super.key});

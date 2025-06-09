@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:minecraft_compass/models/user_model.dart';
-import 'package:minecraft_compass/presentation/create_post/create_post_page.dart';
+import 'package:minecraft_compass/presentation/newfeed/create_post_page.dart';
 import 'package:minecraft_compass/presentation/profile/edit_profile_page.dart';
 import 'package:minecraft_compass/presentation/splash/splash_page.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
