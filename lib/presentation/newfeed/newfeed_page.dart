@@ -38,7 +38,7 @@ class _NewFeedPageState extends State<NewFeedPage> {
       }
 
       context.read<NewsfeedBloc>().add(
-        LoadFeedPosts(currentUserId: currentUserId, friendUids: friendUids),
+        LoadFriendPosts(currentUserId: currentUserId, friendUids: friendUids),
       );
     } else {
       // Fallback nếu chưa authenticated

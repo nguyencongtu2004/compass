@@ -5,6 +5,7 @@ import 'package:minecraft_compass/presentation/compass/bloc/compass_bloc.dart';
 import 'package:minecraft_compass/presentation/newfeed/bloc/newsfeed_bloc.dart';
 import '../presentation/profile/bloc/profile_bloc.dart';
 import '../presentation/friend/bloc/friend_bloc.dart';
+import '../presentation/map/bloc/map_bloc.dart';
 
 /// Service để xử lý logic khởi tạo dữ liệu sau khi đăng nhập
 class AppInitialization {
@@ -17,12 +18,13 @@ class AppInitialization {
     context.read<FriendBloc>().add(LoadFriendsAndRequests(user.uid));
 
     // Load newsfeed posts
-    context.read<NewsfeedBloc>().add(const LoadPosts());
-
-    // Load compass data
+    context.read<NewsfeedBloc>().add(const LoadPosts()); // Load compass data
     context.read<CompassBloc>().add(
       GetCurrentLocationAndUpdate(uid: user.uid),
     );
+
+    // Initialize map data
+    context.read<MapBloc>().add(const MapInitialized());
   }
 
   /// Reset dữ liệu khi người dùng đăng xuất
@@ -31,10 +33,13 @@ class AppInitialization {
     context.read<ProfileBloc>().add(const ProfileResetRequested());
 
     // Reset friend data
-    context.read<FriendBloc>().add(const FriendResetRequested());
-
-    // Reset newsfeed data
+    context.read<FriendBloc>().add(
+      const FriendResetRequested(),
+    ); // Reset newsfeed data
     context.read<NewsfeedBloc>().add(const NewsfeedResetRequested());
+
+    // Reset map data
+    context.read<MapBloc>().add(const MapResetRequested());
   }
 
   /// Kiểm tra xem dữ liệu đã được khởi tạo hoàn tất chưa
@@ -42,6 +47,7 @@ class AppInitialization {
     final profileState = context.read<ProfileBloc>().state;
     final friendState = context.read<FriendBloc>().state;
     final newsfeedState = context.read<NewsfeedBloc>().state;
+    final mapState = context.read<MapBloc>().state;
 
     final profileLoaded =
         profileState is ProfileLoaded || profileState is ProfileError;
@@ -52,6 +58,8 @@ class AppInitialization {
     final newsfeedLoaded =
         newsfeedState is PostsLoaded || newsfeedState is NewsfeedError;
 
-    return profileLoaded && friendLoaded && newsfeedLoaded;
+    final mapLoaded = mapState is MapReady || mapState is MapError;
+
+    return profileLoaded && friendLoaded && newsfeedLoaded && mapLoaded;
   }
 }

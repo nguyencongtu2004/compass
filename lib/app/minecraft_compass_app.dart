@@ -7,6 +7,7 @@ import 'package:minecraft_compass/presentation/friend/bloc/friend_bloc.dart';
 import 'package:minecraft_compass/presentation/compass/bloc/compass_bloc.dart';
 import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
 import 'package:minecraft_compass/presentation/newfeed/bloc/newsfeed_bloc.dart';
+import 'package:minecraft_compass/presentation/map/bloc/map_bloc.dart';
 import 'package:minecraft_compass/data/repositories/location_repository.dart';
 import 'package:minecraft_compass/router/app_router.dart';
 
@@ -28,6 +29,13 @@ class MinecraftCompassApp extends StatelessWidget {
         BlocProvider(
           create: (context) =>
               NewsfeedBloc(profileBloc: context.read<ProfileBloc>()),
+        ),
+        BlocProvider(
+          create: (context) => MapBloc(
+            authBloc: context.read<AuthBloc>(),
+            friendBloc: context.read<FriendBloc>(),
+            newsfeedBloc: context.read<NewsfeedBloc>(),
+          ),
         ),
       ],
       child: MaterialApp.router(

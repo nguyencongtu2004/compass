@@ -77,6 +77,20 @@ class LoadPostsFromFriends extends NewsfeedEvent {
   List<Object?> get props => [friendUids];
 }
 
+class LoadFriendPosts extends NewsfeedEvent {
+  final String currentUserId;
+  final List<String> friendUids;
+
+  const LoadFriendPosts({
+    required this.currentUserId,
+    required this.friendUids,
+  });
+
+  @override
+  List<Object?> get props => [currentUserId, friendUids];
+}
+
+// Event để load posts từ mình và bạn bè (tương thích với MapBloc)
 class LoadFeedPosts extends NewsfeedEvent {
   final String currentUserId;
   final List<String> friendUids;
