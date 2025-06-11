@@ -7,10 +7,11 @@ class CommonScaffold extends StatelessWidget {
   final Widget? floatingActionButton;
   final List<Widget>? actions;
   final Widget? drawer;
-  final PreferredSizeWidget? appBar;
+  final Widget? appBar;
   final Widget? bottomNavigationBar;
   final bool resizeToAvoidBottomInset;
   final bool isLoading;
+  final bool isAppBarOverlay;
 
   const CommonScaffold({
     super.key,
@@ -23,29 +24,28 @@ class CommonScaffold extends StatelessWidget {
     this.bottomNavigationBar,
     this.resizeToAvoidBottomInset = true,
     this.isLoading = false,
+    this.isAppBarOverlay = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return Stack(
       children: [
-        Scaffold(
-          appBar: appBar,
-          bottomNavigationBar: bottomNavigationBar,
-          body: body,
-          floatingActionButton: floatingActionButton,
-          drawer: drawer,
-          resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-        ),
-        if (isLoading)
-          Container(
-            color: Colors.black.withValues(alpha: 0.4),
-            child: Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primary(context),
-              ),
-            ),
+        Positioned.fill(
+          child: Scaffold(
+            appBar: isAppBarOverlay ? null : appBar as PreferredSizeWidget?,
+            bottomNavigationBar: bottomNavigationBar,
+            body: body,
+            floatingActionButton: floatingActionButton,
+            drawer: drawer,
+            resizeToAvoidBottomInset: resizeToAvoidBottomInset,
           ),
+        ),
+        if (isAppBarOverlay && appBar != null)
+          Positioned(top: 0, left: 0, right: 0, child: appBar!),
       ],
     );
   }

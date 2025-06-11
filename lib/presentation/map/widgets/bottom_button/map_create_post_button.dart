@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../../router/app_routes.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../../router/app_routes.dart';
 
 class MapCreatePostButton extends StatelessWidget {
   const MapCreatePostButton({super.key});
+
+  void _onCreatePostPressed(BuildContext context) {
+    context.push(AppRoutes.createPostRoute);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,7 @@ class MapCreatePostButton extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => context.push(AppRoutes.createPostRoute),
+            onTap: () => _onCreatePostPressed(context),
             borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
             child: Padding(
               padding: const EdgeInsets.symmetric(

@@ -6,7 +6,6 @@ import 'package:minecraft_compass/presentation/core/widgets/common_appbar.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/presentation/core/widgets/keep_alive_wrapper.dart';
-import 'package:minecraft_compass/presentation/compass/compass_page.dart';
 import 'package:minecraft_compass/presentation/map/map_page.dart';
 import 'package:minecraft_compass/presentation/newfeed/newfeed_page.dart';
 import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
@@ -31,7 +30,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late PageController _pageController;
   late PageController _midPageController;
-  String page1Title = 'Bản tin';
+  String page1Title = 'Bản đồ';
   @override
   void initState() {
     super.initState();
@@ -105,8 +104,10 @@ class _HomePageState extends State<HomePage> {
           // Trang 1: Compass (giữa - mặc định)
           KeepAliveWrapper(
             child: CommonScaffold(
+              isAppBarOverlay: true,
               appBar: CommonAppbar(
                 title: page1Title,
+                isBackgroudTransparentGradient: true,
                 leftWidget: GestureDetector(
                   onTap: () => _goToPage(0),
                   child: BlocBuilder<ProfileBloc, ProfileState>(
@@ -132,6 +133,9 @@ class _HomePageState extends State<HomePage> {
                 scrollDirection: Axis.vertical,
                 children: [
                   MapPage(
+                    // Chiều cao toolbar + status bar
+                    paddingTop:
+                        kToolbarHeight + MediaQuery.of(context).padding.top,
                     onBackPressed: () {
                       // Quay lại trang la bàn
                       _midPageController.animateToPage(
@@ -141,7 +145,12 @@ class _HomePageState extends State<HomePage> {
                       );
                     },
                   ),
-                  KeepAliveWrapper(child: NewFeedPage()),
+                  KeepAliveWrapper(
+                    child: NewFeedPage(
+                      paddingTop:
+                          kToolbarHeight + MediaQuery.of(context).padding.top,
+                    ),
+                  ),
                   // KeepAliveWrapper(
                   //   child: CompassPage(
                   //     targetLat: double.tryParse(

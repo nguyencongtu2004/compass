@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:minecraft_compass/models/marker_cluster.dart';
 import 'package:minecraft_compass/models/newsfeed_post_model.dart';
 import 'package:minecraft_compass/models/user_model.dart';
 
-import 'map_markers.dart';
+import 'marker/map_markers.dart';
 import 'map_toggle_switch.dart';
+import 'post_detail/single_post_detail_bottom_sheet.dart';
+import 'post_detail/cluster_post_detail_bottom_sheet.dart';
 
-class MapWidget extends StatelessWidget {
+class MapWidget extends StatefulWidget {
   final AnimatedMapController mapController;
   final LatLng? currentLocation;
   final LatLng defaultLocation;
@@ -29,23 +32,41 @@ class MapWidget extends StatelessWidget {
   });
 
   @override
+  State<MapWidget> createState() => _MapWidgetState();
+}
+
+class _MapWidgetState extends State<MapWidget> {
+  double _currentZoom = 15.0;
+
+  void _handleClusterTap(MarkerCluster cluster) {
+    if (cluster.count == 1) {
+      // Single post - hiển thị post detail bottom sheet
+      SinglePostDetailBottomSheet.show(context, cluster.posts.first);
+    } else {
+      // Multiple posts - hiển thị cluster detail bottom sheet
+      ClusterPostDetailBottomSheet.show(context, cluster.posts);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: FlutterMap(
-        mapController: mapController.mapController,
+        mapController: widget.mapController.mapController,
         options: MapOptions(
-          initialCenter: currentLocation ?? defaultLocation,
+          initialCenter: widget.currentLocation ?? widget.defaultLocation,
           initialZoom: 15.0,
-          minZoom: 5.0,
-          maxZoom: 30.0,
+          minZoom: 3.0,
+          maxZoom: 20.0,
           keepAlive: true,
           interactionOptions: const InteractionOptions(
             flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
           ),
-          onPositionChanged: onMapPositionChanged != null
+          onPositionChanged: widget.onMapPositionChanged != null
               ? (camera, hasGesture) {
                   if (hasGesture) {
-                    onMapPositionChanged!(camera.center, camera.zoom);
+                    setState(() => _currentZoom = camera.zoom);
+                    widget.onMapPositionChanged!(camera.center, camera.zoom);
                   }
                 }
               : null,
@@ -55,10 +76,12 @@ class MapWidget extends StatelessWidget {
           MarkerLayer(
             markers: MapMarkersBuilder.buildMarkers(
               context: context,
-              currentLocation: currentLocation,
-              friends: friends,
-              feedPosts: feedPosts,
-              currentMode: currentMode,
+              currentLocation: widget.currentLocation,
+              friends: widget.friends,
+              feedPosts: widget.feedPosts,
+              currentMode: widget.currentMode,
+              currentZoom: _currentZoom,
+              onClusterTap: _handleClusterTap,
             ),
           ),
         ],
@@ -70,8 +93,8 @@ class MapWidget extends StatelessWidget {
     return TileLayer(
       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       userAgentPackageName: 'com.nctu.minecraft_compass',
-      maxZoom: 19,
-      minZoom: 5,
+      maxZoom: 30,
+      minZoom: 0,
       tileBuilder: Theme.of(context).brightness == Brightness.dark
           ? (context, tileWidget, tile) {
               return ColorFiltered(

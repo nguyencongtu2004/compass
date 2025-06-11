@@ -3,18 +3,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:minecraft_compass/models/user_model.dart';
 
 import '../compass/bloc/compass_bloc.dart';
-import '../core/theme/app_spacing.dart';
 import 'bloc/map_bloc.dart';
-import 'widgets/map_create_post_button.dart';
-import 'widgets/map_floating_action_buttons.dart';
+import 'widgets/bottom_button/map_bottom_action_widget.dart';
+import 'widgets/bottom_button/map_floating_action_buttons.dart';
 import 'widgets/map_toggle_switch.dart';
 import 'widgets/map_widget.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({super.key, required this.onBackPressed});
+  const MapPage({
+    super.key,
+    required this.onBackPressed,
+    this.paddingTop = 0.0,
+  });
+
   final Function onBackPressed;
+  final double paddingTop;
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -27,10 +33,10 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _mapController = AnimatedMapController(vsync: this);
-    
+
     // Khởi tạo MapBloc
     context.read<MapBloc>().add(const MapInitialized());
-    
+
     // Lắng nghe vị trí từ CompassBloc
     _initializeLocationListener();
   }
@@ -51,6 +57,7 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
       context.read<CompassBloc>().add(const RefreshCurrentLocation());
     }
   }
+
   // Xử lý chuyển đổi sang chế độ Locations (xem vị trí bạn bè và mình)
   void _onToggleToLocations() {
     context.read<MapBloc>().add(const MapModeChanged(MapDisplayMode.locations));
@@ -87,6 +94,30 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
   void _onResetRotationPressed() {
     // Reset rotation về 0 (hướng Bắc) với animation
     _mapController.animatedRotateReset();
+  }
+
+  void _onFriendTap(UserModel friend) {
+    if (friend.currentLocation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${friend.displayName} chưa có thông tin vị trí'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+        ),
+      );
+      return;
+    }
+    // Animation đến vị trí của bạn bè
+    _mapController.animateTo(
+      dest: LatLng(
+        friend.currentLocation!.latitude,
+        friend.currentLocation!.longitude,
+      ),
+      zoom: 16.0,
+    );
   }
 
   // Helper method để fit camera vào bounds của các điểm
@@ -190,7 +221,7 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
 
               // Toggle switch ở giữa top
               Positioned(
-                top: AppSpacing.md,
+                top: widget.paddingTop,
                 left: 0,
                 right: 0,
                 child: Center(
@@ -207,15 +238,12 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
               MapFloatingActionButtons(
                 onResetRotationPressed: _onResetRotationPressed,
                 onMyLocationPressed: _onMyLocationPressed,
+                isBottomWidgetExpanded:
+                    mapState.currentMode == MapDisplayMode.locations,
               ),
 
-              // Create post button
-              const Positioned(
-                bottom: AppSpacing.md,
-                left: 0,
-                right: 0,
-                child: MapCreatePostButton(),
-              ),
+              // Bottom action widget (Create post button or Friends list)
+              MapBottomActionWidget(onFriendTap: _onFriendTap),
             ],
           );
         },

@@ -51,7 +51,6 @@ class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
         // TODO: Handle auth state changes if needed
       }),
     );
-
     addSubscription(
       _friendBloc.stream.listen((friendState) {
         if (friendState is FriendAndRequestsLoadSuccess) {
@@ -63,6 +62,25 @@ class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
               )
               .toList();
           add(MapFriendsUpdated(friends));
+
+          // Nếu đang ở chế độ friends, tự động load posts của bạn bè
+          if (state is MapReady) {
+            final currentState = state as MapReady;
+            if (currentState.currentMode == MapDisplayMode.friends) {
+              final authState = _authBloc.state;
+              if (authState is AuthAuthenticated) {
+                final friendUids = friendState.friends
+                    .map((friend) => friend.uid)
+                    .toList();
+                _newsfeedBloc.add(
+                  LoadFriendPosts(
+                    currentUserId: authState.user.uid,
+                    friendUids: friendUids,
+                  ),
+                );
+              }
+            }
+          }
         }
       }),
     );
@@ -79,7 +97,6 @@ class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
       }),
     );
   }
-
   void _onMapInitialized(MapInitialized event, Emitter<MapState> emit) async {
     emit(const MapLoading());
 
@@ -92,12 +109,15 @@ class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
           defaultLocation: defaultLocation,
           friends: const [],
           feedPosts: const [],
-          currentMode: MapDisplayMode.locations,
+          currentMode: MapDisplayMode.friends,
           firstTimeLoadExplore: true,
           boundsPoints: const [],
           shouldAutoFitBounds: false,
         ),
       );
+
+      // Load data tương ứng với mode mặc định (friends)
+      _loadDataForMode(MapDisplayMode.friends);
     } catch (e) {
       emit(MapError('Không thể khởi tạo map: ${e.toString()}'));
     }
@@ -298,18 +318,23 @@ class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
         // Load friends locations - chỉ cần load friends, không cần posts
         _friendBloc.add(LoadFriendsAndRequests(currentUserId));
         break;
-
       case MapDisplayMode.friends:
-        // Load posts từ mình và bạn bè - sử dụng LoadFriendPosts
+        // Load friends trước, sau đó posts sẽ được load tự động thông qua listener
+        _friendBloc.add(LoadFriendsAndRequests(currentUserId));
+        
+        // Nếu friends đã được load rồi thì load posts ngay
         final friendState = _friendBloc.state;
-        List<String> friendUids = [];
         if (friendState is FriendAndRequestsLoadSuccess) {
-          friendUids = friendState.friends.map((friend) => friend.uid).toList();
+          final friendUids = friendState.friends
+              .map((friend) => friend.uid)
+              .toList();
+          _newsfeedBloc.add(
+            LoadFriendPosts(
+              currentUserId: currentUserId,
+              friendUids: friendUids,
+            ),
+          );
         }
-
-        _newsfeedBloc.add(
-          LoadFriendPosts(currentUserId: currentUserId, friendUids: friendUids),
-        );
         break;
 
       case MapDisplayMode.explore:

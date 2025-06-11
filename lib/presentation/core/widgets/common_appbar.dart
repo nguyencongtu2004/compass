@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_text_styles.dart';
 
@@ -6,42 +7,60 @@ class CommonAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final Widget? leftWidget;
   final Widget? rightWidget;
+  final bool isBackgroudTransparentGradient;
 
   const CommonAppbar({
     super.key,
     required this.title,
     this.leftWidget,
     this.rightWidget,
+    this.isBackgroudTransparentGradient = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Row(
-        spacing: AppSpacing.sm,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: AppSpacing.md),
-            child: SizedBox(
-              width: AppSpacing.lg2,
-              height: AppSpacing.lg2,
-              child: leftWidget ?? const SizedBox(),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: isBackgroudTransparentGradient
+            ? const LinearGradient(
+                colors: [Colors.black87, Colors.transparent],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              )
+            : null,
+        color: isBackgroudTransparentGradient
+            ? null
+            : AppColors.surface(context),
+      ),
+      child: SafeArea(
+        child: Row(
+          spacing: AppSpacing.sm,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: AppSpacing.md),
+              child: SizedBox(
+                width: AppSpacing.lg2,
+                height: AppSpacing.lg2,
+                child: leftWidget ?? const SizedBox(),
+              ),
             ),
-          ),
 
-          Expanded(
-            child: Center(child: Text(title, style: AppTextStyles.titleLarge)),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.only(right: AppSpacing.md),
-            child: SizedBox(
-              width: AppSpacing.lg2,
-              height: AppSpacing.lg2,
-              child: rightWidget ?? const SizedBox(),
+            Expanded(
+              child: Center(
+                child: Text(title, style: AppTextStyles.titleLarge),
+              ),
             ),
-          ),
-        ],
+
+            Padding(
+              padding: const EdgeInsets.only(right: AppSpacing.md),
+              child: SizedBox(
+                width: AppSpacing.lg2,
+                height: AppSpacing.lg2,
+                child: rightWidget ?? const SizedBox(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
