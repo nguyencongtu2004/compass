@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// App spacing constants based on a consistent scale
 abstract class AppSpacing {
   // Base spacing unit (8px)
@@ -80,4 +82,9 @@ abstract class AppSpacing {
   static const double compassSize = _baseUnit * 31.25; // 250px
   static const double compassNeedleLength = _baseUnit * 12.5; // 100px
   static const double compassRingWidth = _baseUnit * 0.5; // 4px
+
+  /// Calculate the height of the toolbar including the status bar
+  static double toolBarHeight(BuildContext context) {
+    return kToolbarHeight + MediaQuery.of(context).padding.top;
+  }
 }

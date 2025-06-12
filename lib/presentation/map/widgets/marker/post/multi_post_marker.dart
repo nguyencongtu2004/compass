@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:minecraft_compass/models/marker_cluster.dart';
 import 'package:minecraft_compass/models/newsfeed_post_model.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_cached_network_image.dart';
 import 'dart:math' as math;
 
 /// Widget cho multi post cluster marker
@@ -124,45 +125,41 @@ class MultiPostMarker extends StatelessWidget {
     }
 
     return Positioned(
-      left:
-          60 +
-          offsetX -
-          (80 * scale) / 2, // Center với offset, tăng kích thước ảnh
-      top: 60 + offsetY - (80 * scale) / 2, // Center với offset
-      child: Transform.rotate(
-        angle: rotation,
-        child: Transform.scale(
-          scale: scale,
-          child: Container(
-            width: 80, // Tăng kích thước ảnh từ 60 lên 80
-            height: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white,
-                width: 4, // Tăng độ dày border
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.4),
-                  blurRadius: 6,
-                  spreadRadius: 2,
-                  offset: Offset(0, 3),
+      // Center với offset, tăng kích thước ảnh
+      left: 60 + offsetX - (80 * scale) / 2,
+      // Center với offset
+      top: 60 + offsetY - (80 * scale) / 2, 
+      child: Hero(
+        tag: '${post.id}_$index',
+        child: Transform.rotate(
+          angle: rotation,
+          child: Transform.scale(
+            scale: scale,
+            child: Container(
+              width: 80, // Tăng kích thước ảnh từ 60 lên 80
+              height: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 4, // Tăng độ dày border
                 ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                post.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (_, url, error) => Container(
-                  color: AppColors.surfaceVariant(context),
-                  child: Icon(
-                    Icons.image,
-                    color: AppColors.onSurfaceVariant(context),
-                    size: 40, // Tăng kích thước icon
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.4),
+                    blurRadius: 6,
+                    spreadRadius: 2,
+                    offset: Offset(0, 3),
                   ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CommonCachedNetworkImage(
+                  imageUrl: post.imageUrl,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
                 ),
               ),
             ),

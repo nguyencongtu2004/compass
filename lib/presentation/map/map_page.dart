@@ -116,7 +116,6 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
         friend.currentLocation!.latitude,
         friend.currentLocation!.longitude,
       ),
-      zoom: 16.0,
     );
   }
 

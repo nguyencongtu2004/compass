@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:minecraft_compass/models/newsfeed_post_model.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_cached_network_image.dart';
 import '../../../../core/theme/app_colors.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_text_styles.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:minecraft_compass/utils/format_utils.dart';
 import '../../../../core/theme/app_spacing.dart';
 
@@ -19,41 +19,20 @@ class FeedMarker extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         // Hình ảnh feed post
-        Container(
+        CommonCachedNetworkImage(
+          imageUrl: post.imageUrl.isNotEmpty ? post.imageUrl : '',
+          border: Border.all(color: AppColors.primary(context), width: 2),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.onSurface(context).withValues(alpha: 0.2),
+              blurRadius: 8,
+              spreadRadius: 1,
+            ),
+          ],
           width: 80,
           height: 80,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.primary(context), width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.onSurface(context).withValues(alpha: 0.2),
-                blurRadius: 8,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: CachedNetworkImage(
-              imageUrl: post.imageUrl.isNotEmpty ? post.imageUrl : '',
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: AppColors.surfaceVariant(context),
-                child: Icon(
-                  Icons.image,
-                  color: AppColors.onSurfaceVariant(context),
-                ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: AppColors.surfaceVariant(context),
-                child: Icon(
-                  Icons.broken_image,
-                  color: AppColors.onSurfaceVariant(context),
-                ),
-              ),
-            ),
-          ),
+          fit: BoxFit.cover,
         ),
         const SizedBox(height: AppSpacing.xs),
 

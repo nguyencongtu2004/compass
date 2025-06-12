@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_cached_network_image.dart';
 import 'package:minecraft_compass/utils/format_utils.dart';
 import '../../../models/newsfeed_post_model.dart';
 import '../../core/theme/app_colors.dart';
@@ -79,49 +80,17 @@ class PostCard extends StatelessWidget {
           ],
 
           // Image
-          ClipRRect(
+          CommonCachedNetworkImage(
+            imageUrl: post.imageUrl,
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(AppSpacing.radiusLg),
               bottomRight: Radius.circular(AppSpacing.radiusLg),
             ),
-            child: CachedNetworkImage(
-              imageUrl: post.imageUrl,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                height: 300,
-                color: AppColors.surfaceVariant(context),
-                child: Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.primary(context),
-                    ),
-                  ),
-                ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                height: 300,
-                color: AppColors.surfaceVariant(context),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.error,
-                      color: AppColors.error(context),
-                      size: 48,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    Text(
-                      'Không thể tải ảnh',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.error(context),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ), // Location info (if exists)
+            width: double.infinity,
+            fit: BoxFit.cover,
+          ),
+
+          // Location info (if exists)
           if (post.location != null) ...[
             Padding(
               padding: const EdgeInsets.all(AppSpacing.md),

@@ -8,8 +8,7 @@ import 'package:minecraft_compass/models/user_model.dart';
 
 import 'marker/map_markers.dart';
 import 'map_toggle_switch.dart';
-import 'post_detail/single_post_detail_bottom_sheet.dart';
-import 'post_detail/cluster_post_detail_bottom_sheet.dart';
+import 'post_detail/modern_post_overlay.dart';
 
 class MapWidget extends StatefulWidget {
   final AnimatedMapController mapController;
@@ -37,15 +36,8 @@ class MapWidget extends StatefulWidget {
 
 class _MapWidgetState extends State<MapWidget> {
   double _currentZoom = 15.0;
-
   void _handleClusterTap(MarkerCluster cluster) {
-    if (cluster.count == 1) {
-      // Single post - hiển thị post detail bottom sheet
-      SinglePostDetailBottomSheet.show(context, cluster.posts.first);
-    } else {
-      // Multiple posts - hiển thị cluster detail bottom sheet
-      ClusterPostDetailBottomSheet.show(context, cluster.posts);
-    }
+    ModernPostOverlay.showMultiplePosts(context, cluster.posts);
   }
 
   @override

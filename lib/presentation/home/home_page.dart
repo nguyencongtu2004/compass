@@ -134,8 +134,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   MapPage(
                     // Chiều cao toolbar + status bar
-                    paddingTop:
-                        kToolbarHeight + MediaQuery.of(context).padding.top,
+                    paddingTop: AppSpacing.toolBarHeight(context),
                     onBackPressed: () {
                       // Quay lại trang la bàn
                       _midPageController.animateToPage(
@@ -147,8 +146,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   KeepAliveWrapper(
                     child: NewFeedPage(
-                      paddingTop:
-                          kToolbarHeight + MediaQuery.of(context).padding.top,
+                      paddingTop: AppSpacing.toolBarHeight(context),
                     ),
                   ),
                   // KeepAliveWrapper(

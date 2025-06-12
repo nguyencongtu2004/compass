@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
 
 class CommonScaffold extends StatelessWidget {
   final String? title;
