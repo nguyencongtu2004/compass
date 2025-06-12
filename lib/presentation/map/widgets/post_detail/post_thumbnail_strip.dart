@@ -4,30 +4,17 @@ import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_cached_network_image.dart';
 
-class PostThumbnailStrip extends StatefulWidget {
+class PostThumbnailStrip extends StatelessWidget {
   const PostThumbnailStrip({
     super.key,
     required this.posts,
-    required this.currentIndex,
     required this.onThumbnailTap,
+    required this.currentIndex,
   });
 
   final List<NewsfeedPost> posts;
   final int currentIndex;
   final void Function(int) onThumbnailTap;
-
-  @override
-  State<PostThumbnailStrip> createState() => _PostThumbnailStripState();
-}
-
-class _PostThumbnailStripState extends State<PostThumbnailStrip> {
-  int _currentIndex = 0;
-
-  @override
-  void initState() {
-    _currentIndex = widget.currentIndex;
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +23,12 @@ class _PostThumbnailStripState extends State<PostThumbnailStrip> {
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-        itemCount: widget.posts.length,
+        itemCount: posts.length,
         itemBuilder: (context, index) {
-          final post = widget.posts[index];
-          final isSelected = index == _currentIndex;
+          final post = posts[index];
+          final isSelected = index == currentIndex;
           return GestureDetector(
-            onTap: () {
-              setState(() => _currentIndex = index);
-              widget.onThumbnailTap(index);
-            },
+            onTap: () => onThumbnailTap(index),
             child: Container(
               width: 80,
               height: 80, // Đảm bảo container cũng có chiều cao cố định

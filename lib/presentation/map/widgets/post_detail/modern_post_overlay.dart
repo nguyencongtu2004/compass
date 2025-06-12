@@ -64,7 +64,7 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
   void _onThumbnailTap(int index) => _pageController.animateToPage(
     index,
     duration: const Duration(milliseconds: 300),
-    curve: Curves.easeInOutCirc,
+    curve: Curves.easeInOutCubicEmphasized,
   );
 
   void _sendMessage(BuildContext context) {
