@@ -5,6 +5,7 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:minecraft_compass/models/user_model.dart';
 
+import '../../data/services/shared_preferences_service.dart';
 import '../compass/bloc/compass_bloc.dart';
 import 'bloc/map_bloc.dart';
 import 'widgets/bottom_button/map_bottom_action_widget.dart';
@@ -28,7 +29,6 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
   late final AnimatedMapController _mapController;
-
   @override
   void initState() {
     super.initState();
@@ -81,13 +81,18 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
   // Xử lý khi ấn nút my location
   void _onMyLocationPressed() {
     final mapState = context.read<MapBloc>().state;
-    if (mapState is MapReady && mapState.currentLocation != null) {
-      // Di chuyển đến vị trí hiện tại với animation mượt
-      _mapController.animateTo(dest: mapState.currentLocation!, zoom: 16.0);
-    } else {
-      // Yêu cầu lấy vị trí hiện tại
-      context.read<CompassBloc>().add(const RefreshCurrentLocation());
+    if (mapState is MapReady) {
+      // Ưu tiên vị trí hiện tại từ GPS, nếu không có thì dùng cached user location
+      final userLocation =
+          mapState.currentLocation ?? mapState.cachedUserLocation;
+      if (userLocation != null) {
+        // Di chuyển đến vị trí người dùng với animation mượt
+        _mapController.animateTo(dest: userLocation);
+        return;
+      }
     }
+    // Yêu cầu lấy vị trí hiện tại nếu không có vị trí nào
+    context.read<CompassBloc>().add(const RefreshCurrentLocation());
   }
 
   // Xử lý khi ấn nút reset rotation - xoay bản đồ về hướng Bắc
@@ -120,7 +125,7 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
   }
 
   // Helper method để fit camera vào bounds của các điểm
-  void _fitBounds(List<LatLng> points) {
+  void _fitBounds(List<LatLng> points) async {
     if (points.isEmpty) return;
 
     double minLat = points.first.latitude;
@@ -136,6 +141,22 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
     }
 
     final bounds = LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
+
+    // Tính toán center và zoom level cho fitBounds
+    final center = bounds.center;
+    final double targetZoom = _mapController.mapController.camera.zoom;
+
+    // Lưu thông tin fitBounds xuống local storage trước khi thực hiện animation
+    try {
+      await SharedPreferencesService.cacheFitBounds(
+        center.latitude,
+        center.longitude,
+        targetZoom,
+      );
+    } catch (e) {
+      // Ignore cache errors, không ảnh hưởng đến functionality chính
+      debugPrint('Error caching fitBounds: $e');
+    }
 
     // Sử dụng animatedFitCamera với animation mượt mà và giới hạn zoom tối đa
     _mapController.animatedFitCamera(
@@ -203,18 +224,20 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
           if (mapState is! MapReady) {
             return const Center(child: CircularProgressIndicator());
           }
-
           return Stack(
             children: [
               // Map widget
               MapWidget(
                 mapController: _mapController,
                 currentLocation:
-                    mapState.currentLocation ?? mapState.defaultLocation,
+                    mapState.currentLocation ??
+                    mapState.cachedUserLocation ??
+                    mapState.defaultLocation,
                 defaultLocation: mapState.defaultLocation,
                 friends: mapState.friends,
                 feedPosts: mapState.feedPosts,
                 currentMode: mapState.currentMode,
+                initialZoom: mapState.initialZoom,
                 onMapPositionChanged: _onMapPositionChanged,
               ),
 

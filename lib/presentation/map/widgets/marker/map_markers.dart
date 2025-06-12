@@ -14,7 +14,7 @@ import '../map_toggle_switch.dart';
 class MapMarkersBuilder {
   static List<Marker> buildMarkers({
     required BuildContext context,
-    required LatLng? currentLocation,
+    required LatLng? currentUserLocation,
     required List<UserModel> friends,
     required List<NewsfeedPost> feedPosts,
     required MapDisplayMode currentMode,
@@ -24,10 +24,10 @@ class MapMarkersBuilder {
     final markers = <Marker>[];
 
     // Marker cho người dùng hiện tại (luôn hiển thị)
-    if (currentLocation != null) {
+    if (currentUserLocation != null) {
       markers.add(
         Marker(
-          point: currentLocation,
+          point: currentUserLocation,
           width: 50,
           height: 50,
           rotate: true,

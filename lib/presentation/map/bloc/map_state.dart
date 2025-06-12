@@ -15,17 +15,22 @@ class MapLoading extends MapState {
 }
 
 class MapReady extends MapState {
-  final LatLng? currentLocation;
-  final LatLng defaultLocation;
+  final LatLng? currentLocation; // Vị trí hiện tại từ GPS
+  final LatLng?
+  cachedUserLocation; // Vị trí người dùng từ cache (không phải fitBounds)
+  final LatLng
+  defaultLocation; // Vị trí mặc định từ cache fitBounds hoặc fallback
   final List<UserModel> friends;
   final List<NewsfeedPost> feedPosts;
   final MapDisplayMode currentMode;
   final bool firstTimeLoadExplore;
   final List<LatLng> boundsPoints;
   final bool shouldAutoFitBounds;
+  final double initialZoom;
 
   const MapReady({
     this.currentLocation,
+    this.cachedUserLocation,
     required this.defaultLocation,
     required this.friends,
     required this.feedPosts,
@@ -33,11 +38,13 @@ class MapReady extends MapState {
     required this.firstTimeLoadExplore,
     required this.boundsPoints,
     required this.shouldAutoFitBounds,
+    this.initialZoom = 15.0,
   });
 
   @override
   List<Object?> get props => [
     currentLocation,
+    cachedUserLocation,
     defaultLocation,
     friends,
     feedPosts,
@@ -45,10 +52,11 @@ class MapReady extends MapState {
     firstTimeLoadExplore,
     boundsPoints,
     shouldAutoFitBounds,
+    initialZoom,
   ];
-
   MapReady copyWith({
     LatLng? currentLocation,
+    LatLng? cachedUserLocation,
     LatLng? defaultLocation,
     List<UserModel>? friends,
     List<NewsfeedPost>? feedPosts,
@@ -56,9 +64,11 @@ class MapReady extends MapState {
     bool? firstTimeLoadExplore,
     List<LatLng>? boundsPoints,
     bool? shouldAutoFitBounds,
+    double? initialZoom,
   }) {
     return MapReady(
       currentLocation: currentLocation ?? this.currentLocation,
+      cachedUserLocation: cachedUserLocation ?? this.cachedUserLocation,
       defaultLocation: defaultLocation ?? this.defaultLocation,
       friends: friends ?? this.friends,
       feedPosts: feedPosts ?? this.feedPosts,
@@ -66,16 +76,17 @@ class MapReady extends MapState {
       firstTimeLoadExplore: firstTimeLoadExplore ?? this.firstTimeLoadExplore,
       boundsPoints: boundsPoints ?? this.boundsPoints,
       shouldAutoFitBounds: shouldAutoFitBounds ?? this.shouldAutoFitBounds,
+      initialZoom: initialZoom ?? this.initialZoom,
     );
   }
-
   /// Lấy các điểm để fit bounds dựa trên mode hiện tại
   List<LatLng> getPointsForCurrentMode() {
     final allPoints = <LatLng>[];
 
-    // Thêm vị trí hiện tại
-    if (currentLocation != null) {
-      allPoints.add(currentLocation!);
+    // Ưu tiên vị trí hiện tại từ GPS, nếu không có thì dùng cached user location
+    final userLocation = currentLocation ?? cachedUserLocation;
+    if (userLocation != null) {
+      allPoints.add(userLocation);
     }
 
     // Thêm vị trí dựa trên chế độ hiện tại

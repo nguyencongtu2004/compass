@@ -101,18 +101,28 @@ class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
     emit(const MapLoading());
 
     try {
-      // Load default location từ cache hoặc fallback
+      // Load default location từ cache fitBounds hoặc fallback
       final defaultLocation = await _loadDefaultLocation();
+      
+      // Load cached user location riêng biệt (từ cache location, không phải fitBounds)
+      final cachedUserLocation = await _loadCachedUserLocation();
+
+      // Kiểm tra xem có cached fitBounds không để xác định zoom level
+      final cachedFitBounds =
+          await SharedPreferencesService.getCachedFitBounds();
+      final initialZoom = cachedFitBounds?['zoom']?.toDouble() ?? 15.0;
 
       emit(
         MapReady(
           defaultLocation: defaultLocation,
+          cachedUserLocation: cachedUserLocation,
           friends: const [],
           feedPosts: const [],
           currentMode: MapDisplayMode.friends,
           firstTimeLoadExplore: true,
           boundsPoints: const [],
           shouldAutoFitBounds: false,
+          initialZoom: initialZoom,
         ),
       );
 
@@ -285,12 +295,21 @@ class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
     final currentState = state as MapReady;
 
     emit(currentState.copyWith(defaultLocation: event.defaultLocation));
-  }
-
-  // Helper methods
+  } // Helper methods
 
   Future<LatLng> _loadDefaultLocation() async {
     try {
+      // Ưu tiên lấy từ cached fitBounds trước cho default location
+      final cachedFitBounds =
+          await SharedPreferencesService.getCachedFitBounds();
+      if (cachedFitBounds != null) {
+        return LatLng(
+          cachedFitBounds['latitude']!,
+          cachedFitBounds['longitude']!,
+        );
+      }
+
+      // Nếu không có fitBounds cache, lấy từ cached location
       final cachedLocation = await SharedPreferencesService.getCachedLocation();
       if (cachedLocation != null) {
         return LatLng(
@@ -298,12 +317,28 @@ class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
           cachedLocation['longitude']!,
         );
       } else {
-        // Fallback to Hanoi coordinates if no cached location
+        // Fallback to Hanoi coordinates if no cached data
         return const LatLng(21.0285, 105.8542);
       }
     } catch (e) {
       // Fallback to Hanoi coordinates on error
       return const LatLng(21.0285, 105.8542);
+    }
+  }
+
+  Future<LatLng?> _loadCachedUserLocation() async {
+    try {
+      // Chỉ lấy từ cached location (vị trí người dùng), không lấy từ fitBounds
+      final cachedLocation = await SharedPreferencesService.getCachedLocation();
+      if (cachedLocation != null) {
+        return LatLng(
+          cachedLocation['latitude']!,
+          cachedLocation['longitude']!,
+        );
+      }
+      return null;
+    } catch (e) {
+      return null;
     }
   }
 

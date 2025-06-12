@@ -17,6 +17,7 @@ class MapWidget extends StatefulWidget {
   final List<UserModel> friends;
   final List<NewsfeedPost> feedPosts;
   final MapDisplayMode currentMode;
+  final double initialZoom;
   final Function(LatLng center, double zoom)? onMapPositionChanged;
 
   const MapWidget({
@@ -27,6 +28,7 @@ class MapWidget extends StatefulWidget {
     required this.friends,
     required this.feedPosts,
     required this.currentMode,
+    this.initialZoom = 15.0,
     this.onMapPositionChanged,
   });
 
@@ -47,7 +49,7 @@ class _MapWidgetState extends State<MapWidget> {
         mapController: widget.mapController.mapController,
         options: MapOptions(
           initialCenter: widget.currentLocation ?? widget.defaultLocation,
-          initialZoom: 15.0,
+          initialZoom: widget.initialZoom,
           minZoom: 3.0,
           maxZoom: 20.0,
           keepAlive: true,
@@ -68,7 +70,7 @@ class _MapWidgetState extends State<MapWidget> {
           MarkerLayer(
             markers: MapMarkersBuilder.buildMarkers(
               context: context,
-              currentLocation: widget.currentLocation,
+              currentUserLocation: widget.currentLocation,
               friends: widget.friends,
               feedPosts: widget.feedPosts,
               currentMode: widget.currentMode,

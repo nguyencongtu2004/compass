@@ -5,6 +5,10 @@ class SharedPreferencesKeys {
   static const lastKnownLatitude = 'LAST_KNOWN_LATITUDE';
   static const lastKnownLongitude = 'LAST_KNOWN_LONGITUDE';
   static const lastKnownLocationTimestamp = 'LAST_KNOWN_LOCATION_TIMESTAMP';
+  static const lastFitBoundsLatitude = 'LAST_FIT_BOUNDS_LATITUDE';
+  static const lastFitBoundsLongitude = 'LAST_FIT_BOUNDS_LONGITUDE';
+  static const lastFitBoundsZoom = 'LAST_FIT_BOUNDS_ZOOM';
+  static const lastFitBoundsTimestamp = 'LAST_FIT_BOUNDS_TIMESTAMP';
 }
 
 class SharedPreferencesService {
@@ -80,11 +84,67 @@ class SharedPreferencesService {
     }
     return null;
   }
-
   static Future<void> clearCachedLocation() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(SharedPreferencesKeys.lastKnownLatitude);
     await prefs.remove(SharedPreferencesKeys.lastKnownLongitude);
     await prefs.remove(SharedPreferencesKeys.lastKnownLocationTimestamp);
+  }
+
+  // FitBounds caching methods
+  static Future<void> cacheFitBounds(
+    double latitude,
+    double longitude,
+    double zoom,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(
+      SharedPreferencesKeys.lastFitBoundsLatitude,
+      latitude,
+    );
+    await prefs.setDouble(
+      SharedPreferencesKeys.lastFitBoundsLongitude,
+      longitude,
+    );
+    await prefs.setDouble(SharedPreferencesKeys.lastFitBoundsZoom, zoom);
+    await prefs.setInt(
+      SharedPreferencesKeys.lastFitBoundsTimestamp,
+      DateTime.now().millisecondsSinceEpoch,
+    );
+  }
+
+  static Future<Map<String, double>?> getCachedFitBounds() async {
+    final prefs = await SharedPreferences.getInstance();
+    final latitude = prefs.getDouble(
+      SharedPreferencesKeys.lastFitBoundsLatitude,
+    );
+    final longitude = prefs.getDouble(
+      SharedPreferencesKeys.lastFitBoundsLongitude,
+    );
+    final zoom = prefs.getDouble(SharedPreferencesKeys.lastFitBoundsZoom);
+
+    if (latitude != null && longitude != null && zoom != null) {
+      return {'latitude': latitude, 'longitude': longitude, 'zoom': zoom};
+    }
+    return null;
+  }
+
+  static Future<DateTime?> getCachedFitBoundsTimestamp() async {
+    final prefs = await SharedPreferences.getInstance();
+    final timestamp = prefs.getInt(
+      SharedPreferencesKeys.lastFitBoundsTimestamp,
+    );
+    if (timestamp != null) {
+      return DateTime.fromMillisecondsSinceEpoch(timestamp);
+    }
+    return null;
+  }
+
+  static Future<void> clearCachedFitBounds() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(SharedPreferencesKeys.lastFitBoundsLatitude);
+    await prefs.remove(SharedPreferencesKeys.lastFitBoundsLongitude);
+    await prefs.remove(SharedPreferencesKeys.lastFitBoundsZoom);
+    await prefs.remove(SharedPreferencesKeys.lastFitBoundsTimestamp);
   }
 }

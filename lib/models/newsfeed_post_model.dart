@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 import 'location_model.dart';
 
-class NewsfeedPost {
+class NewsfeedPost extends Equatable {
   final String id;
   final String userId;
   final String userDisplayName;
@@ -70,4 +71,16 @@ class NewsfeedPost {
       location: location ?? this.location,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        userId,
+        userDisplayName,
+        userAvatarUrl,
+        imageUrl,
+        caption,
+        createdAt,
+        location,
+      ];
 }
