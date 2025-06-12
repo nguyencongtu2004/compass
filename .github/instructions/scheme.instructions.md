@@ -85,7 +85,7 @@ Dưới đây là tài liệu schema Firestore đầy đủ:
 | `content`   | `string`    |     –    | Nội dung tin nhắn                    |
 | `createdAt` | `Timestamp` |     –    | Thời điểm gửi                        |
 | `readAt`    | `Timestamp` |    Có    | Thời điểm bên kia đã đọc             |
-| `type`      | `string`    |    Có    | Loại tin (ví dụ `"text"`, `"post"`) |
+| `type`      | `string`    |    Có    | Loại tin (ví dụ `"text"`, `"post"`)  |
 
 ---
 

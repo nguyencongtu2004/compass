@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -21,9 +22,11 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-
   bool _profileLoaded = false;
   bool _friendsLoaded = false;
+  bool _hasNavigated = false;
+  bool _hasInitialized = false;
+  Timer? _timeoutTimer;
 
   @override
   void initState() {
@@ -46,18 +49,80 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
     _controller.forward();
 
-    // Khởi tạo dữ liệu
+    // Reset states và khởi tạo dữ liệu
     _initializeData();
+
+    // Timeout để tránh bị treo mãi mãi
+    _timeoutTimer = Timer(const Duration(seconds: 10), () {
+      if (!_hasNavigated && mounted) {
+        final authState = context.read<AuthBloc>().state;
+        if (authState is AuthAuthenticated) {
+          _navigateToHome();
+        } else {
+          _navigateToLogin();
+        }
+      }
+    });
   }
 
   void _initializeData() {
-    // Không làm gì ở đây, chỉ để AuthBloc tự động phát hiện trạng thái
-    // và xử lý trong BlocListener bên dưới
+    // Reset states để xử lý hot reload
+    _profileLoaded = false;
+    _friendsLoaded = false;
+    _hasNavigated = false;
+    _hasInitialized = false;
+
+    debugPrint(
+      'SplashPage: _initializeData called - performing hot reload reset',
+    );
+
+    // Kiểm tra trạng thái hiện tại và xử lý accordingly
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authState = context.read<AuthBloc>().state;
+      debugPrint('SplashPage: AuthState is ${authState.runtimeType}');
+
+      if (authState is AuthAuthenticated && !_hasInitialized) {
+        _hasInitialized = true;
+
+        // Kiểm tra trạng thái hiện tại của các BLoC để xử lý hot reload
+        final profileState = context.read<ProfileBloc>().state;
+        final friendState = context.read<FriendBloc>().state;
+
+        debugPrint('SplashPage: ProfileState is ${profileState.runtimeType}');
+        debugPrint('SplashPage: FriendState is ${friendState.runtimeType}');
+
+        // Nếu data đã được load rồi, đánh dấu là đã loaded
+        if (profileState is ProfileLoaded || profileState is ProfileError) {
+          _profileLoaded = true;
+          debugPrint('SplashPage: Profile already loaded, marking as loaded');
+        }
+        if (friendState is FriendAndRequestsLoadSuccess ||
+            friendState is FriendOperationFailure) {
+          _friendsLoaded = true;
+          debugPrint('SplashPage: Friends already loaded, marking as loaded');
+        }
+
+        // Nếu chưa loaded thì khởi tạo, nếu đã loaded thì kiểm tra navigate
+        if (!_profileLoaded || !_friendsLoaded) {
+          debugPrint('SplashPage: Initializing user data...');
+          AppInitialization.initializeUserData(context, authState.user);
+        } else {
+          debugPrint(
+            'SplashPage: All data already loaded, checking navigation...',
+          );
+          _checkAndNavigate();
+        }
+      } else if (authState is AuthUnauthenticated && !_hasNavigated) {
+        debugPrint('SplashPage: User not authenticated, navigating to login');
+        _navigateToLogin();
+      }
+    });
   }
 
-  void _checkAndNavigate() {
-    if (_profileLoaded && _friendsLoaded) {
-      // Cả hai đã tải xong, chuyển đến trang chính
+  void _navigateToHome() {
+    if (!_hasNavigated && mounted) {
+      _hasNavigated = true;
+      _timeoutTimer?.cancel();
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) {
           context.go(AppRoutes.homeRoute);
@@ -66,9 +131,30 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
     }
   }
 
+  void _navigateToLogin() {
+    if (!_hasNavigated && mounted) {
+      _hasNavigated = true;
+      _timeoutTimer?.cancel();
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) {
+          context.go(AppRoutes.loginRoute);
+        }
+      });
+    }
+  }
+
+  void _checkAndNavigate() {
+    debugPrint(
+      'SplashPage: _checkAndNavigate called - Profile: $_profileLoaded, Friends: $_friendsLoaded, HasNavigated: $_hasNavigated',
+    );
+    if (_profileLoaded && _friendsLoaded && !_hasNavigated) {
+      _navigateToHome();
+    }
+  }
   @override
   void dispose() {
     _controller.dispose();
+    _timeoutTimer?.cancel();
     super.dispose();
   }
 
@@ -79,16 +165,33 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
         listeners: [
           BlocListener<AuthBloc, AuthState>(
             listener: (context, state) {
-              if (state is AuthAuthenticated) {
+              if (state is AuthAuthenticated && !_hasInitialized) {
                 // Đã đăng nhập khi mở app, khởi tạo dữ liệu
-                AppInitialization.initializeUserData(context, state.user);
+                _hasInitialized = true;
+
+                // Kiểm tra trạng thái hiện tại của các BLoC để xử lý hot reload
+                final profileState = context.read<ProfileBloc>().state;
+                final friendState = context.read<FriendBloc>().state;
+
+                // Nếu data đã được load rồi, đánh dấu là đã loaded
+                if (profileState is ProfileLoaded ||
+                    profileState is ProfileError) {
+                  _profileLoaded = true;
+                }
+                if (friendState is FriendAndRequestsLoadSuccess ||
+                    friendState is FriendOperationFailure) {
+                  _friendsLoaded = true;
+                }
+
+                // Nếu chưa loaded thì khởi tạo, nếu đã loaded thì kiểm tra navigate
+                if (!_profileLoaded || !_friendsLoaded) {
+                  AppInitialization.initializeUserData(context, state.user);
+                } else {
+                  _checkAndNavigate();
+                }
               } else if (state is AuthUnauthenticated) {
-                // Chưa đăng nhập, chờ một chút để đảm bảo Firebase đã hoàn tất kiểm tra
-                Future.delayed(const Duration(seconds: 1), () {
-                  if (mounted) {
-                    context.go(AppRoutes.loginRoute);
-                  }
-                });
+                // Chưa đăng nhập
+                _navigateToLogin();
               }
               // AuthInitial: không làm gì, chờ Firebase xác định trạng thái
             },
@@ -96,8 +199,10 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
           BlocListener<ProfileBloc, ProfileState>(
             listener: (context, state) {
               if (state is ProfileLoaded || state is ProfileError) {
-                setState(() => _profileLoaded = true);
-                _checkAndNavigate();
+                if (!_profileLoaded) {
+                  setState(() => _profileLoaded = true);
+                  _checkAndNavigate();
+                }
               }
             },
           ),
@@ -105,8 +210,10 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
             listener: (context, state) {
               if (state is FriendAndRequestsLoadSuccess ||
                   state is FriendOperationFailure) {
-                setState(() => _friendsLoaded = true);
-                _checkAndNavigate();
+                if (!_friendsLoaded) {
+                  setState(() => _friendsLoaded = true);
+                  _checkAndNavigate();
+                }
               }
             },
           ),

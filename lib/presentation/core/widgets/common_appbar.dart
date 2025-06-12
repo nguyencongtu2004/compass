@@ -4,16 +4,18 @@ import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_text_styles.dart';
 
 class CommonAppbar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
+  final String? title;
   final Widget? leftWidget;
   final Widget? rightWidget;
+  final Widget? customWidget;
   final bool isBackgroudTransparentGradient;
 
   const CommonAppbar({
     super.key,
-    required this.title,
+    this.title,
     this.leftWidget,
     this.rightWidget,
+    this.customWidget,
     this.isBackgroudTransparentGradient = false,
   });
 
@@ -33,34 +35,40 @@ class CommonAppbar extends StatelessWidget implements PreferredSizeWidget {
             : AppColors.surface(context),
       ),
       child: SafeArea(
-        child: Row(
-          spacing: AppSpacing.sm,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: AppSpacing.md),
-              child: SizedBox(
-                width: AppSpacing.lg2,
-                height: AppSpacing.lg2,
-                child: leftWidget ?? const SizedBox(),
-              ),
-            ),
+        child:
+            customWidget ??
+            Row(
+              spacing: AppSpacing.sm,
+              children: [
+                // Left widget area - always present to keep title centered
+                Padding(
+                  padding: const EdgeInsets.only(left: AppSpacing.md),
+                  child: SizedBox(
+                    width: AppSpacing.lg2,
+                    height: AppSpacing.lg2,
+                    child: leftWidget ?? const SizedBox(),
+                  ),
+                ),
 
-            Expanded(
-              child: Center(
-                child: Text(title, style: AppTextStyles.titleLarge),
-              ),
-            ),
+                // Title area - expanded to fill remaining space
+                if (title != null)
+                  Expanded(
+                    child: Center(
+                      child: Text(title!, style: AppTextStyles.titleLarge),
+                    ),
+                  ),
 
-            Padding(
-              padding: const EdgeInsets.only(right: AppSpacing.md),
-              child: SizedBox(
-                width: AppSpacing.lg2,
-                height: AppSpacing.lg2,
-                child: rightWidget ?? const SizedBox(),
-              ),
+                // Right widget area - always present to keep title centered
+                Padding(
+                  padding: const EdgeInsets.only(right: AppSpacing.md),
+                  child: SizedBox(
+                    width: AppSpacing.lg2,
+                    height: AppSpacing.lg2,
+                    child: rightWidget ?? const SizedBox(),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
       ),
     );
   }

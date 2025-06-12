@@ -8,10 +8,21 @@ class NewsfeedRepository {
 
   NewsfeedRepository({FirebaseFirestore? firestore})
     : _firestore = firestore ?? FirebaseFirestore.instance;
-
   /// Tạo một bài đăng mới
   Future<void> createPost(NewsfeedPost post) async {
     await _firestore.collection('newsfeeds').add(post.toMap());
+  }
+
+  /// Lấy bài đăng theo ID
+  Future<NewsfeedPost?> getPostById(String postId) async {
+    try {
+      final doc = await _firestore.collection('newsfeeds').doc(postId).get();
+      if (!doc.exists) return null;
+
+      return NewsfeedPost.fromMap(doc.id, doc.data()!);
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Lấy danh sách bài đăng theo thời gian (mới nhất trước)

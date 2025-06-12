@@ -4,9 +4,13 @@ import 'package:minecraft_compass/presentation/compass/bloc/compass_bloc.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_appbar.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_back_button.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/presentation/core/widgets/keep_alive_wrapper.dart';
 import 'package:minecraft_compass/presentation/map/map_page.dart';
+import 'package:minecraft_compass/presentation/core/widgets/message_badge_icon.dart';
+import 'package:minecraft_compass/presentation/messaging/conversation/conversation_list_page.dart';
+import 'package:minecraft_compass/presentation/messaging/conversation/bloc/conversation_bloc.dart';
 import 'package:minecraft_compass/presentation/newfeed/newfeed_page.dart';
 import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
@@ -48,6 +52,7 @@ class _HomePageState extends State<HomePage> {
 
     // Chỉ cập nhật vị trí, không load lại toàn bộ dữ liệu vì đã được khởi tạo trong splash
     _updateLocationOnStart();
+    _loadTotalUnreadCount();
   }
 
   @override
@@ -66,8 +71,18 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _loadTotalUnreadCount() {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      // Load unread message count
+      context.read<ConversationBloc>().add(
+        LoadTotalUnreadCount(authState.user.uid),
+      );
+    }
+  }
+
   void _goToPage(int page) {
-    if (page < 0 || page > 2) return; // Giới hạn trang từ 0 đến 2
+    if (page < 0 || page > 3) return; // Giới hạn trang từ 0 đến 3
     _pageController.animateToPage(
       page,
       duration: const Duration(milliseconds: 250),
@@ -92,9 +107,9 @@ class _HomePageState extends State<HomePage> {
             child: CommonScaffold(
               appBar: CommonAppbar(
                 title: 'Hồ sơ',
-                rightWidget: GestureDetector(
-                  onTap: () => _goToPage(1),
-                  child: const Icon(Icons.arrow_forward, size: AppSpacing.md4),
+                rightWidget: CommonBackButton(
+                  isArrowRight: true,
+                  onPressed: () => _goToPage(1),
                 ),
               ),
               body: const ProfilePage(),
@@ -170,12 +185,25 @@ class _HomePageState extends State<HomePage> {
             child: CommonScaffold(
               appBar: CommonAppbar(
                 title: 'Bạn bè',
-                leftWidget: GestureDetector(
-                  onTap: () => _goToPage(1),
-                  child: const Icon(Icons.arrow_back, size: AppSpacing.md4),
+                leftWidget: CommonBackButton(onPressed: () => _goToPage(1)),
+                rightWidget: MessageBadgeIcon(
+                  icon: Icons.message,
+                  size: AppSpacing.md4,
+                  onTap: () => _goToPage(3),
                 ),
               ),
               body: const FriendListPage(),
+            ),
+          ),
+
+          // Trang 3: Messages (phải nhất)
+          KeepAliveWrapper(
+            child: CommonScaffold(
+              appBar: CommonAppbar(
+                title: 'Tin nhắn',
+                leftWidget: CommonBackButton(onPressed: () => _goToPage(2)),
+              ),
+              body: const ConversationListPage(),
             ),
           ),
         ],

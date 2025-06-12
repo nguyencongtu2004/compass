@@ -18,6 +18,9 @@ class NewsfeedBloc extends Bloc<NewsfeedEvent, NewsfeedState> {
   final CloudinaryService _cloudinaryService;
   final ProfileBloc _profileBloc;
   
+  // Expose repository for other widgets to use
+  NewsfeedRepository get newsfeedRepository => _newsfeedRepository;
+  
   // Chỉ lưu 2 loại posts tương ứng với 2 chế độ map
   List<NewsfeedPost> _friendsPosts =
       []; // Posts từ mình và bạn bè (MapDisplayMode.friends)

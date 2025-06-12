@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:minecraft_compass/models/newsfeed_post_model.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_action_buttons.dart';
@@ -6,6 +8,12 @@ import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_head
 import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_image_with_caption.dart';
 import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_user_info.dart';
 import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_thumbnail_strip.dart';
+import 'package:minecraft_compass/presentation/auth/bloc/auth_bloc.dart';
+import 'package:minecraft_compass/presentation/messaging/chat/bloc/message_bloc.dart';
+import 'package:minecraft_compass/router/app_routes.dart';
+import 'package:minecraft_compass/models/message_model.dart';
+import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
+import 'package:minecraft_compass/data/repositories/message_repository.dart';
 
 /// Modern unified overlay hiển thị chi tiết post/cluster với giao diện hiện đại
 class ModernPostOverlay extends StatefulWidget {
@@ -66,14 +74,73 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
     duration: const Duration(milliseconds: 300),
     curve: Curves.easeInOutCubicEmphasized,
   );
-
   void _sendMessage(BuildContext context) {
-    // TODO: Implement send message functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Chức năng gửi tin nhắn sẽ được triển khai sau'),
-      ),
-    );
+    final currentPost = widget.posts[_currentIndex];
+    final authState = context.read<AuthBloc>().state;
+
+    if (authState is AuthAuthenticated) {
+      final myUid = authState.user.uid;
+      final postAuthorUid = currentPost.userId;
+
+      // Không cho phép gửi tin nhắn cho chính mình
+      if (myUid == postAuthorUid) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Bạn không thể gửi tin nhắn cho chính mình'),
+            backgroundColor: AppColors.error(context),
+          ),
+        );
+        return;
+      }
+
+      // Tạo conversation và navigate ngay lập tức
+      _createConversationAndNavigate(
+        context,
+        myUid,
+        postAuthorUid,
+        currentPost,
+      );
+    }
+  }
+
+  void _createConversationAndNavigate(
+    BuildContext context,
+    String myUid,
+    String postAuthorUid,
+    NewsfeedPost currentPost,
+  ) async {
+    try {
+      // Tạo conversation trực tiếp không qua bloc để tránh multiple listeners
+      final messageRepository = MessageRepository();
+      final conversation = await messageRepository.createOrGetConversation(
+        myUid,
+        postAuthorUid,
+      );
+
+      // Gửi tin nhắn chứa post
+      context.read<MessageBloc>().add(
+        SendMessage(
+          conversationId: conversation.id,
+          senderId: myUid,
+          content: currentPost.id, // Post ID as content
+          type: MessageType.post,
+        ),
+      );
+
+      // Navigate to chat
+      Navigator.of(context).pop(); // Close overlay first
+      context.push(
+        '${AppRoutes.chatRoute}/${conversation.id}',
+        extra: {'otherUid': postAuthorUid},
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Không thể tạo cuộc trò chuyện: $e'),
+          backgroundColor: AppColors.error(context),
+        ),
+      );
+    }
   }
 
   void _addComment(BuildContext context) {
