@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minecraft_compass/presentation/auth/forgot_password_dialog.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/utils/validator.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
@@ -53,6 +54,14 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void _loginWithGoogle() {
+    context.read<AuthBloc>().add(const AuthGoogleSignInRequested());
+  }
+
+  void _showForgotPasswordDialog() {
+    showDialog(context: context, builder: (context) => ForgotPasswordDialog());
+  }
+
   @override
   Widget build(BuildContext context) {
     return CommonScaffold(
@@ -70,6 +79,15 @@ class _LoginPageState extends State<LoginPage> {
               // Đăng nhập thành công, khởi tạo dữ liệu và chuyển đến home
               AppInitialization.initializeUserData(context, state.user);
               context.go(AppRoutes.homeRoute);
+            } else if (state is AuthPasswordResetSent) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Email đặt lại mật khẩu đã được gửi đến ${state.email}',
+                  ),
+                  backgroundColor: AppColors.primary(context),
+                ),
+              );
             }
           },
           child: Center(
@@ -136,15 +154,66 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       validator: (value) => Validator.validatePassword(value),
                     ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // Login button
+                    const SizedBox(height: AppSpacing.md), // Login button
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return CommonButton(
                           text: 'Đăng nhập',
                           onPressed: _login,
                           isLoading: state is AuthLoading,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+
+                    // Forgot password link
+                    TextButton(
+                      onPressed: _showForgotPasswordDialog,
+                      child: Text(
+                        'Quên mật khẩu?',
+                        style: AppTextStyles.labelMedium.copyWith(
+                          color: AppColors.primary(context),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+
+                    // Divider
+                    Row(
+                      children: [
+                        const Expanded(child: Divider()),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                          ),
+                          child: Text(
+                            'hoặc',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.onSurfaceVariant(context),
+                            ),
+                          ),
+                        ),
+                        const Expanded(child: Divider()),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+
+                    // Google Sign In button
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        return CommonButton(
+                          text: 'Đăng nhập với Google',
+                          onPressed: state is AuthLoading
+                              ? null
+                              : _loginWithGoogle,
+                          backgroundColor: Colors.white,
+                          textColor: Colors.black87,
+                          prefixIcon: const Icon(
+                            Icons.g_mobiledata,
+                            size: 24,
+                            color: Colors.red,
+                          ),
+                          borderColor: AppColors.outline(context),
                         );
                       },
                     ),

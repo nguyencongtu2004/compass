@@ -263,6 +263,18 @@ class _ProfilePageState extends State<ProfilePage> {
                   },
                   child: const Text('Thử lại'),
                 ),
+                const SizedBox(height: 16),
+
+                ElevatedButton.icon(
+                  onPressed: _logout,
+                  icon: const Icon(Icons.logout),
+                  label: const Text('Đăng xuất'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.error(context),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
               ],
             ),
           );

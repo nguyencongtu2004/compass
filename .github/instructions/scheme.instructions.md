@@ -1,138 +1,182 @@
----
-applyTo: "**"
----
-
-Dưới đây là mô tả schema (Firestore) cho collection `users`:
+Dưới đây là tài liệu schema Firestore đầy đủ:
 
 ---
 
-## Collection: `users`
+## 1. Collection `users`
 
-### Document ID: `string` (tự sinh hoặc UID người dùng)
+**Document ID:** `string` (UID người dùng hoặc tự sinh)
 
-#### 1. Các field chính
+### Các field
 
-- **avatarUrl** (_string_)
-  – URL của ảnh đại diện (Cloudinary, v.v.)
-- **createdAt** (_Timestamp_)
-  – Thời điểm tạo tài khoản
-- **displayName** (_string_)
-  – Tên hiển thị của người dùng
-- **email** (_string_)
-  – Địa chỉ email
-
-#### 2. Vị trí hiện tại (embedded map)
-
-- **currentLocation** (_map_) gồm:
-
-  - `latitude` (_number_) – Kinh độ
-  - `longitude` (_number_) – Vĩ độ
-  - `updatedAt` (_Timestamp_) – Thời điểm cập nhật vị trí
-
-#### 3. Danh sách lời mời kết bạn
-
-- **friendRequests** (_map\<string, any> hoặc array<string>_)
-  – Key có thể là `userId` của người gửi, value là thông tin trạng thái (ví dụ `true` hoặc object chi tiết)
-
-#### 4. Danh sách bạn bè
-
-- **friends** (_map\<string, object>_)
-  – Key là `friendId`, value là một object chứa thông tin cơ bản của bạn bè, ví dụ:
-
-  ```js
-  {
-    [friendId]: {
-      username: string
-      // có thể bổ sung thêm: displayName, avatarUrl, lastActiveAt…
-    },
-    …
-  }
-  ```
+| Trường            | Kiểu            | Nullable | Mô tả                                 |
+| ----------------- | --------------- | :------: | ------------------------------------- |
+| `uid`             | `string`        |     –    | ID người dùng (trùng với Document ID) |
+| `avatarUrl`       | `string`        |     –    | URL ảnh đại diện                      |
+| `displayName`     | `string`        |     –    | Tên hiển thị                          |
+| `username`        | `string`        |     –    | Tên đăng nhập                         |
+| `email`           | `string`        |     –    | Địa chỉ email                         |
+| `createdAt`       | `Timestamp`     |     –    | Thời điểm tạo tài khoản               |
+| `currentLocation` | `map`           |    Có    | Thông tin vị trí hiện tại             |
+|   – `latitude`    | `number`        |     –    | Vĩ độ                                 |
+|   – `longitude`   | `number`        |     –    | Kinh độ                               |
+|   – `updatedAt`   | `Timestamp`     |     –    | Thời điểm cập nhật vị trí             |
+| `friends`         | `array<string>` |     –    | Danh sách `uid` bạn bè                |
+| `friendRequests`  | `array<string>` |     –    | Danh sách `uid` đã gửi lời mời        |
 
 ---
 
-### Ví dụ (TypeScript-like)
+## 2. Collection `newsfeeds`
+
+**Document ID:** `string` (tự sinh)
+
+### Các field
+
+| Trường             | Kiểu        | Nullable | Mô tả                                           |
+| ------------------ | ----------- | :------: | ----------------------------------------------- |
+| `id`               | `string`    |     –    | Document ID                                     |
+| `userId`           | `string`    |     –    | UID người đăng                                  |
+| `userDisplayName`  | `string`    |     –    | Tên hiển thị tại thời điểm đăng                 |
+| `userAvatarUrl`    | `string`    |    Có    | URL avatar tại thời điểm đăng                   |
+| `imageUrl`         | `string`    |     –    | URL ảnh chính                                   |
+| `caption`          | `string`    |    Có    | Chú thích (nếu có)                              |
+| `createdAt`        | `Timestamp` |     –    | Thời điểm tạo bài                               |
+| `location`         | `map`       |    Có    | Thông tin vị trí (nếu có)                       |
+|   – `latitude`     | `number`    |     –    | Vĩ độ                                           |
+|   – `longitude`    | `number`    |     –    | Kinh độ                                         |
+|   – `locationName` | `string`    |    Có    | Tên/mô tả vị trí                                |
+|   – `updatedAt`    | `Timestamp` |     –    | Thời điểm cập nhật vị trí                       |
+| `commentsCount`    | `number`    |     –    | Tổng số bình luận (cập nhật qua Cloud Function) |
+
+### Sub-collection `comments`
+
+**Path:** `newsfeeds/{postId}/comments/{commentId}`
+
+| Trường            | Kiểu        | Nullable | Mô tả                                        |
+| ----------------- | ----------- | :------: | -------------------------------------------- |
+| `userId`          | `string`    |     –    | UID người comment                            |
+| `userDisplayName` | `string`    |     –    | Tên hiển thị tại thời điểm comment           |
+| `userAvatarUrl`   | `string`    |     –    | URL avatar tại thời điểm comment             |
+| `content`         | `string`    |     –    | Nội dung bình luận                           |
+| `createdAt`       | `Timestamp` |     –    | Thời điểm tạo bình luận                      |
+| `parentCommentId` | `string`    |    Có    | ID comment cha (nếu support reply nhiều cấp) |
+
+---
+
+## 3. Collection `conversations`
+
+**Document ID:** `string` cố định, ví dụ `"uidA_uidB"` (sắp xếp lexicographically hai UID)
+
+### Các field
+
+| Trường          | Kiểu                 | Nullable | Mô tả                                            |
+| --------------- | -------------------- | :------: | ------------------------------------------------ |
+| `participants`  | `array<string>`      |     –    | `[uidA, uidB]` (luôn 2 phần tử)                  |
+| `lastMessage`   | `string`             |     –    | Nội dung tin nhắn cuối cùng                      |
+| `lastUpdatedAt` | `Timestamp`          |     –    | Thời điểm tin nhắn cuối                          |
+| `unreadCounts`  | `map<string,number>` |     –    | Số tin chưa đọc với mỗi user, ví dụ `{[uid]: 2}` |
+
+### Sub-collection `messages`
+
+**Path:** `conversations/{conversationId}/messages/{messageId}`
+
+| Trường      | Kiểu        | Nullable | Mô tả                                |
+| ----------- | ----------- | :------: | ------------------------------------ |
+| `senderId`  | `string`    |     –    | UID người gửi                        |
+| `content`   | `string`    |     –    | Nội dung tin nhắn                    |
+| `createdAt` | `Timestamp` |     –    | Thời điểm gửi                        |
+| `readAt`    | `Timestamp` |    Có    | Thời điểm bên kia đã đọc             |
+| `type`      | `string`    |    Có    | Loại tin (ví dụ `"text"`, `"post"`) |
+
+---
+
+## Ví dụ TypeScript-like
 
 ```ts
 interface User {
+  uid: string;
   avatarUrl: string;
-  createdAt: firebase.firestore.Timestamp;
   displayName: string;
+  username: string;
   email: string;
-  currentLocation: {
-    latitude: number;
-    longitude: number;
-    updatedAt: firebase.firestore.Timestamp;
-  };
-  friendRequests: {
-    [userId: string]: any;
-  };
-  friends: {
-    [userId: string]: {
-      username: string;
-      // …các trường bổ sung nếu cần
-    };
-  };
-}
-```
-
-Dưới đây là mô tả schema cho collection **`newsfeeds`** (Firestore):
-
----
-
-## Collection: `newsfeeds`
-
-### Document ID: `string`
-
-#### Các field:
-
-- **caption** (_string_)
-  – Chú thích hoặc nội dung văn bản kèm ảnh.
-
-- **createdAt** (_Timestamp_)
-  – Thời điểm tạo bài đăng.
-
-- **imageUrl** (_string_)
-  – URL của ảnh chính trong bài (ví dụ lưu trên Cloudinary).
-
-- **location** (_map_)
-
-  - `latitude` (_number_) – Vĩ độ.
-  - `longitude` (_number_) – Kinh độ.
-  - `locationName` (_string_) – Tên hoặc mô tả vị trí (ví dụ `"Lat: 10.8528, Lng: 106.7936"`).
-  - `updatedAt` (_Timestamp_) – Thời điểm cập nhật vị trí.
-
-- **userId** (_string_)
-  – ID người đăng (tham chiếu sang document trong `users`).
-
-- **userDisplayName** (_string_)
-  – Tên hiển thị của người đăng tại thời điểm lưu bài.
-
-- **userAvatarUrl** (_string_)
-  – URL ảnh đại diện của người đăng (để hiển thị nhanh mà không cần fetch thêm từ `users`).
-
----
-
-### Ví dụ (TypeScript-like)
-
-```ts
-interface Newsfeed {
-  caption: string;
   createdAt: firebase.firestore.Timestamp;
-  imageUrl: string;
-  location: {
+  currentLocation?: {
     latitude: number;
     longitude: number;
-    locationName: string;
     updatedAt: firebase.firestore.Timestamp;
   };
+  friends: string[];
+  friendRequests: string[];
+}
+
+interface NewsfeedPost {
+  id: string;
+  userId: string;
+  userDisplayName: string;
+  userAvatarUrl?: string;
+  imageUrl: string;
+  caption?: string;
+  createdAt: firebase.firestore.Timestamp;
+  location?: {
+    latitude: number;
+    longitude: number;
+    locationName?: string;
+    updatedAt: firebase.firestore.Timestamp;
+  };
+  commentsCount: number;
+}
+
+interface Comment {
   userId: string;
   userDisplayName: string;
   userAvatarUrl: string;
+  content: string;
+  createdAt: firebase.firestore.Timestamp;
+  parentCommentId?: string;
+}
+
+interface Conversation {
+  participants: [string, string];
+  lastMessage: string;
+  lastUpdatedAt: firebase.firestore.Timestamp;
+  unreadCounts: { [uid: string]: number };
+}
+
+interface Message {
+  senderId: string;
+  content: string;
+  createdAt: firebase.firestore.Timestamp;
+  readAt?: firebase.firestore.Timestamp;
+  type?: string;
 }
 ```
 
-> **Ghi chú:**
->
-> - Việc lưu sẵn `userDisplayName` và `userAvatarUrl` giúp đỡ tải UI nhanh, tránh nhiều lần join/call đến `users`.
-> - Nếu cần mở rộng, có thể thêm các trường như `likes`, `commentsCount`, hoặc sub-collection `comments`.
+---
+
+### Lưu ý & Best Practices
+
+* **Indexing:**
+
+  * `newsfeeds/{postId}/comments` theo `createdAt` để load comment theo thứ tự thời gian.
+  * `conversations` theo `lastUpdatedAt` để hiển thị danh sách conversation mới nhất.
+
+* **Query ví dụ:**
+
+  ```js
+  // Lấy comments của 1 post:
+  db.collection('newsfeeds')
+    .doc(postId)
+    .collection('comments')
+    .orderBy('createdAt', 'asc');
+
+  // Lấy conversation của user:
+  db.collection('conversations')
+    .where('participants', 'array-contains', myUid)
+    .orderBy('lastUpdatedAt', 'desc');
+  ```
+
+* **Security Rules:**
+
+  * Với `comments`: chỉ cho phép authenticated user ghi comment.
+  * Với `conversations` & `messages`: chỉ cho phép user trong `participants` đọc/ghi.
+
+---

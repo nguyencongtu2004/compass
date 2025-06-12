@@ -11,6 +11,8 @@ class CommonButton extends StatelessWidget {
   final Color? textColor;
   final double? width;
   final double? height;
+  final Widget? prefixIcon;
+  final Color? borderColor;
 
   const CommonButton({
     super.key,
@@ -21,6 +23,8 @@ class CommonButton extends StatelessWidget {
     this.textColor,
     this.width,
     this.height,
+    this.prefixIcon,
+    this.borderColor,
     // this.height = AppSpacing.buttonHeight,
   });
 
@@ -30,20 +34,21 @@ class CommonButton extends StatelessWidget {
       width: width,
       height: height,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
-        style: ElevatedButton.styleFrom(
+        onPressed: isLoading ? null : onPressed,        style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? AppColors.primary(context),
           foregroundColor: textColor ?? AppColors.onPrimary(context),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            side: borderColor != null 
+              ? BorderSide(color: borderColor!, width: 1.0)
+              : BorderSide.none,
           ),
           elevation: AppSpacing.elevation2,
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md3,
             vertical: AppSpacing.md,
           ),
-        ),
-        child: isLoading
+        ),        child: isLoading
             ? SizedBox(
                 height: AppSpacing.iconSm,
                 width: AppSpacing.iconSm,
@@ -52,11 +57,21 @@ class CommonButton extends StatelessWidget {
                   strokeWidth: AppSpacing.border2,
                 ),
               )
-            : Text(
-                text,
-                style: AppTextStyles.buttonLarge.copyWith(
-                  color: textColor ?? AppColors.onPrimary(context),
-                ),
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (prefixIcon != null) ...[
+                    prefixIcon!,
+                    const SizedBox(width: AppSpacing.sm),
+                  ],
+                  Text(
+                    text,
+                    style: AppTextStyles.buttonLarge.copyWith(
+                      color: textColor ?? AppColors.onPrimary(context),
+                    ),
+                  ),
+                ],
               ),
       ),
     );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_cached_network_image.dart';
 import 'package:minecraft_compass/utils/format_utils.dart';
 import '../../../models/newsfeed_post_model.dart';
