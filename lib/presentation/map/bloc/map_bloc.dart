@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../data/services/shared_preferences_service.dart';
@@ -16,6 +17,7 @@ import '../../core/mixins/bloc_subscription_mixin.dart';
 part 'map_event.dart';
 part 'map_state.dart';
 
+@lazySingleton
 class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
   final AuthBloc _authBloc;
   final FriendBloc _friendBloc;

@@ -7,14 +7,19 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:minecraft_compass/app/minecraft_compass_app.dart';
 import 'package:minecraft_compass/app/firebase_options.dart';
 import 'package:minecraft_compass/config/app_bloc_observer.dart';
+import 'package:minecraft_compass/di/injection.dart';
 
 void main() async {
   // Giữ native splash screen hiển thị cho đến khi app sẵn sàng
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  // Initialize Firebase
+  // Initialize Firebase FIRST before DI
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  // Setup Dependency Injection AFTER Firebase initialization
+  configureDependencies();
 
   // Initialize Firebase App Check
   await FirebaseAppCheck.instance.activate(

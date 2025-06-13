@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:flutter/material.dart';
 import 'package:minecraft_compass/data/services/shared_preferences_service.dart';
 
+@lazySingleton
 class HttpService {
   final _dio = Dio(BaseOptions(baseUrl: ''));
 

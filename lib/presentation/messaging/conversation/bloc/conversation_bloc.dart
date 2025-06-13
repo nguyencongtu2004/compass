@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../../../data/repositories/message_repository.dart';
 import '../../../../models/conversation_model.dart';
@@ -8,6 +9,7 @@ import '../../../../models/conversation_model.dart';
 part 'conversation_event.dart';
 part 'conversation_state.dart';
 
+@lazySingleton
 class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
   final MessageRepository _messageRepository;
 
@@ -16,9 +18,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
   List<ConversationModel> _conversations = [];
   int _totalUnreadCount = 0;
-
-  ConversationBloc({MessageRepository? messageRepository})
-    : _messageRepository = messageRepository ?? MessageRepository(),
+  ConversationBloc({required MessageRepository messageRepository})
+    : _messageRepository = messageRepository,
       super(const ConversationInitial()) {
     on<LoadConversations>(_onLoadConversations);
     on<ConversationsUpdated>(_onConversationsUpdated);

@@ -3,20 +3,22 @@ import 'dart:math';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_compass/flutter_compass.dart' as compass;
+import 'package:injectable/injectable.dart';
 import '../../../utils/location_utils.dart';
 import '../../../data/repositories/location_repository.dart';
 
 part 'compass_event.dart';
 part 'compass_state.dart';
 
+@lazySingleton
 class CompassBloc extends Bloc<CompassEvent, CompassState> {
+  final LocationRepository _locationRepository;
   StreamSubscription<compass.CompassEvent>? _compassSubscription;
   Timer? _randomCompassTimer;
   double _currentRandomAngle = 0.0; // Lưu góc ngẫu nhiên hiện tại
-  final LocationRepository _locationRepository;
-
-  CompassBloc({LocationRepository? locationRepository})
-    : _locationRepository = locationRepository ?? LocationRepository(),
+  
+  CompassBloc({required LocationRepository locationRepository})
+    : _locationRepository = locationRepository,
       super(CompassInitial()) {
     on<StartCompass>(_onStartCompass);
     on<StartRandomCompass>(_onStartRandomCompass);
@@ -28,6 +30,7 @@ class CompassBloc extends Bloc<CompassEvent, CompassState> {
     on<UpdateTargetLocation>(_onUpdateTargetLocation);
     on<GetCurrentLocationAndUpdate>(_onGetCurrentLocationAndUpdate);
   }
+  
   void _onStartCompass(StartCompass event, Emitter<CompassState> emit) {
     emit(CompassLoading());
 

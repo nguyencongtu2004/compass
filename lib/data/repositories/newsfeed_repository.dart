@@ -1,13 +1,14 @@
 import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:injectable/injectable.dart';
 import 'package:minecraft_compass/utils/location_utils.dart';
 import '../../models/newsfeed_post_model.dart';
 
+@lazySingleton
 class NewsfeedRepository {
   final FirebaseFirestore _firestore;
 
-  NewsfeedRepository({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+  NewsfeedRepository(FirebaseFirestore firestore) : _firestore = firestore;
   /// Tạo một bài đăng mới
   Future<void> createPost(NewsfeedPost post) async {
     await _firestore.collection('newsfeeds').add(post.toMap());

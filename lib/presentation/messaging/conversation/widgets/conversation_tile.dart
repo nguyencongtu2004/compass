@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../di/injection.dart';
 import '../../../../models/conversation_model.dart';
 import '../../../../models/user_model.dart';
 import '../../../../data/repositories/user_repository.dart';
@@ -46,7 +47,7 @@ class _ConversationTileState extends State<ConversationTile> {
       );
       if (otherUid.isNotEmpty) {
         final userRepository =
-            UserRepository(); // Sử dụng constructor trực tiếp
+            getIt<UserRepository>(); // Sử dụng dependency injection
         final user = await userRepository.getUserByUid(otherUid);
         if (mounted) {
           setState(() {

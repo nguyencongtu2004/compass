@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import '../../../models/newsfeed_post_model.dart';
 import '../../../models/location_model.dart';
 import '../../../data/repositories/newsfeed_repository.dart';
@@ -13,19 +14,20 @@ part 'newsfeed_state.dart';
 // Enum để track loại posts hiện tại - chỉ có 2 loại tương ứng với chế độ map
 enum PostType { friends, explore }
 
+@lazySingleton
 class NewsfeedBloc extends Bloc<NewsfeedEvent, NewsfeedState> {
   final NewsfeedRepository _newsfeedRepository;
   final CloudinaryService _cloudinaryService;
   final ProfileBloc _profileBloc;
-  
+
   // Expose repository for other widgets to use
   NewsfeedRepository get newsfeedRepository => _newsfeedRepository;
-  
+
   // Chỉ lưu 2 loại posts tương ứng với 2 chế độ map
-  List<NewsfeedPost> _friendsPosts =
-      []; // Posts từ mình và bạn bè (MapDisplayMode.friends)
-  List<NewsfeedPost> _explorePosts =
-      []; // Posts từ mình và người lạ (MapDisplayMode.explore)
+  // Posts từ mình và bạn bè (MapDisplayMode.friends)
+  List<NewsfeedPost> _friendsPosts = [];
+  // Posts từ mình và người lạ (MapDisplayMode.explore)
+  List<NewsfeedPost> _explorePosts = [];
 
   bool _hasMoreFriendsPosts = true;
   bool _hasMoreExplorePosts = true;
@@ -34,11 +36,11 @@ class NewsfeedBloc extends Bloc<NewsfeedEvent, NewsfeedState> {
   PostType _currentPostType = PostType.friends;
 
   NewsfeedBloc({
-    NewsfeedRepository? newsfeedRepository,
-    CloudinaryService? cloudinaryService,
+    required NewsfeedRepository newsfeedRepository,
+    required CloudinaryService cloudinaryService,
     required ProfileBloc profileBloc,
-  }) : _newsfeedRepository = newsfeedRepository ?? NewsfeedRepository(),
-       _cloudinaryService = cloudinaryService ?? CloudinaryService(),
+  }) : _newsfeedRepository = newsfeedRepository,
+       _cloudinaryService = cloudinaryService,
        _profileBloc = profileBloc,
        super(NewsfeedInitial()) {
     on<LoadPosts>(_onLoadPosts);
@@ -106,7 +108,7 @@ class NewsfeedBloc extends Bloc<NewsfeedEvent, NewsfeedState> {
         createdAt: DateTime.now(),
         location: event.location,
       );
-      
+
       // Save to Firestore
       await _newsfeedRepository.createPost(post);
 
@@ -135,7 +137,7 @@ class NewsfeedBloc extends Bloc<NewsfeedEvent, NewsfeedState> {
         case PostType.friends:
           _friendsPosts.clear();
           _hasMoreFriendsPosts = true;
-          
+
           // TODO: Reload friends posts
           emit(
             PostsLoaded(
@@ -314,6 +316,7 @@ class NewsfeedBloc extends Bloc<NewsfeedEvent, NewsfeedState> {
       emit(NewsfeedError(message: e.toString()));
     }
   }
+
   void _onLoadFriendPosts(
     LoadFriendPosts event,
     Emitter<NewsfeedState> emit,
@@ -344,6 +347,7 @@ class NewsfeedBloc extends Bloc<NewsfeedEvent, NewsfeedState> {
       emit(NewsfeedError(message: e.toString()));
     }
   }
+
   // Handler cho LoadFeedPosts (alias cho LoadFriendPosts để tương thích với MapBloc)
   void _onLoadFeedPosts(
     LoadFeedPosts event,

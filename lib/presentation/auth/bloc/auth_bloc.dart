@@ -1,19 +1,23 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../models/auth_exception.dart';
+import '../../../data/managers/message_bloc_manager.dart';
+import '../../../di/injection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
+@lazySingleton
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
   late StreamSubscription<User?> _userSubscription;
 
-  AuthBloc({AuthRepository? authRepository})
-    : _authRepository = authRepository ?? AuthRepository(),
+  AuthBloc({required AuthRepository authRepository})
+    : _authRepository = authRepository,
       super(AuthInitial()) {
     on<AuthUserChanged>(_onUserChanged);
     on<AuthLoginRequested>(_onLoginRequested);
@@ -74,6 +78,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
+    // Clear all MessageBloc cache when logout
+    final messageBlocManager = getIt<MessageBlocManager>();
+    messageBlocManager.clearAll();
+    
     await _authRepository.logout();
   }
 

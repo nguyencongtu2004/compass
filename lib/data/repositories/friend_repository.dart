@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:injectable/injectable.dart';
 import '../../models/user_model.dart';
 
+@lazySingleton
 class FriendRepository {
   final FirebaseFirestore _firestore;
 
-  FriendRepository({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+  FriendRepository(FirebaseFirestore firestore) : _firestore = firestore;
 
   /// Lấy danh sách bạn bè
   Future<List<UserModel>> getFriends(String uid) async {

@@ -1,20 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:injectable/injectable.dart';
 import '../../models/auth_exception.dart';
 
+@lazySingleton
 class AuthRepository {
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore;
   final GoogleSignIn _googleSignIn;
 
   AuthRepository({
-    FirebaseAuth? firebaseAuth, 
-    FirebaseFirestore? firestore,
-    GoogleSignIn? googleSignIn,
-  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-       _firestore = firestore ?? FirebaseFirestore.instance,
-       _googleSignIn = googleSignIn ?? GoogleSignIn();
+    required FirebaseAuth firebaseAuth,
+    required FirebaseFirestore firestore,
+    required GoogleSignIn googleSignIn,
+  }) : _firebaseAuth = firebaseAuth,
+       _firestore = firestore,
+       _googleSignIn = googleSignIn;
+
   /// Đăng ký mới
   Future<User?> registerByEmail({
     required String email,
@@ -50,6 +53,7 @@ class AuthRepository {
       );
     }
   }
+
   /// Đăng nhập
   Future<User?> loginByEmail({
     required String email,
@@ -70,6 +74,7 @@ class AuthRepository {
       );
     }
   }
+
   /// Đăng xuất
   Future<void> logout() async {
     // Sign out from Google if signed in
@@ -81,8 +86,10 @@ class AuthRepository {
 
   /// Stream lắng nghe AuthStateChanges
   Stream<User?> get user => _firebaseAuth.authStateChanges();
+
   /// Lấy user hiện tại
   User? get currentUser => _firebaseAuth.currentUser;
+
   /// Gửi email reset password
   Future<void> sendPasswordResetEmail({required String email}) async {
     try {
@@ -96,13 +103,13 @@ class AuthRepository {
       );
     }
   }
-  
+
   /// Đăng nhập bằng Google
   Future<User?> signInWithGoogle() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      
+
       if (googleUser == null) {
         // User canceled the sign-in
         throw const AuthException(
@@ -112,7 +119,8 @@ class AuthRepository {
       }
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
@@ -121,13 +129,17 @@ class AuthRepository {
       );
 
       // Sign in to Firebase with the Google credential
-      final UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
+      final UserCredential userCredential = await _firebaseAuth
+          .signInWithCredential(credential);
       final User? user = userCredential.user;
 
       if (user != null) {
         // Check if user document exists, if not create it
-        final userDoc = await _firestore.collection('users').doc(user.uid).get();
-        
+        final userDoc = await _firestore
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
         if (!userDoc.exists) {
           // Create new user document for Google sign-in users
           await _firestore.collection('users').doc(user.uid).set({

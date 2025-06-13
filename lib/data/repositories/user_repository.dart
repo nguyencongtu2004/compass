@@ -1,18 +1,16 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:injectable/injectable.dart';
 import '../../models/user_model.dart';
 import '../services/cloudinary_service.dart';
 
+@lazySingleton
 class UserRepository {
   final FirebaseFirestore _firestore;
   final CloudinaryService _cloudinaryService;
 
-  UserRepository({
-    FirebaseFirestore? firestore,
-    CloudinaryService? cloudinaryService,
-  }) : _firestore = firestore ?? FirebaseFirestore.instance,
-       _cloudinaryService = cloudinaryService ?? CloudinaryService();
+  UserRepository(this._cloudinaryService, this._firestore);
 
   /// Lấy thông tin user theo uid
   Future<UserModel?> getUserByUid(String uid) async {

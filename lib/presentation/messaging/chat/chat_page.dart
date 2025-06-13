@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:minecraft_compass/presentation/core/widgets/common_back_button.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_text_styles.dart';
 import '../../core/widgets/common_appbar.dart';
-import '../../core/widgets/common_avatar.dart';
 import '../../core/widgets/common_scaffold.dart';
-import '../../auth/bloc/auth_bloc.dart';
 import 'bloc/message_bloc.dart';
 import '../conversation/bloc/conversation_bloc.dart';
-import 'widgets/message_bubble.dart';
+import 'widgets/chat_header.dart';
+import 'widgets/chat_body.dart';
 import 'widgets/message_input.dart';
-import '../../../models/user_model.dart';
 import '../../../models/message_model.dart';
+import '../../../models/user_model.dart';
+import '../../../data/managers/message_bloc_manager.dart';
 import '../../../data/repositories/user_repository.dart';
+import '../../../di/injection.dart';
+import '../../auth/bloc/auth_bloc.dart';
 
-class ChatPage extends StatefulWidget {
+class ChatPage extends StatelessWidget {
   final String conversationId;
   final String otherUid;
 
@@ -29,33 +28,60 @@ class ChatPage extends StatefulWidget {
   });
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  Widget build(BuildContext context) {
+    final messageBlocManager = getIt<MessageBlocManager>();
+    final messageBloc = messageBlocManager.getMessageBloc(conversationId);
+
+    return BlocProvider.value(
+      value: messageBloc,
+      child: _ChatPageContent(
+        conversationId: conversationId,
+        otherUid: otherUid,
+      ),
+    );
+  }
 }
 
-class _ChatPageState extends State<ChatPage> {
-  final ScrollController _scrollController = ScrollController();
-  final UserRepository _userRepository = UserRepository();
+class _ChatPageContent extends StatefulWidget {
+  final String conversationId;
+  final String otherUid;
+
+  const _ChatPageContent({
+    required this.conversationId,
+    required this.otherUid,
+  });
+
+  @override
+  State<_ChatPageContent> createState() => _ChatPageContentState();
+}
+
+class _ChatPageContentState extends State<_ChatPageContent> {
+  final ScrollController scrollController = ScrollController();
+  final UserRepository userRepository = getIt<UserRepository>();
 
   UserModel? otherUser;
   bool isLoading = true;
   List<MessageModel> _previousMessages = [];
 
+  String get conversationId => widget.conversationId;
+  String get otherUid => widget.otherUid;
+
   @override
   void initState() {
     super.initState();
-    _loadData();
+    loadData();
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
-  Future<void> _loadData() async {
+  Future<void> loadData() async {
     // Load other user info
     try {
-      final user = await _userRepository.getUserByUid(widget.otherUid);
+      final user = await userRepository.getUserByUid(otherUid);
       if (mounted) {
         setState(() {
           otherUser = user;
@@ -69,26 +95,26 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     // Load messages
-    context.read<MessageBloc>().add(LoadMessages(widget.conversationId));
+    context.read<MessageBloc>().add(LoadMessages(conversationId));
 
     // Mark messages as read
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       context.read<MessageBloc>().add(
         MarkMessagesAsRead(
-          conversationId: widget.conversationId,
+          conversationId: conversationId,
           myUid: authState.user.uid,
         ),
       );
     }
   }
 
-  void _sendMessage(String content) {
+  void sendMessage(String content) {
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       context.read<MessageBloc>().add(
         SendMessage(
-          conversationId: widget.conversationId,
+          conversationId: conversationId,
           senderId: authState.user.uid,
           content: content,
           type: MessageType.text,
@@ -96,22 +122,14 @@ class _ChatPageState extends State<ChatPage> {
       );
 
       // Scroll to bottom after sending
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            0,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
-        }
-      });
+      scrollToBottom();
     }
   }
 
-  void _scrollToBottom() {
+  void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients && mounted) {
-        _scrollController.animateTo(
+      if (scrollController.hasClients && mounted) {
+        scrollController.animateTo(
           0,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
@@ -120,43 +138,30 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
+  String getCurrentUserId() {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      return authState.user.uid;
+    }
+    return '';
+  }
+
+  void _sendMessage(String content) {
+    sendMessage(content);
+  }
+
+  void _scrollToBottom() {
+    scrollToBottom();
+  }
+
+  void _loadData() {
+    loadData();
+  }
   @override
   Widget build(BuildContext context) {
     return CommonScaffold(
       appBar: CommonAppbar(
-        customWidget: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CommonBackButton(),
-              const SizedBox(width: AppSpacing.md),
-
-              CommonAvatar(
-                radius: 20,
-                avatarUrl: otherUser?.avatarUrl ?? '',
-                displayName: otherUser?.displayName ?? 'U',
-                backgroundColor: AppColors.primary(context),
-                textColor: AppColors.onPrimary(context),
-              ),
-              const SizedBox(width: AppSpacing.sm),
-
-              Expanded(
-                child: Text(
-                  otherUser?.displayName ??
-                      (isLoading ? 'Đang tải...' : 'Người dùng'),
-                  style: AppTextStyles.titleLarge.copyWith(
-                    color: AppColors.onSurface(context),
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.md),
-            ],
-          ),
+        customWidget: ChatHeader(otherUser: otherUser, isLoading: isLoading,
         ),
       ),
       body: Column(
@@ -182,20 +187,13 @@ class _ChatPageState extends State<ChatPage> {
                 }
               },
               builder: (context, state) {
-                if (state is MessagesLoaded) {
-                  if (state.messages.isEmpty) {
-                    return _buildEmptyMessages();
-                  }
-
-                  return _buildMessagesList(state.messages);
-                }
-
-                if (state is MessageError) {
-                  return _buildErrorState(state.message);
-                }
-
-                // Hiển thị empty messages thay vì loading để tránh flicker
-                return _buildEmptyMessages();
+                return ChatBody(
+                  otherUser: otherUser,
+                  isLoading: isLoading,
+                  myUid: getCurrentUserId(),
+                  scrollController: scrollController,
+                  onRetry: _loadData,
+                );
               },
             ),
           ),
@@ -219,115 +217,6 @@ class _ChatPageState extends State<ChatPage> {
                 );
               },
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMessagesList(List<MessageModel> messages) {
-    final authState = context.read<AuthBloc>().state;
-    if (authState is! AuthAuthenticated) {
-      return const SizedBox.shrink();
-    }
-
-    final myUid = authState.user.uid;
-
-    return ListView.builder(
-      controller: _scrollController,
-      reverse: true,
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-      itemCount: messages.length,
-      itemBuilder: (context, index) {
-        final message = messages[index];
-        final isFromMe =
-            message.senderId ==
-            myUid; // Show timestamp for first message or messages with >30 minutes gap
-        bool showTimestamp = false;
-        if (index == messages.length - 1) {
-          // Always show timestamp for the oldest message
-          showTimestamp = true;
-        } else {
-          final nextMessage = messages[index + 1];
-          final timeDiff = nextMessage.createdAt.difference(message.createdAt);
-          if (timeDiff.inMinutes >= 30) {
-            showTimestamp = true;
-          }
-        }
-
-        return MessageBubble(
-          message: message,
-          isFromMe: isFromMe,
-          showTimestamp: showTimestamp,
-        );
-      },
-    );
-  }
-
-  Widget _buildEmptyMessages() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CommonAvatar(
-            radius: 40,
-            avatarUrl: otherUser?.avatarUrl ?? '',
-            displayName: otherUser?.displayName ?? 'U',
-            backgroundColor: AppColors.primary(context),
-            textColor: AppColors.onPrimary(context),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'Trò chuyện với ${otherUser?.displayName ?? (isLoading ? 'đang tải...' : 'bạn bè')}',
-            style: AppTextStyles.titleLarge.copyWith(
-              color: AppColors.onSurface(context),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            isLoading
-                ? 'Đang tải cuộc trò chuyện...'
-                : 'Gửi tin nhắn đầu tiên để bắt đầu cuộc trò chuyện',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.onSurfaceVariant(context),
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(String message) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.error_outline,
-            size: AppSpacing.iconXxl * 2,
-            color: AppColors.error(context),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            'Có lỗi xảy ra',
-            style: AppTextStyles.titleLarge.copyWith(
-              color: AppColors.error(context),
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            message,
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: AppColors.onSurfaceVariant(context),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppSpacing.md3),
-          TextButton.icon(
-            onPressed: _loadData,
-            icon: const Icon(Icons.refresh),
-            label: const Text('Thử lại'),
           ),
         ],
       ),

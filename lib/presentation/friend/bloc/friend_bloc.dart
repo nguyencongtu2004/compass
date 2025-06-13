@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import '../../../data/repositories/friend_repository.dart';
 import '../../../models/user_model.dart';
 
 part 'friend_event.dart';
 part 'friend_state.dart';
 
+@lazySingleton
 class FriendBloc extends Bloc<FriendEvent, FriendState> {
   final FriendRepository _friendRepository;
   StreamSubscription<List<UserModel>>? _friendsLocationSubscription;
@@ -14,8 +16,8 @@ class FriendBloc extends Bloc<FriendEvent, FriendState> {
   // Store current friends and requests state để restore sau khi search
   FriendAndRequestsLoadSuccess? _currentFriendsState;
 
-  FriendBloc({FriendRepository? friendRepository})
-    : _friendRepository = friendRepository ?? FriendRepository(),
+  FriendBloc({required FriendRepository friendRepository})
+    : _friendRepository = friendRepository,
       super(FriendInitial()) {
     on<LoadFriendsAndRequests>(_onLoadFriendsAndRequests);
     on<SendFriendRequest>(_onSendFriendRequest);

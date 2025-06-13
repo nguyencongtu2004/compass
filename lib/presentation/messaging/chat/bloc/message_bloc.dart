@@ -12,12 +12,11 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
   final MessageRepository _messageRepository;
 
   StreamSubscription<List<MessageModel>>? _messagesSubscription;
-
   List<MessageModel> _messages = [];
   String? _currentConversationId;
 
-  MessageBloc({MessageRepository? messageRepository})
-    : _messageRepository = messageRepository ?? MessageRepository(),
+  MessageBloc({required MessageRepository messageRepository})
+    : _messageRepository = messageRepository,
       super(const MessageInitial()) {
     on<LoadMessages>(_onLoadMessages);
     on<MessagesUpdated>(_onMessagesUpdated);

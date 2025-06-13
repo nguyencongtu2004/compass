@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 import 'package:minecraft_compass/config/cloudinary_config.dart';
 
+@lazySingleton
 class CloudinaryService {
   final _dio = Dio();
 

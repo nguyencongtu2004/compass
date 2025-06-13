@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minecraft_compass/di/injection.dart';
 import 'package:minecraft_compass/models/newsfeed_post_model.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_action_buttons.dart';
@@ -9,7 +10,6 @@ import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_imag
 import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_user_info.dart';
 import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_thumbnail_strip.dart';
 import 'package:minecraft_compass/presentation/auth/bloc/auth_bloc.dart';
-import 'package:minecraft_compass/presentation/messaging/chat/bloc/message_bloc.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import 'package:minecraft_compass/models/message_model.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
@@ -111,20 +111,18 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
   ) async {
     try {
       // Tạo conversation trực tiếp không qua bloc để tránh multiple listeners
-      final messageRepository = MessageRepository();
+      final messageRepository = getIt<MessageRepository>();
       final conversation = await messageRepository.createOrGetConversation(
         myUid,
         postAuthorUid,
       );
 
-      // Gửi tin nhắn chứa post
-      context.read<MessageBloc>().add(
-        SendMessage(
-          conversationId: conversation.id,
-          senderId: myUid,
-          content: currentPost.id, // Post ID as content
-          type: MessageType.post,
-        ),
+      // Gửi tin nhắn chứa post trực tiếp qua repository
+      await messageRepository.sendMessage(
+        conversationId: conversation.id,
+        senderId: myUid,
+        content: currentPost.id, // Post ID as content
+        type: MessageType.post,
       );
 
       // Navigate to chat

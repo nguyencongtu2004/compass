@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:injectable/injectable.dart';
 import '../../models/location_model.dart';
 import '../../models/user_model.dart';
 import '../services/shared_preferences_service.dart';
 
+@lazySingleton
 class LocationRepository {
   final FirebaseFirestore _firestore;
 
-  LocationRepository({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+  LocationRepository(FirebaseFirestore firestore) : _firestore = firestore;
 
   /// Lấy vị trí hiện tại từ GPS
   Future<Position> getCurrentPosition() async {

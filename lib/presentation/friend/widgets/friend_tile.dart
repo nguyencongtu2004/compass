@@ -9,6 +9,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../../router/app_routes.dart';
 import '../../../data/repositories/message_repository.dart';
+import '../../../di/injection.dart';
 
 class FriendTile extends StatelessWidget {
   final UserModel friend;
@@ -21,7 +22,7 @@ class FriendTile extends StatelessWidget {
     if (authState is AuthAuthenticated) {
       try {
         // Tạo conversation trực tiếp để tránh multiple listeners
-        final messageRepository = MessageRepository();
+        final messageRepository = getIt<MessageRepository>();
         final conversation = await messageRepository.createOrGetConversation(
           authState.user.uid,
           friend.uid,

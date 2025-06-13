@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:injectable/injectable.dart';
 import '../../models/conversation_model.dart';
 import '../../models/message_model.dart';
 
+@lazySingleton
 class MessageRepository {
   final FirebaseFirestore _firestore;
 
-  MessageRepository({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance;
+  MessageRepository(FirebaseFirestore firestore) : _firestore = firestore;
 
   /// Lấy danh sách conversations của user
   Stream<List<ConversationModel>> getConversations(String myUid) {

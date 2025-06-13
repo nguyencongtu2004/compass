@@ -2,20 +2,24 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:injectable/injectable.dart';
 import '../../../data/repositories/user_repository.dart';
 import '../../../models/user_model.dart';
 
 part 'profile_event.dart';
 part 'profile_state.dart';
 
+@lazySingleton
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final UserRepository _userRepository;
   final FirebaseAuth _auth;
 
-  ProfileBloc({UserRepository? userRepository, FirebaseAuth? auth})
-    : _userRepository = userRepository ?? UserRepository(),
-      _auth = auth ?? FirebaseAuth.instance,
-      super(ProfileInitial()) {
+  ProfileBloc({
+    required UserRepository userRepository,
+    required FirebaseAuth auth,
+  }) : _userRepository = userRepository,
+       _auth = auth,
+       super(ProfileInitial()) {
     on<ProfileLoadRequested>(_onProfileLoadRequested);
     on<ProfileUpdateRequested>(_onProfileUpdateRequested);
     on<UsernameAvailabilityCheck>(_onUsernameAvailabilityCheck);
