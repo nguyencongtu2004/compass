@@ -24,9 +24,9 @@ class MapReady extends MapState {
   final List<NewsfeedPost> feedPosts;
   final MapDisplayMode currentMode;
   final bool firstTimeLoadExplore;
-  final List<LatLng> boundsPoints;
-  final bool shouldAutoFitBounds;
+  final List<LatLng> boundsPoints;  final bool shouldAutoFitBounds;
   final double initialZoom;
+  final bool isPostDetailVisible;
 
   const MapReady({
     this.currentLocation,
@@ -39,6 +39,7 @@ class MapReady extends MapState {
     required this.boundsPoints,
     required this.shouldAutoFitBounds,
     this.initialZoom = 15.0,
+    this.isPostDetailVisible = false,
   });
 
   @override
@@ -53,8 +54,8 @@ class MapReady extends MapState {
     boundsPoints,
     shouldAutoFitBounds,
     initialZoom,
-  ];
-  MapReady copyWith({
+    isPostDetailVisible,
+  ];  MapReady copyWith({
     LatLng? currentLocation,
     LatLng? cachedUserLocation,
     LatLng? defaultLocation,
@@ -65,6 +66,7 @@ class MapReady extends MapState {
     List<LatLng>? boundsPoints,
     bool? shouldAutoFitBounds,
     double? initialZoom,
+    bool? isPostDetailVisible,
   }) {
     return MapReady(
       currentLocation: currentLocation ?? this.currentLocation,
@@ -77,6 +79,7 @@ class MapReady extends MapState {
       boundsPoints: boundsPoints ?? this.boundsPoints,
       shouldAutoFitBounds: shouldAutoFitBounds ?? this.shouldAutoFitBounds,
       initialZoom: initialZoom ?? this.initialZoom,
+      isPostDetailVisible: isPostDetailVisible ?? this.isPostDetailVisible,
     );
   }
   /// Lấy các điểm để fit bounds dựa trên mode hiện tại

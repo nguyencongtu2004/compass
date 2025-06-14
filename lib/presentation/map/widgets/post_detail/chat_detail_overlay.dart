@@ -3,6 +3,8 @@ import 'package:minecraft_compass/models/newsfeed_post_model.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_image_with_caption.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minecraft_compass/presentation/map/bloc/map_bloc.dart';
 import 'package:minecraft_compass/presentation/messaging/chat/widgets/message_input.dart';
 
 /// Overlay trang chat chi tiết với post và thanh tin nhắn đầy đủ
@@ -15,13 +17,15 @@ class ChatDetailOverlay extends StatefulWidget {
     required this.post,
     required this.onSendMessage,
   });
-
   /// Static method để hiển thị overlay
   static Future<void> show(
     BuildContext context,
     NewsfeedPost post,
     Function(String message) onSendMessage,
   ) {
+    // Thông báo MapBloc rằng chat detail đang được hiển thị
+    context.read<MapBloc>().add(const MapPostDetailVisibilityChanged(true));
+    
     return Navigator.of(context).push(
       PageRouteBuilder(
         // opaque: false, // Route trong suốt
@@ -33,7 +37,10 @@ class ChatDetailOverlay extends StatefulWidget {
           );
         },
       ),
-    );
+    ).then((_) {
+      // Thông báo MapBloc rằng chat detail đã được đóng
+      context.read<MapBloc>().add(const MapPostDetailVisibilityChanged(false));
+    });
   }
 
   @override
@@ -63,7 +70,7 @@ class _ChatDetailOverlayState extends State<ChatDetailOverlay>
     _isClosing = true;
     Navigator.of(context).pop();
   }
-  
+
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();

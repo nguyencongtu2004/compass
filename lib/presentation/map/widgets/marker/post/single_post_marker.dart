@@ -25,7 +25,7 @@ class SinglePostMarker extends StatelessWidget {
               height: 75,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.primary(context), width: 3),
+                border: Border.all(color: Colors.white, width: 3),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.onSurface(context).withValues(alpha: 0.2),

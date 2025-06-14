@@ -14,13 +14,8 @@ import 'widgets/map_toggle_switch.dart';
 import 'widgets/map_widget.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({
-    super.key,
-    required this.onBackPressed,
-    this.paddingTop = 0.0,
-  });
+  const MapPage({super.key, this.paddingTop = 0.0});
 
-  final Function onBackPressed;
   final double paddingTop;
 
   @override
@@ -242,30 +237,33 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
               ),
 
               // Toggle switch ở giữa top
-              Positioned(
-                top: widget.paddingTop,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: MapToggleSwitch(
-                    currentMode: mapState.currentMode,
-                    onToggleToLocations: _onToggleToLocations,
-                    onToggleToFriends: _onToggleToFriends,
-                    onToggleToExplore: _onToggleToExplore,
+              if (!mapState.isPostDetailVisible)
+                Positioned(
+                  top: widget.paddingTop,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: MapToggleSwitch(
+                      currentMode: mapState.currentMode,
+                      onToggleToLocations: _onToggleToLocations,
+                      onToggleToFriends: _onToggleToFriends,
+                      onToggleToExplore: _onToggleToExplore,
+                    ),
                   ),
                 ),
-              ),
 
               // Floating action buttons
-              MapFloatingActionButtons(
-                onResetRotationPressed: _onResetRotationPressed,
-                onMyLocationPressed: _onMyLocationPressed,
-                isBottomWidgetExpanded:
-                    mapState.currentMode == MapDisplayMode.locations,
-              ),
+              if (!mapState.isPostDetailVisible)
+                MapFloatingActionButtons(
+                  onResetRotationPressed: _onResetRotationPressed,
+                  onMyLocationPressed: _onMyLocationPressed,
+                  isBottomWidgetExpanded:
+                      mapState.currentMode == MapDisplayMode.locations,
+                ),
 
               // Bottom action widget (Create post button or Friends list)
-              MapBottomActionWidget(onFriendTap: _onFriendTap),
+              if (!mapState.isPostDetailVisible)
+                MapBottomActionWidget(onFriendTap: _onFriendTap),
             ],
           );
         },

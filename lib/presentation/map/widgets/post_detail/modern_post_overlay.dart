@@ -12,6 +12,7 @@ import 'package:minecraft_compass/presentation/auth/bloc/auth_bloc.dart';
 import 'package:minecraft_compass/models/message_model.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
 import 'package:minecraft_compass/data/repositories/message_repository.dart';
+import 'package:minecraft_compass/presentation/map/bloc/map_bloc.dart';
 
 /// Modern unified overlay hiển thị chi tiết post/cluster với giao diện hiện đại
 class ModernPostOverlay extends StatefulWidget {
@@ -28,9 +29,11 @@ class ModernPostOverlay extends StatefulWidget {
     BuildContext context,
     List<NewsfeedPost> posts,
   ) => show(context, posts);
-
   /// Static method chung để hiển thị overlay
   static void show(BuildContext context, List<NewsfeedPost> posts) {
+    // Thông báo MapBloc rằng post detail đang được hiển thị
+    context.read<MapBloc>().add(const MapPostDetailVisibilityChanged(true));
+    
     Navigator.of(context).push(
       PageRouteBuilder(
         opaque: false, // Route trong suốt
@@ -42,7 +45,10 @@ class ModernPostOverlay extends StatefulWidget {
           );
         },
       ),
-    );
+    ).then((_) {
+      // Thông báo MapBloc rằng post detail đã được đóng
+      context.read<MapBloc>().add(const MapPostDetailVisibilityChanged(false));
+    });
   }
 
   @override
@@ -238,10 +244,26 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
                   PostImageWithCaption(post: post),
                   // Action buttons ở dưới ảnh
                   const SizedBox(height: AppSpacing.md),
-                  PostActionButtons(
-                    post: post,
-                    onMessageSend: (message) => _sendMessage(context, message),
-                    onCommentTap: () => _addComment(context),
+                  Builder(
+                    builder: (context) {
+                      final authState = context.read<AuthBloc>().state;
+                      final bool isMyPost;
+                      if (authState is AuthAuthenticated) {
+                        final myUid = authState.user.uid;
+                        final postAuthorUid = post.userId;
+                        isMyPost = myUid == postAuthorUid;
+                      } else {
+                        // Chưa đăng nhập thì không phải post của mình
+                        isMyPost = false;
+                      }
+                      return PostActionButtons(
+                        post: post,
+                        isShowChatInput: !isMyPost,
+                        onMessageSend: (message) =>
+                            _sendMessage(context, message),
+                        onCommentTap: () => _addComment(context),
+                      );
+                    },
                   ),
                 ],
               ),

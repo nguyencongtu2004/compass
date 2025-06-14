@@ -85,3 +85,12 @@ class MapDefaultLocationSet extends MapEvent {
 class MapResetRequested extends MapEvent {
   const MapResetRequested();
 }
+
+class MapPostDetailVisibilityChanged extends MapEvent {
+  final bool isPostDetailVisible;
+
+  const MapPostDetailVisibilityChanged(this.isPostDetailVisible);
+
+  @override
+  List<Object?> get props => [isPostDetailVisible];
+}

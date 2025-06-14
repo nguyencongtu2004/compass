@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:minecraft_compass/models/user_model.dart';
+import 'package:minecraft_compass/presentation/friend/friend_list_page.dart';
 import 'package:minecraft_compass/presentation/messaging/chat/chat_page.dart';
 import 'package:minecraft_compass/presentation/messaging/conversation/conversation_list_page.dart';
 import 'package:minecraft_compass/presentation/newfeed/create_post_page.dart';
@@ -65,8 +66,7 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.friendListRoute, // friends
           builder: (context, state) {
-            final initialPage = 2; // Friends page index
-            return HomePage(initialPage: initialPage);
+            return FriendListPage();
           },
         ),
         GoRoute(

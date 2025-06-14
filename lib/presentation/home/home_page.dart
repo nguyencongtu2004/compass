@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:minecraft_compass/presentation/compass/bloc/compass_bloc.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_appbar.dart';
@@ -11,11 +12,10 @@ import 'package:minecraft_compass/presentation/map/map_page.dart';
 import 'package:minecraft_compass/presentation/core/widgets/message_badge_icon.dart';
 import 'package:minecraft_compass/presentation/messaging/conversation/conversation_list_page.dart';
 import 'package:minecraft_compass/presentation/messaging/conversation/bloc/conversation_bloc.dart';
-import 'package:minecraft_compass/presentation/newfeed/newfeed_page.dart';
 import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
+import 'package:minecraft_compass/router/app_routes.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../profile/profile_page.dart';
-import '../friend/friend_list_page.dart';
 
 class HomePage extends StatefulWidget {
   final int initialPage;
@@ -33,22 +33,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late PageController _pageController;
-  late PageController _midPageController;
-  String page1Title = 'Bản đồ';
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: widget.initialPage);
-    _midPageController = PageController(initialPage: 0);
-    _midPageController.addListener(() {
-      // Cập nhật tiêu đề khi cuộn trang giữa
-      if (_midPageController.page == 0) {
-        page1Title = 'Bản đồ';
-      } else if (_midPageController.page == 1) {
-        page1Title = 'Bản tin';
-      }
-      setState(() {});
-    });
 
     // Chỉ cập nhật vị trí, không load lại toàn bộ dữ liệu vì đã được khởi tạo trong splash
     _updateLocationOnStart();
@@ -116,13 +104,13 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          // Trang 1: Compass (giữa - mặc định)
+          // Trang 1: Bản đồ (giữa - mặc định)
           KeepAliveWrapper(
             child: CommonScaffold(
               isAppBarOverlay: true,
               resizeToAvoidBottomInset: false,
               appBar: CommonAppbar(
-                title: page1Title,
+                title: 'Bản đồ',
                 isBackgroudTransparentGradient: true,
                 leftWidget: GestureDetector(
                   onTap: () => _goToPage(0),
@@ -139,70 +127,29 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                 ),
-                rightWidget: GestureDetector(
-                  onTap: () => _goToPage(2),
-                  child: const Icon(Icons.people_alt, size: AppSpacing.md4),
-                ),
-              ),
-              body: PageView(
-                controller: _midPageController,
-                scrollDirection: Axis.vertical,
-                children: [
-                  MapPage(
-                    // Chiều cao toolbar + status bar
-                    paddingTop: AppSpacing.toolBarHeight(context),
-                    onBackPressed: () {
-                      // Quay lại trang la bàn
-                      _midPageController.animateToPage(
-                        1,
-                        duration: const Duration(milliseconds: 250),
-                        curve: Curves.easeInOutCubic,
-                      );
-                    },
-                  ),
-                  KeepAliveWrapper(
-                    child: NewFeedPage(
-                      paddingTop: AppSpacing.toolBarHeight(context),
-                    ),
-                  ),
-                  // KeepAliveWrapper(
-                  //   child: CompassPage(
-                  //     targetLat: double.tryParse(
-                  //       widget.queryParams?['lat'] ?? '',
-                  //     ),
-                  //     targetLng: double.tryParse(
-                  //       widget.queryParams?['lng'] ?? '',
-                  //     ),
-                  //     friendName: widget.queryParams?['friendName'],
-                  //   ),
-                  // ),
-                ],
-              ),
-            ),
-          ),
-
-          // Trang 2: Friend List (phải)
-          KeepAliveWrapper(
-            child: CommonScaffold(
-              appBar: CommonAppbar(
-                title: 'Bạn bè',
-                leftWidget: CommonBackButton(onPressed: () => _goToPage(1)),
                 rightWidget: MessageBadgeIcon(
                   icon: Icons.message,
                   size: AppSpacing.md4,
-                  onTap: () => _goToPage(3),
+                  onTap: () => _goToPage(2),
                 ),
               ),
-              body: const FriendListPage(),
+              body: MapPage(
+                // Chiều cao toolbar + status bar
+                paddingTop: AppSpacing.toolBarHeight(context),
+              ),
             ),
           ),
 
-          // Trang 3: Messages (phải nhất)
+          // Trang 2: Messages (phải)
           KeepAliveWrapper(
             child: CommonScaffold(
               appBar: CommonAppbar(
                 title: 'Tin nhắn',
-                leftWidget: CommonBackButton(onPressed: () => _goToPage(2)),
+                leftWidget: CommonBackButton(onPressed: () => _goToPage(1)),
+                rightWidget: IconButton(
+                  icon: const Icon(Icons.people),
+                  onPressed: () => context.push(AppRoutes.friendListRoute),
+                ),
               ),
               body: const ConversationListPage(),
             ),

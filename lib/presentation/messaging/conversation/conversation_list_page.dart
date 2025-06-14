@@ -115,6 +115,15 @@ class _ConversationListPageState extends State<ConversationListPage> {
                     ),
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: AppSpacing.lg),
+                  ElevatedButton(
+                    onPressed: () => context.push(AppRoutes.friendListRoute),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary(context),
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Đi đến bạn bè'),
+                  ),
                 ],
               ),
             );
@@ -144,9 +153,9 @@ class _ConversationListPageState extends State<ConversationListPage> {
                   conversation: conversation,
                   currentUserId: authState.user.uid,
                   onTap: () => context.push(
-                      '${AppRoutes.chatRoute}/${conversation.id}',
-                      extra: {'otherUid': otherUid},
-                    ),
+                    '${AppRoutes.chatRoute}/${conversation.id}',
+                    extra: {'otherUid': otherUid},
+                  ),
                   onDelete: () => _showDeleteDialog(conversation.id),
                 );
               },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
+import 'package:minecraft_compass/presentation/core/widgets/overlay/overlay_manager.dart';
 
 /// Widget thanh tin nhắn nhanh với 3 icon gợi ý và khả năng mở chat detail
 class QuickMessageBar extends StatelessWidget {
@@ -12,12 +13,47 @@ class QuickMessageBar extends StatelessWidget {
     required this.onQuickMessageSend,
     required this.onOpenDetailChat,
   });
-  // Danh sách các tin nhắn gợi ý với text
+
+  // Danh sách các tin nhắn gợi ý với text và emoji tương ứng
   static const List<Map<String, dynamic>> _quickMessages = [
-    {'text': '❤️', 'message': '❤️ Tuyệt vời!'},
-    {'text': '📍', 'message': '📍 Chỗ này ở đâu vậy?'},
-    {'text': '👍', 'message': '👍 Nice!'},
+    {
+      'text': '❤️',
+      'message': '❤️ Tuyệt vời!',
+      'emojis': ['❤️', '💖', '😍', '🥰', '💕'],
+    },
+    {
+      'text': '📍',
+      'message': '📍 Chỗ này ở đâu vậy?',
+      'emojis': ['📍', '🗺️', '🧭', '📌', '🏞️'],
+    },
+    {
+      'text': '👍',
+      'message': '👍 Nice!',
+      'emojis': ['👍', '👏', '🎉', '✨', '🔥'],
+    },
   ];
+
+  void _onEmojiTap(BuildContext context, Map<String, dynamic> messageData) {
+    // Hiển thị hiệu ứng emoji bay trước
+    OverlayManager.showEmojiRain(
+      context,
+      emojis: List<String>.from(messageData['emojis']),
+      duration: const Duration(seconds: 2),
+      emojiCount: 20,
+      emojiSize: 50.0,
+      onComplete: () {
+        // Hiển thị toast thành công với thiết kế mới
+        OverlayManager.showSuccess(
+          context,
+          message: 'Đã gửi tin nhắn thành công! 🎉',
+        );
+      },
+    );
+
+    // Sau đó gửi tin nhắn
+    onQuickMessageSend(messageData['message']);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -57,13 +93,14 @@ class QuickMessageBar extends StatelessWidget {
                             fontSize: 16,
                           ),
                         ),
-                      ), // 3 text gợi ý ở bên phải
+                      ),
+
+                      // 3 text gợi ý ở bên phải
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: _quickMessages.map((messageData) {
                           return GestureDetector(
-                            onTap: () =>
-                                onQuickMessageSend(messageData['message']),
+                            onTap: () => _onEmojiTap(context, messageData),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: AppSpacing.xs,
@@ -71,6 +108,12 @@ class QuickMessageBar extends StatelessWidget {
                               ),
                               margin: const EdgeInsets.only(
                                 left: AppSpacing.micro,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                  AppSpacing.radiusLg,
+                                ),
+                                color: Colors.transparent,
                               ),
                               child: Text(
                                 messageData['text'],

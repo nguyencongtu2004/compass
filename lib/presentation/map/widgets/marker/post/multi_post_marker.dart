@@ -142,7 +142,7 @@ class MultiPostMarker extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: Colors.white,
-                  width: 4, // Tăng độ dày border
+                  width: 4,
                 ),
                 boxShadow: [
                   BoxShadow(

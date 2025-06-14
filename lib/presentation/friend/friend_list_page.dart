@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_back_button.dart';
+import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
+import 'package:minecraft_compass/presentation/core/widgets/widgets.dart';
 import 'bloc/friend_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../../models/user_model.dart';
@@ -62,74 +65,105 @@ class _FriendListPageState extends State<FriendListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Add friend section
-        AddFriendSection(
-          emailController: _emailController,
-          isSearching: _isSearching,
-          onAddFriend: _addFriend,
-          onClear: () {
-            context.read<FriendBloc>().add(const ClearSearchResults());
-          },
-        ),
+    return CommonScaffold(
+      appBar: CommonAppbar(
+        title: 'Danh sách bạn bè',
+        leftWidget: CommonBackButton(),
+      ),
+      body: Column(
+        children: [
+          // Add friend section
+          AddFriendSection(
+            emailController: _emailController,
+            isSearching: _isSearching,
+            onAddFriend: _addFriend,
+            onClear: () {
+              context.read<FriendBloc>().add(const ClearSearchResults());
+            },
+          ),
 
-        // Friends list
-        Expanded(
-          child: BlocConsumer<FriendBloc, FriendState>(
-            listener: (context, state) {
-              if (state is FriendOperationFailure) {
-                setState(() => _isSearching = false);
+          // Friends list
+          Expanded(
+            child: BlocConsumer<FriendBloc, FriendState>(
+              listener: (context, state) {
+                if (state is FriendOperationFailure) {
+                  setState(() => _isSearching = false);
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: AppColors.error(context),
-                  ),
-                );
-              }
-
-              if (state is UserSearchResult) {
-                setState(() => _isSearching = false);
-
-                if (state.user != null) {
-                  _showAddFriendDialog(state.user!);
-                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Không tìm thấy người dùng')),
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: AppColors.error(context),
+                    ),
                   );
                 }
-                context.read<FriendBloc>().add(const ClearSearchResults());
-              }
-              
-              if (state is FriendRequestSent) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Đã gửi lời mời kết bạn'),
-                    backgroundColor: AppColors.success(context),
-                  ),
-                );
-                _emailController.clear();
-                // Clear search results and return to friends list
-                context.read<FriendBloc>().add(const ClearSearchResults());
-                // Reload để cập nhật danh sách bạn bè mới
-                _loadFriends();
-              }
 
-              // Thêm xử lý cho các trường hợp khác
-              if (state is FriendAndRequestsLoadSuccess) {
-                // Lưu lại state thành công để sử dụng cho các state khác
-                _lastSuccessState = state;
-              }
-            },
-            builder: (context, state) {
-              // Lưu lại state thành công cuối cùng
-              if (state is FriendAndRequestsLoadSuccess) {
-                _lastSuccessState = state;
-              }
+                if (state is UserSearchResult) {
+                  setState(() => _isSearching = false);
 
-              if (state is FriendLoadInProgress) {
-                // Nếu đang loading mà có state thành công trước đó, hiển thị state đó
+                  if (state.user != null) {
+                    _showAddFriendDialog(state.user!);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Không tìm thấy người dùng'),
+                      ),
+                    );
+                  }
+                  context.read<FriendBloc>().add(const ClearSearchResults());
+                }
+
+                if (state is FriendRequestSent) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Đã gửi lời mời kết bạn'),
+                      backgroundColor: AppColors.success(context),
+                    ),
+                  );
+                  _emailController.clear();
+                  // Clear search results and return to friends list
+                  context.read<FriendBloc>().add(const ClearSearchResults());
+                  // Reload để cập nhật danh sách bạn bè mới
+                  _loadFriends();
+                }
+
+                // Thêm xử lý cho các trường hợp khác
+                if (state is FriendAndRequestsLoadSuccess) {
+                  // Lưu lại state thành công để sử dụng cho các state khác
+                  _lastSuccessState = state;
+                }
+              },
+              builder: (context, state) {
+                // Lưu lại state thành công cuối cùng
+                if (state is FriendAndRequestsLoadSuccess) {
+                  _lastSuccessState = state;
+                }
+
+                if (state is FriendLoadInProgress) {
+                  // Nếu đang loading mà có state thành công trước đó, hiển thị state đó
+                  if (_lastSuccessState != null) {
+                    return FriendsListView(
+                      state: _lastSuccessState!,
+                      onRemoveFriend: _showRemoveFriendDialog,
+                      onAcceptRequest: _acceptRequest,
+                      onDeclineRequest: _declineRequest,
+                      onRefresh: _loadFriends,
+                    );
+                  }
+                  return const LoadingIndicator();
+                }
+
+                if (state is FriendAndRequestsLoadSuccess) {
+                  return FriendsListView(
+                    state: state,
+                    onRemoveFriend: _showRemoveFriendDialog,
+                    onAcceptRequest: _acceptRequest,
+                    onDeclineRequest: _declineRequest,
+                    onRefresh: _loadFriends,
+                  );
+                }
+
+                // Đối với các state khác (UserSearchResult, FriendRequestSent, etc.),
+                // hiển thị UI cuối cùng thành công nếu có
                 if (_lastSuccessState != null) {
                   return FriendsListView(
                     state: _lastSuccessState!,
@@ -139,36 +173,13 @@ class _FriendListPageState extends State<FriendListPage> {
                     onRefresh: _loadFriends,
                   );
                 }
-                return const LoadingIndicator();
-              }
 
-              if (state is FriendAndRequestsLoadSuccess) {
-                return FriendsListView(
-                  state: state,
-                  onRemoveFriend: _showRemoveFriendDialog,
-                  onAcceptRequest: _acceptRequest,
-                  onDeclineRequest: _declineRequest,
-                  onRefresh: _loadFriends,
-                );
-              }
-
-              // Đối với các state khác (UserSearchResult, FriendRequestSent, etc.),
-              // hiển thị UI cuối cùng thành công nếu có
-              if (_lastSuccessState != null) {
-                return FriendsListView(
-                  state: _lastSuccessState!,
-                  onRemoveFriend: _showRemoveFriendDialog,
-                  onAcceptRequest: _acceptRequest,
-                  onDeclineRequest: _declineRequest,
-                  onRefresh: _loadFriends,
-                );
-              }
-
-              return const Center(child: Text('Có lỗi xảy ra'));
-            },
+                return const Center(child: Text('Có lỗi xảy ra'));
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

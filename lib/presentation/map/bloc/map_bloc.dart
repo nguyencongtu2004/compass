@@ -38,11 +38,11 @@ class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
     on<MapLocationUpdated>(_onMapLocationUpdated);
     on<MapFriendsUpdated>(_onMapFriendsUpdated);
     on<MapFeedPostsUpdated>(_onMapFeedPostsUpdated);
-    on<MapPositionChanged>(_onMapPositionChanged);
-    on<MapAutoFitBoundsRequested>(_onMapAutoFitBoundsRequested);
+    on<MapPositionChanged>(_onMapPositionChanged);    on<MapAutoFitBoundsRequested>(_onMapAutoFitBoundsRequested);
     on<MapLoadPostsByLocationRequested>(_onMapLoadPostsByLocationRequested);
     on<MapDefaultLocationSet>(_onMapDefaultLocationSet);
     on<MapResetRequested>(_onMapResetRequested);
+    on<MapPostDetailVisibilityChanged>(_onMapPostDetailVisibilityChanged);
 
     // Lắng nghe thay đổi từ các BLoC khác
     _setupBlocListeners();
@@ -438,6 +438,16 @@ class MapBloc extends Bloc<MapEvent, MapState> with BlocSubscriptionMixin {
   void _onMapResetRequested(MapResetRequested event, Emitter<MapState> emit) {
     // Reset map về trạng thái ban đầu
     emit(const MapInitial());
+  }
+
+  void _onMapPostDetailVisibilityChanged(
+    MapPostDetailVisibilityChanged event,
+    Emitter<MapState> emit,
+  ) {
+    if (state is MapReady) {
+      final currentState = state as MapReady;
+      emit(currentState.copyWith(isPostDetailVisible: event.isPostDetailVisible));
+    }
   }
 
   @override

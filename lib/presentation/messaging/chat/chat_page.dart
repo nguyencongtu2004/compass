@@ -164,6 +164,7 @@ class _ChatPageContentState extends State<_ChatPageContent>
   void _scrollToBottom() {
     scrollToBottom();
   }
+  
   void _loadData() {
     loadData();
   }
