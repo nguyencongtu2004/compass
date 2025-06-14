@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_avatar.dart';
 import 'package:minecraft_compass/presentation/profile/bloc/profile_bloc.dart';
+import 'package:minecraft_compass/presentation/locale/bloc/locale_bloc.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import 'package:minecraft_compass/utils/app_initialization.dart';
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../friend/bloc/friend_bloc.dart';
 import '../core/theme/app_colors.dart';
@@ -57,12 +59,12 @@ class _ProfilePageState extends State<ProfilePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Đăng xuất'),
-        content: const Text('Bạn có chắc chắn muốn đăng xuất?'),
+        title: Text(context.l10n.signOut),
+        content: Text(context.l10n.signOutConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -77,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
               backgroundColor: AppColors.error(context),
               foregroundColor: Colors.white,
             ),
-            child: const Text('Đăng xuất'),
+            child: Text(context.l10n.signOut),
           ),
         ],
       ),
@@ -126,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text(
                           user.displayName.isNotEmpty
                               ? user.displayName
-                              : 'Người dùng',
+                              : context.l10n.user,
                           style: AppTextStyles.titleLarge,
                         ),
                         const SizedBox(height: 4),
@@ -143,17 +145,15 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
 
-                const SizedBox(height: 24),
-
-                // Settings section
+                const SizedBox(height: 24), // Settings section
                 Card(
                   child: Column(
                     children: [
                       ListTile(
                         leading: const Icon(Icons.location_on),
-                        title: const Text('Chia sẻ vị trí'),
-                        subtitle: const Text(
-                          'Cho phép bạn bè xem vị trí của bạn',
+                        title: Text(context.l10n.shareLocation),
+                        subtitle: Text(
+                          context.l10n.allowFriendsToSeeYourLocation,
                         ),
                         trailing: Switch(
                           value: _isLocationSharing,
@@ -161,15 +161,36 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       const Divider(height: 1),
+                      BlocBuilder<LocaleBloc, LocaleState>(
+                        builder: (context, localeState) {
+                          String currentLanguage = 'English';
+                          if (localeState is LocaleLoaded) {
+                            currentLanguage =
+                                localeState.locale.languageCode == 'vi'
+                                ? 'Tiếng Việt'
+                                : 'English';
+                          }
+                          return ListTile(
+                            leading: const Icon(Icons.language),
+                            title: Text(context.l10n.language),
+                            subtitle: Text(currentLanguage),
+                            trailing: const Icon(Icons.arrow_forward_ios),
+                            onTap: () {
+                              context.push(AppRoutes.languageSettingsRoute);
+                            },
+                          );
+                        },
+                      ),
+                      const Divider(height: 1),
                       ListTile(
                         leading: const Icon(Icons.compass_calibration),
-                        title: const Text('Về la bàn'),
-                        subtitle: const Text('Xem thông tin về ứng dụng'),
+                        title: Text(context.l10n.aboutCompass),
+                        subtitle: Text(context.l10n.viewAppInformation),
                         trailing: const Icon(Icons.arrow_forward_ios),
                         onTap: () {
                           showAboutDialog(
                             context: context,
-                            applicationName: 'CompassFriend',
+                            applicationName: context.l10n.appTitle,
                             applicationVersion: '1.0.0',
                             applicationIcon: Icon(
                               Icons.compass_calibration,
@@ -177,9 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               color: AppColors.primaryLight,
                             ),
                             children: [
-                              const Text(
-                                'Ứng dụng la bàn kết nối với bạn bè, giúp bạn định hướng đến vị trí của người thân.',
-                              ),
+                              Text(context.l10n.compassAppDescription),
                             ],
                           );
                         },
@@ -213,7 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Vị trí của bạn đang được chia sẻ với bạn bè',
+                            context.l10n.yourLocationIsBeingShared,
                             style: TextStyle(color: AppColors.success(context)),
                           ),
                         ),
@@ -221,15 +240,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
 
-                const SizedBox(height: 32),
-
-                // Logout button
+                const SizedBox(height: 32), // Logout button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _logout,
                     icon: const Icon(Icons.logout),
-                    label: const Text('Đăng xuất'),
+                    label: Text(context.l10n.signOut),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.error(context),
                       foregroundColor: Colors.white,
@@ -261,14 +278,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       const ProfileLoadRequested(),
                     );
                   },
-                  child: const Text('Thử lại'),
+                  child: Text(context.l10n.retry),
                 ),
                 const SizedBox(height: 16),
-
                 ElevatedButton.icon(
                   onPressed: _logout,
                   icon: const Icon(Icons.logout),
-                  label: const Text('Đăng xuất'),
+                  label: Text(context.l10n.signOut),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.error(context),
                     foregroundColor: Colors.white,
@@ -280,7 +296,7 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }
 
-        return const Center(child: Text('Không thể tải thông tin người dùng'));
+        return Center(child: Text(context.l10n.cannotLoadUserInformation));
       },
     );
   }

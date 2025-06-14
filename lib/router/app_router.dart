@@ -5,6 +5,7 @@ import 'package:minecraft_compass/presentation/messaging/chat/chat_page.dart';
 import 'package:minecraft_compass/presentation/messaging/conversation/conversation_list_page.dart';
 import 'package:minecraft_compass/presentation/newfeed/create_post_page.dart';
 import 'package:minecraft_compass/presentation/profile/edit_profile_page.dart';
+import 'package:minecraft_compass/presentation/settings/language_settings_page.dart';
 import 'package:minecraft_compass/presentation/splash/splash_page.dart';
 import 'package:minecraft_compass/router/app_routes.dart';
 import '../presentation/auth/login_page.dart';
@@ -95,6 +96,10 @@ class AppRouter {
 
             return ChatPage(conversationId: conversationId, otherUid: otherUid);
           },
+        ),
+        GoRoute(
+          path: AppRoutes.languageSettingsRoute,
+          builder: (context, state) => const LanguageSettingsPage(),
         ),
       ],
     );

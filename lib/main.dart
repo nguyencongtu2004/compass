@@ -12,7 +12,7 @@ import 'package:minecraft_compass/di/injection.dart';
 void main() async {
   // Giữ native splash screen hiển thị cho đến khi app sẵn sàng
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  
+
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // Initialize Firebase FIRST before DI

@@ -1,0 +1,287 @@
+{
+    "@@locale": "en",
+    "appTitle": "Minecraft Compass",
+    "@appTitle": {
+        "description": "The title of the application"
+    },
+    "signIn": "Sign In",
+    "@signIn": {
+        "description": "The sign in button"
+    },
+    "signOut": "Sign Out",
+    "@signOut": {
+        "description": "The sign out button"
+    },
+    "signUp": "Sign Up",
+    "@signUp": {
+        "description": "The sign up button"
+    },
+    "email": "Email",
+    "@email": {
+        "description": "The email input field"
+    },
+    "password": "Password",
+    "@password": {
+        "description": "The password input field"
+    },
+    "confirmPassword": "Confirm Password",
+    "@confirmPassword": {
+        "description": "The confirm password input field"
+    },
+    "forgotPassword": "Forgot Password?",
+    "@forgotPassword": {
+        "description": "Link to reset password"
+    },
+    "createAccount": "Create Account",
+    "@createAccount": {
+        "description": "Button to create a new account"
+    },
+    "alreadyHaveAccount": "Already have an account?",
+    "@alreadyHaveAccount": {
+        "description": "Text for users who already have an account"
+    },
+    "dontHaveAccount": "Don't have an account?",
+    "@dontHaveAccount": {
+        "description": "Text for users who do not have an account"
+    },
+    "signInWithGoogle": "Sign in with Google",
+    "@signInWithGoogle": {
+        "description": "Button to sign in using Google account"
+    },
+    "home": "Home",
+    "@home": {
+        "description": "The home screen of the app"
+    },
+    "compass": "Compass",
+    "@compass": {
+        "description": "The compass feature of the app"
+    },
+    "map": "Map",
+    "@map": {
+        "description": "The map feature of the app"
+    },
+    "profile": "Profile",
+    "@profile": {
+        "description": "User profile section"
+    },
+    "friends": "Friends",
+    "@friends": {
+        "description": "Friends section in the app"
+    },
+    "messages": "Messages",
+    "@messages": {
+        "description": "Messages section in the app"
+    },
+    "newsfeed": "Newsfeed",
+    "@newsfeed": {
+        "description": "Newsfeed section in the app"
+    },
+    "settings": "Settings",
+    "@settings": {
+        "description": "Settings section in the app"
+    },
+    "save": "Save",
+    "@save": {
+        "description": "Button to save changes"
+    },
+    "cancel": "Cancel",
+    "@cancel": {
+        "description": "Button to cancel an action"
+    },
+    "delete": "Delete",
+    "@delete": {
+        "description": "Button to delete an item"
+    },
+    "edit": "Edit",
+    "@edit": {
+        "description": "Button to edit an item"
+    },
+    "add": "Add",
+    "@add": {
+        "description": "Button to add a new item"
+    },
+    "remove": "Remove",
+    "@remove": {
+        "description": "Button to remove an item"
+    },
+    "confirm": "Confirm",
+    "@confirm": {
+        "description": "Button to confirm an action"
+    },
+    "loading": "Loading...",
+    "@loading": {
+        "description": "Text displayed while loading data"
+    },
+    "error": "Error",
+    "@error": {
+        "description": "Generic error message"
+    },
+    "success": "Success",
+    "@success": {
+        "description": "Generic success message"
+    },
+    "retry": "Retry",
+    "@retry": {
+        "description": "Button to retry an action"
+    },
+    "close": "Close",
+    "@close": {
+        "description": "Button to close a dialog or popup"
+    },
+    "ok": "OK",
+    "@ok": {
+        "description": "Button to acknowledge a message"
+    },
+    "yes": "Yes",
+    "@yes": {
+        "description": "Affirmative response button"
+    },
+    "no": "No",
+    "@no": {
+        "description": "Negative response button"
+    },
+    "compassTitle": "Compass",
+    "@compassTitle": {
+        "description": "Title for the compass feature"
+    },
+    "direction": "Direction",
+    "@direction": {
+        "description": "The direction displayed by the compass"
+    },
+    "coordinates": "Coordinates",
+    "@coordinates": {
+        "description": "The coordinates displayed on the compass"
+    },
+    "latitude": "Latitude",
+    "@latitude": {
+        "description": "Latitude coordinate"
+    },
+    "longitude": "Longitude",
+    "@longitude": {
+        "description": "Longitude coordinate"
+    },
+    "accuracy": "Accuracy",
+    "@accuracy": {
+        "description": "The accuracy of the location"
+    },
+    "meters": "meters",
+    "@meters": {
+        "description": "Unit of measurement for distance"
+    },
+    "mapTitle": "Map",
+    "@mapTitle": {
+        "description": "Title for the map feature"
+    },
+    "currentLocation": "Current Location",
+    "@currentLocation": {
+        "description": "Label for the user's current location on the map"
+    },
+    "searchLocation": "Search location...",
+    "@searchLocation": {
+        "description": "Placeholder text for the location search input"
+    },
+    "markers": "Markers",
+    "layers": "Layers",
+    "friendsTitle": "Friends",
+    "addFriend": "Add Friend",
+    "removeFriend": "Remove Friend",
+    "friendRequests": "Friend Requests",
+    "online": "Online",
+    "offline": "Offline",
+    "lastSeen": "Last seen",
+    "messagesTitle": "Messages",
+    "sendMessage": "Send message...",
+    "typeMessage": "Type a message...",
+    "send": "Send",
+    "conversation": "Conversation",
+    "profileTitle": "Profile",
+    "editProfile": "Edit Profile",
+    "displayName": "Display Name",
+    "phoneNumber": "Phone Number",
+    "bio": "Bio",
+    "changeProfilePicture": "Change Profile Picture",
+    "newsfeedTitle": "Newsfeed",
+    "createPost": "Create Post",
+    "whatsOnYourMind": "What's on your mind?",
+    "post": "Post",
+    "like": "Like",
+    "comment": "Comment",
+    "share": "Share",
+    "errorOccurred": "An error occurred",
+    "networkError": "Network error",
+    "invalidCredentials": "Invalid credentials",
+    "userNotFound": "User not found",
+    "emailInUse": "Email already in use",
+    "weakPassword": "Password is too weak",
+    "invalidEmail": "Invalid email address",
+    "locationPermissionDenied": "Location permission denied",
+    "locationServiceDisabled": "Location service disabled",
+    "loginSuccessful": "Login successful",
+    "signUpSuccessful": "Sign up successful",
+    "profileUpdated": "Profile updated successfully",
+    "postCreated": "Post created successfully",
+    "friendAdded": "Friend added successfully",
+    "messageSent": "Message sent",
+    "fieldRequired": "This field is required",
+    "invalidEmailFormat": "Invalid email format",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "now": "Now",
+    "minutesAgo": "{minutes} minutes ago",
+    "@minutesAgo": {
+        "placeholders": {
+            "minutes": {
+                "type": "int"
+            }
+        }
+    },
+    "hoursAgo": "{hours} hours ago",
+    "@hoursAgo": {
+        "placeholders": {
+            "hours": {
+                "type": "int"
+            }
+        }
+    },
+    "daysAgo": "{days} days ago",
+    "@daysAgo": {
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "shareLocation": "Share Location",
+    "allowFriendsToSeeYourLocation": "Allow friends to see your location",
+    "language": "Language",
+    "aboutCompass": "About Compass",
+    "viewAppInformation": "View app information",
+    "compassAppDescription": "A compass app that connects with friends, helping you navigate to your loved ones' locations.",
+    "@compassAppDescription": {
+        "description": "Description of the compass app"
+    },
+    "yourLocationIsBeingShared": "Your location is being shared with friends",
+    "@yourLocationIsBeingShared": {
+        "description": "Message indicating that the user's location is being shared"
+    },
+    "locationSharingEnabled": "Location sharing enabled",
+    "@locationSharingEnabled": {
+        "description": "Message indicating that location sharing is enabled"
+    },
+    "signOutConfirmation": "Are you sure you want to sign out?",
+    "@signOutConfirmation": {
+        "description": "Confirmation message when signing out"
+    },
+    "user": "User",
+    "@user": {
+        "description": "Label for user information"
+    },
+    "cannotLoadUserInformation": "Cannot load user information",
+    "@cannotLoadUserInformation": {
+        "description": "Error message when user information cannot be loaded"
+    },
+    "appWillRestart": "The app will restart to apply the new language",
+    "@appWillRestart": {
+        "description": "Message indicating that the app will restart"
+    }
+}

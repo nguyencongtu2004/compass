@@ -10,6 +10,7 @@ abstract final class AppRoutes {
   static const String createPostRoute = '/create-post';
   static const String conversationsRoute = '/conversations';
   static const String chatRoute = '/chat';
+  static const String languageSettingsRoute = '/settings/language';
 
   // static const String homeCompassRoute = '/home/compass';
   // static const String homeFriendsRoute = '/home/friends';
