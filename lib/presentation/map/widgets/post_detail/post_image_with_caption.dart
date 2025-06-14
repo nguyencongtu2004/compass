@@ -5,10 +5,9 @@ import 'package:minecraft_compass/presentation/core/theme/app_text_styles.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_cached_network_image.dart';
 
 class PostImageWithCaption extends StatelessWidget {
-  const PostImageWithCaption({super.key, required this.post, this.index});
+  const PostImageWithCaption({super.key, required this.post});
 
   final NewsfeedPost post;
-  final int? index;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,7 @@ class PostImageWithCaption extends StatelessWidget {
       child: Stack(
         children: [
           Hero(
-            tag: '${post.id}_${index ?? 0}',
+            tag: post.id,
             child: AspectRatio(
               aspectRatio: 1, // Định dạng vuông
               child: CommonCachedNetworkImage(

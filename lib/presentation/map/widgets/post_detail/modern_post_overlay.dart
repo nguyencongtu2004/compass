@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:minecraft_compass/di/injection.dart';
 import 'package:minecraft_compass/models/newsfeed_post_model.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
@@ -10,7 +9,6 @@ import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_imag
 import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_user_info.dart';
 import 'package:minecraft_compass/presentation/map/widgets/post_detail/post_thumbnail_strip.dart';
 import 'package:minecraft_compass/presentation/auth/bloc/auth_bloc.dart';
-import 'package:minecraft_compass/router/app_routes.dart';
 import 'package:minecraft_compass/models/message_model.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
 import 'package:minecraft_compass/data/repositories/message_repository.dart';
@@ -74,7 +72,7 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
     duration: const Duration(milliseconds: 300),
     curve: Curves.easeInOutCubicEmphasized,
   );
-  void _sendMessage(BuildContext context) {
+  void _sendMessage(BuildContext context, String userMessage) {
     final currentPost = widget.posts[_currentIndex];
     final authState = context.read<AuthBloc>().state;
 
@@ -93,21 +91,23 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
         return;
       }
 
-      // Tạo conversation và navigate ngay lập tức
-      _createConversationAndNavigate(
+      // Tạo conversation và gửi 2 messages
+      _createConversationAndSendMessages(
         context,
         myUid,
         postAuthorUid,
         currentPost,
+        userMessage,
       );
     }
   }
 
-  void _createConversationAndNavigate(
+  void _createConversationAndSendMessages(
     BuildContext context,
     String myUid,
     String postAuthorUid,
     NewsfeedPost currentPost,
+    String userMessage,
   ) async {
     try {
       // Tạo conversation trực tiếp không qua bloc để tránh multiple listeners
@@ -117,7 +117,7 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
         postAuthorUid,
       );
 
-      // Gửi tin nhắn chứa post trực tiếp qua repository
+      // Gửi message chứa post trước
       await messageRepository.sendMessage(
         conversationId: conversation.id,
         senderId: myUid,
@@ -125,12 +125,20 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
         type: MessageType.post,
       );
 
-      // Navigate to chat
-      Navigator.of(context).pop(); // Close overlay first
-      context.push(
-        '${AppRoutes.chatRoute}/${conversation.id}',
-        extra: {'otherUid': postAuthorUid},
+      // Gửi message của người dùng sau
+      await messageRepository.sendMessage(
+        conversationId: conversation.id,
+        senderId: myUid,
+        content: userMessage,
+        type: MessageType.text,
       );
+
+      // Navigate to chat
+      // Navigator.of(context).pop(); // Close overlay first
+      // context.push(
+      //   '${AppRoutes.chatRoute}/${conversation.id}',
+      //   extra: {'otherUid': postAuthorUid},
+      // );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -145,7 +153,7 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
     // TODO: Implement add comment functionality
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Chức năng bình luận sẽ được triển khai sau'), 
+        content: Text('Chức năng bình luận sẽ được triển khai sau'),
       ),
     );
   }
@@ -219,22 +227,24 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
               horizontal: AppSpacing.md,
               vertical: AppSpacing.sm,
             ),
-            child: Column(
-              children: [
-                // User info cố định ở trên gần ảnh
-                PostUserInfo(post: post),
-                const SizedBox(height: AppSpacing.md),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // User info cố định ở trên gần ảnh
+                  PostUserInfo(post: post),
+                  const SizedBox(height: AppSpacing.md),
 
-                // Image container với caption đè lên
-                PostImageWithCaption(post: post, index: index),
-
-                // Action buttons ở dưới ảnh
-                const SizedBox(height: AppSpacing.md),
-                PostActionButtons(
-                  onMessageTap: () => _sendMessage(context),
-                  onCommentTap: () => _addComment(context),
-                ),
-              ],
+                  // Image container với caption đè lên
+                  PostImageWithCaption(post: post),
+                  // Action buttons ở dưới ảnh
+                  const SizedBox(height: AppSpacing.md),
+                  PostActionButtons(
+                    post: post,
+                    onMessageSend: (message) => _sendMessage(context, message),
+                    onCommentTap: () => _addComment(context),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -247,22 +257,40 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
           horizontal: AppSpacing.md,
           vertical: AppSpacing.sm,
         ),
-        child: Column(
-          children: [
-            // User info cố định ở trên gần ảnh
-            PostUserInfo(post: post),
-            const SizedBox(height: AppSpacing.md),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              // User info cố định ở trên gần ảnh
+              PostUserInfo(post: post),
+              const SizedBox(
+                height: AppSpacing.md,
+              ), // Image container với caption đè lên
+              PostImageWithCaption(post: post),
 
-            // Image container với caption đè lên
-            PostImageWithCaption(post: post, index: 0),
-
-            // Action buttons ở dưới ảnh
-            const SizedBox(height: AppSpacing.md),
-            PostActionButtons(
-              onMessageTap: () => _sendMessage(context),
-              onCommentTap: () => _addComment(context),
-            ),
-          ],
+              // Action buttons ở dưới ảnh
+              const SizedBox(height: AppSpacing.md),
+              Builder(
+                builder: (context) {
+                  final authState = context.read<AuthBloc>().state;
+                  final bool isMyPost;
+                  if (authState is AuthAuthenticated) {
+                    final myUid = authState.user.uid;
+                    final postAuthorUid = post.userId;
+                    isMyPost = myUid == postAuthorUid;
+                  } else {
+                    // Chưa đăng nhập thì không phải post của mình
+                    isMyPost = false;
+                  }
+                  return PostActionButtons(
+                    post: post,
+                    isShowChatInput: !isMyPost,
+                    onMessageSend: (message) => _sendMessage(context, message),
+                    onCommentTap: () => _addComment(context),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       );
     }

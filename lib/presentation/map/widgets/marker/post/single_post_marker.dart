@@ -19,7 +19,7 @@ class SinglePostMarker extends StatelessWidget {
         height: 120,
         child: Center(
           child: Hero(
-            tag: '${post.id}_0',
+            tag: post.id,
             child: Container(
               width: 75,
               height: 75,

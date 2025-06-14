@@ -130,7 +130,7 @@ class MultiPostMarker extends StatelessWidget {
       // Center với offset
       top: 60 + offsetY - (80 * scale) / 2, 
       child: Hero(
-        tag: '${post.id}_$index',
+        tag: post.id,
         child: Transform.rotate(
           angle: rotation,
           child: Transform.scale(

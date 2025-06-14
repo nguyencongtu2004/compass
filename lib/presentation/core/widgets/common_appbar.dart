@@ -35,6 +35,7 @@ class CommonAppbar extends StatelessWidget implements PreferredSizeWidget {
             : AppColors.surface(context),
       ),
       child: SafeArea(
+        bottom: false,
         child:
             customWidget ??
             Row(

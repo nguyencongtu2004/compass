@@ -38,6 +38,7 @@ class ChatBody extends StatelessWidget {
             messages: state.messages,
             myUid: myUid,
             scrollController: scrollController,
+            otherUser: otherUser,
           );
         }
 

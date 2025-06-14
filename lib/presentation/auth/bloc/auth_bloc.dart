@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../models/auth_exception.dart';
-import '../../../data/managers/message_bloc_manager.dart';
+import '../../messaging/chat/bloc/message_bloc_manager.dart';
 import '../../../di/injection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

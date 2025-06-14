@@ -5,11 +5,15 @@ import '../../../core/theme/app_spacing.dart';
 class MessageInput extends StatefulWidget {
   final Function(String) onSendMessage;
   final bool isEnabled;
+  final Color? backgroundColor;
+  final bool autoFocus;
 
   const MessageInput({
     super.key,
     required this.onSendMessage,
     this.isEnabled = true,
+    this.backgroundColor,
+    this.autoFocus = false,
   });
 
   @override
@@ -18,18 +22,26 @@ class MessageInput extends StatefulWidget {
 
 class _MessageInputState extends State<MessageInput> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   bool _hasText = false;
-
   @override
   void initState() {
     super.initState();
     _controller.addListener(_onTextChanged);
+    
+    // Auto focus nếu được yêu cầu
+    if (widget.autoFocus) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _focusNode.requestFocus();
+      });
+    }
   }
 
   @override
   void dispose() {
     _controller.removeListener(_onTextChanged);
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -45,6 +57,8 @@ class _MessageInputState extends State<MessageInput> {
     if (text.isNotEmpty && widget.isEnabled) {
       widget.onSendMessage(text);
       _controller.clear();
+      // Giữ focus để không ẩn bàn phím sau khi gửi
+      FocusScope.of(context).requestFocus(_focusNode);
     }
   }
 
@@ -55,81 +69,67 @@ class _MessageInputState extends State<MessageInput> {
         horizontal: AppSpacing.md,
         vertical: AppSpacing.sm,
       ),
-      decoration: BoxDecoration(
-        color: AppColors.surface(context),
-        border: Border(
-          top: BorderSide(
-            color: AppColors.outline(context).withValues(alpha: 0.2),
-            width: AppSpacing.border,
-          ),
-        ),
-      ),
+      color: widget.backgroundColor ?? AppColors.surface(context),
+
       child: SafeArea(
+        top: false,
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Expanded(
               child: TextField(
                 controller: _controller,
+                focusNode: _focusNode,
                 enabled: widget.isEnabled,
-                maxLines: 3,
+                maxLines: 5,
                 minLines: 1,
+                keyboardType: TextInputType.multiline,
                 textInputAction: TextInputAction.newline,
-                onSubmitted: (_) => _sendMessage(),
+                style: TextStyle(color: AppColors.onSurface(context)),
                 decoration: InputDecoration(
                   hintText: 'Nhập tin nhắn...',
+                  hintStyle: TextStyle(
+                    color: AppColors.onSurface(context).withValues(alpha: 0.6),
+                  ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-                    borderSide: BorderSide(
-                      color: AppColors.outline(context).withValues(alpha: 0.5),
-                    ),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusXxl),
+                    borderSide: BorderSide.none,
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-                    borderSide: BorderSide(
-                      color: AppColors.outline(context).withValues(alpha: 0.5),
-                    ),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusXxl),
+                    borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-                    borderSide: BorderSide(
-                      color: AppColors.primary(context),
-                      width: AppSpacing.border2,
-                    ),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusXxl),
+                    borderSide: BorderSide.none,
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
-                    vertical: AppSpacing.sm2,
+                    vertical: AppSpacing.sm,
                   ),
                   filled: true,
-                  fillColor: AppColors.surfaceVariant(
+                  fillColor: AppColors.inputBackground(
                     context,
-                  ).withValues(alpha: 0.5),
+                  ), // Sử dụng màu chung
                 ),
               ),
             ),
             const SizedBox(width: AppSpacing.sm),
-            Material(
-              color: _hasText && widget.isEnabled
-                  ? AppColors.primary(context)
-                  : AppColors.surfaceVariant(context),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusRound),
-              child: InkWell(
-                onTap: _hasText && widget.isEnabled ? _sendMessage : null,
-                borderRadius: BorderRadius.circular(AppSpacing.radiusRound),
-                child: Container(
-                  width: AppSpacing.lg2,
-                  height: AppSpacing.lg2,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusRound),
-                  ),
-                  child: Icon(
-                    Icons.send,
-                    size: AppSpacing.iconSm,
-                    color: _hasText && widget.isEnabled
-                        ? AppColors.onPrimary(context)
-                        : AppColors.onSurfaceVariant(context),
-                  ),
-                ),
+
+            IconButton.filled(
+              onPressed: _hasText && widget.isEnabled ? _sendMessage : null,
+              icon: Icon(
+                Icons.send,
+                size: AppSpacing.iconMd,
+                color: _hasText && widget.isEnabled
+                    ? AppColors.primary(context)
+                    : AppColors.onSurface(context).withValues(alpha: 0.4),
+              ),
+              style: IconButton.styleFrom(
+                shape: const CircleBorder(),
+                backgroundColor: Colors.transparent,
+                disabledBackgroundColor: Colors.transparent,
+                padding: EdgeInsets.zero,
               ),
             ),
           ],

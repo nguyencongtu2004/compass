@@ -28,13 +28,24 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
     try {
       _currentConversationId = event.conversationId;
 
-      // Emit MessagesLoaded với danh sách trống ngay lập tức để tránh loading
-      emit(
-        MessagesLoaded(
-          conversationId: event.conversationId,
-          messages: const [],
-        ),
-      );
+      // Nếu đã có messages cached cho conversation này, emit ngay lập tức
+      if (_messages.isNotEmpty &&
+          _currentConversationId == event.conversationId) {
+        emit(
+          MessagesLoaded(
+            conversationId: event.conversationId,
+            messages: _messages,
+          ),
+        );
+      } else {
+        // Emit MessagesLoaded với danh sách trống ngay lập tức để tránh loading
+        emit(
+          MessagesLoaded(
+            conversationId: event.conversationId,
+            messages: const [],
+          ),
+        );
+      }
 
       _messagesSubscription?.cancel();
       _messagesSubscription = _messageRepository

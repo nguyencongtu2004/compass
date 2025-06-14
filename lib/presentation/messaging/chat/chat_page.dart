@@ -12,8 +12,7 @@ import 'widgets/chat_body.dart';
 import 'widgets/message_input.dart';
 import '../../../models/message_model.dart';
 import '../../../models/user_model.dart';
-import '../../../data/managers/message_bloc_manager.dart';
-import '../../../data/repositories/user_repository.dart';
+import 'bloc/message_bloc_manager.dart';
 import '../../../di/injection.dart';
 import '../../auth/bloc/auth_bloc.dart';
 
@@ -55,12 +54,13 @@ class _ChatPageContent extends StatefulWidget {
   State<_ChatPageContent> createState() => _ChatPageContentState();
 }
 
-class _ChatPageContentState extends State<_ChatPageContent> {
+class _ChatPageContentState extends State<_ChatPageContent>
+    with WidgetsBindingObserver {
   final ScrollController scrollController = ScrollController();
-  final UserRepository userRepository = getIt<UserRepository>();
+  final MessageBlocManager messageBlocManager = getIt<MessageBlocManager>();
 
   UserModel? otherUser;
-  bool isLoading = true;
+  bool isLoading = false; // Bắt đầu với false thay vì true
   List<MessageModel> _previousMessages = [];
 
   String get conversationId => widget.conversationId;
@@ -69,23 +69,34 @@ class _ChatPageContentState extends State<_ChatPageContent> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     loadData();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     scrollController.dispose();
     super.dispose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Đánh dấu đã đọc khi app được resume
+    if (state == AppLifecycleState.resumed) {
+      _markMessagesAsRead();
+    }
+  }
+
   Future<void> loadData() async {
-    // Load other user info
+    // Load other user info from cache first
     try {
-      final user = await userRepository.getUserByUid(otherUid);
+      final user = await messageBlocManager.getCachedUser(otherUid);
       if (mounted) {
         setState(() {
           otherUser = user;
-          isLoading = false;
+          isLoading = user == null; // Chỉ loading nếu không có user
         });
       }
     } catch (e) {
@@ -94,7 +105,7 @@ class _ChatPageContentState extends State<_ChatPageContent> {
       }
     }
 
-    // Load messages
+    // Load messages - MessageBloc đã được cache nên không có delay
     context.read<MessageBloc>().add(LoadMessages(conversationId));
 
     // Mark messages as read
@@ -153,16 +164,27 @@ class _ChatPageContentState extends State<_ChatPageContent> {
   void _scrollToBottom() {
     scrollToBottom();
   }
-
   void _loadData() {
     loadData();
   }
+
+  void _markMessagesAsRead() {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      context.read<MessageBloc>().add(
+        MarkMessagesAsRead(
+          conversationId: conversationId,
+          myUid: authState.user.uid,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CommonScaffold(
       appBar: CommonAppbar(
-        customWidget: ChatHeader(otherUser: otherUser, isLoading: isLoading,
-        ),
+        customWidget: ChatHeader(otherUser: otherUser, isLoading: isLoading),
       ),
       body: Column(
         children: [
@@ -180,8 +202,32 @@ class _ChatPageContentState extends State<_ChatPageContent> {
                   _scrollToBottom();
                 } else if (state is MessagesLoaded) {
                   // Tự động cuộn xuống khi có tin nhắn mới
-                  if (_previousMessages.length != state.messages.length) {
+                  final hasNewMessages =
+                      _previousMessages.length != state.messages.length;
+                  if (hasNewMessages) {
                     _scrollToBottom();
+                    
+                    // Kiểm tra nếu có tin nhắn mới từ người khác và đánh dấu đã đọc
+                    final myUid = getCurrentUserId();
+                    if (myUid.isNotEmpty && state.messages.isNotEmpty) {
+                      // Tìm tin nhắn mới (những tin nhắn không có trong danh sách trước đó)
+                      final previousIds = _previousMessages
+                          .map((m) => m.id)
+                          .toSet();
+                      final newMessages = state.messages
+                          .where((message) => !previousIds.contains(message.id))
+                          .toList();
+
+                      // Kiểm tra nếu có tin nhắn mới từ người khác chưa đọc
+                      final hasUnreadFromOther = newMessages.any(
+                        (message) =>
+                            message.senderId != myUid && !message.isRead,
+                      );
+
+                      if (hasUnreadFromOther) {
+                        _markMessagesAsRead();
+                      }
+                    }
                   }
                   _previousMessages = List.from(state.messages);
                 }
@@ -214,6 +260,7 @@ class _ChatPageContentState extends State<_ChatPageContent> {
                 return MessageInput(
                   onSendMessage: _sendMessage,
                   isEnabled: isEnabled,
+                  autoFocus: true, // Tự động focus khi mở trang
                 );
               },
             ),

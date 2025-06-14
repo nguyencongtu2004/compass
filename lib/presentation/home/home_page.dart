@@ -120,6 +120,7 @@ class _HomePageState extends State<HomePage> {
           KeepAliveWrapper(
             child: CommonScaffold(
               isAppBarOverlay: true,
+              resizeToAvoidBottomInset: false,
               appBar: CommonAppbar(
                 title: page1Title,
                 isBackgroudTransparentGradient: true,

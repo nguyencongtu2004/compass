@@ -14,7 +14,7 @@ import 'package:firebase_auth/firebase_auth.dart' as _i59;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:google_sign_in/google_sign_in.dart' as _i116;
 import 'package:injectable/injectable.dart' as _i526;
-import 'package:minecraft_compass/data/managers/message_bloc_manager.dart'
+import 'package:minecraft_compass/presentation/messaging/chat/bloc/message_bloc_manager.dart'
     as _i961;
 import 'package:minecraft_compass/data/repositories/auth_repository.dart'
     as _i41;
@@ -110,6 +110,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i961.MessageBlocManager>(
       () => _i961.MessageBlocManager(
         messageRepository: gh<_i125.MessageRepository>(),
+        userRepository: gh<_i194.UserRepository>(),
       ),
     );
     gh.lazySingleton<_i260.ConversationBloc>(

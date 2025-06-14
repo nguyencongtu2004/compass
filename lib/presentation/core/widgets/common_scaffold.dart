@@ -35,6 +35,7 @@ class CommonScaffold extends StatelessWidget {
       children: [
         Positioned.fill(
           child: Scaffold(
+            
             appBar: isAppBarOverlay ? null : appBar as PreferredSizeWidget?,
             bottomNavigationBar: bottomNavigationBar,
             body: body,

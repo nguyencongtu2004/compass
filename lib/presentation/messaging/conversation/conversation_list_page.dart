@@ -9,6 +9,8 @@ import '../../../router/app_routes.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import 'bloc/conversation_bloc.dart';
 import 'widgets/conversation_tile.dart';
+import '../chat/bloc/message_bloc_manager.dart';
+import '../../../di/injection.dart';
 
 class ConversationListPage extends StatefulWidget {
   const ConversationListPage({super.key});
@@ -32,6 +34,28 @@ class _ConversationListPageState extends State<ConversationListPage> {
       );
     }
   }
+
+  /// Preload data cho các conversations gần đây nhất để tăng tốc độ loading
+  void _preloadTopConversations(List<dynamic> conversations) {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! AuthAuthenticated) return;
+
+    final messageBlocManager = getIt<MessageBlocManager>();
+
+    // Preload top 3 conversations gần đây nhất
+    final topConversations = conversations.take(3);
+    for (final conversation in topConversations) {
+      final otherUid = conversation.participants.firstWhere(
+        (uid) => uid != authState.user.uid,
+        orElse: () => '',
+      );
+
+      if (otherUid.isNotEmpty) {
+        messageBlocManager.preloadConversation(conversation.id, otherUid);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ConversationBloc, ConversationState>(
@@ -62,8 +86,10 @@ class _ConversationListPageState extends State<ConversationListPage> {
         if (state is ConversationLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-
         if (state is ConversationsLoaded) {
+          // Proactive preloading: preload top conversations để giảm loading time
+          _preloadTopConversations(state.conversations);
+
           if (state.conversations.isEmpty) {
             return Center(
               child: Column(

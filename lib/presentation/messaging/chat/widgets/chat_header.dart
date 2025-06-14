@@ -18,38 +18,44 @@ class ChatHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CommonBackButton(),
-          const SizedBox(width: AppSpacing.md),
-
-          CommonAvatar(
-            radius: 20,
-            avatarUrl: otherUser?.avatarUrl ?? '',
-            displayName: otherUser?.displayName ?? 'U',
-            backgroundColor: AppColors.primary(context),
-            textColor: AppColors.onPrimary(context),
+    return SizedBox(
+      height: kToolbarHeight,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
           ),
-          const SizedBox(width: AppSpacing.sm),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CommonBackButton(),
+              const SizedBox(width: AppSpacing.md),
 
-          Expanded(
-            child: Text(
-              otherUser?.displayName ??
-                  (isLoading ? 'Đang tải...' : 'Người dùng'),
-              style: AppTextStyles.titleLarge.copyWith(
-                color: AppColors.onSurface(context),
+              CommonAvatar(
+                radius: 18,
+                avatarUrl: otherUser?.avatarUrl ?? '',
+                displayName: otherUser?.displayName ?? 'U',
+                backgroundColor: AppColors.primary(context),
+                textColor: AppColors.onPrimary(context),
               ),
-              overflow: TextOverflow.ellipsis,
-            ),
+              const SizedBox(width: AppSpacing.sm),
+
+              Expanded(
+                child: Text(
+                  otherUser?.displayName ??
+                      (isLoading ? 'Đang tải...' : 'Người dùng'),
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: AppColors.onSurface(context),
+                    fontWeight: FontWeight.w600,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+            ],
           ),
-          const SizedBox(width: AppSpacing.md),
-        ],
+        ),
       ),
     );
   }

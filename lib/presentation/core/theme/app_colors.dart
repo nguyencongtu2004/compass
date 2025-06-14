@@ -48,13 +48,20 @@ class AppColors {
 
   static const Color infoLight = Color(0xFF0288D1); // Light Blue 700
   static const Color infoDark = Color(0xFF4FC3F7); // Light Blue 300
-
   // Border colors
   static const Color borderLight = Color(0xFFE0E0E0);
   static const Color borderDark = Color(0xFF424242);
 
   static const Color outlineLight = Color(0xFF79747E);
   static const Color outlineDark = Color(0xFF938F99);
+
+  // Input và message bubble background (khác với surfaceVariant)
+  static const Color inputBackgroundLight = Color(
+    0xFFF0F0F0,
+  ); // Xám nhạt hơn surfaceVariant
+  static const Color inputBackgroundDark = Color(
+    0xFF383838,
+  ); // Xám đậm hơn surfaceVariant
 
   // Compass specific colors
   static const Color compassNeedleLight = Color(0xFFD32F2F); // Red for north
@@ -205,10 +212,15 @@ class AppColors {
         ? onSurfaceVariantLight
         : onSurfaceVariantDark;
   }
-
   static Color outline(BuildContext context) {
     return Theme.of(context).brightness == Brightness.light
         ? outlineLight
         : outlineDark;
+  }
+
+  static Color inputBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.light
+        ? inputBackgroundLight
+        : inputBackgroundDark;
   }
 }

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../../../../di/injection.dart';
 import '../../../../models/conversation_model.dart';
 import '../../../../models/user_model.dart';
-import '../../../../data/repositories/user_repository.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/common_avatar.dart';
 import '../../../../utils/format_utils.dart';
+import '../../chat/bloc/message_bloc_manager.dart';
 
 class ConversationTile extends StatefulWidget {
   final ConversationModel conversation;
@@ -46,9 +46,9 @@ class _ConversationTileState extends State<ConversationTile> {
         orElse: () => '',
       );
       if (otherUid.isNotEmpty) {
-        final userRepository =
-            getIt<UserRepository>(); // Sử dụng dependency injection
-        final user = await userRepository.getUserByUid(otherUid);
+        // Sử dụng MessageBlocManager để cache user
+        final messageBlocManager = getIt<MessageBlocManager>();
+        final user = await messageBlocManager.getCachedUser(otherUid);
         if (mounted) {
           setState(() {
             _otherUser = user;
@@ -69,6 +69,33 @@ class _ConversationTileState extends State<ConversationTile> {
         });
       }
     }
+  }
+
+  void _preloadConversationData() {
+    final otherUid = widget.conversation.participants.firstWhere(
+      (uid) => uid != widget.currentUserId,
+      orElse: () => '',
+    );
+
+    if (otherUid.isNotEmpty) {
+      final messageBlocManager = getIt<MessageBlocManager>();
+      // Chỉ preload nếu cần thiết để tránh gọi duplicate
+      if (messageBlocManager.shouldPreloadConversation(
+        widget.conversation.id,
+        otherUid,
+      )) {
+        messageBlocManager.preloadConversation(
+          widget.conversation.id,
+          otherUid,
+        );
+      }
+    }
+  }
+
+  void _handleTap() {
+    // Gọi preload trước khi navigate để đảm bảo data sẵn sàng
+    _preloadConversationData();
+    widget.onTap();
   }
 
   void _showContextMenu() {
@@ -120,11 +147,7 @@ class _ConversationTileState extends State<ConversationTile> {
       return ListTile(
         leading: CircleAvatar(
           backgroundColor: AppColors.surfaceVariant(context),
-          child: const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
+          child: const SizedBox(width: 28, height: 28),
         ),
         title: Container(
           height: 16,
@@ -163,7 +186,7 @@ class _ConversationTileState extends State<ConversationTile> {
         ),
         title: Text(
           _otherUser?.displayName ?? 'Unknown User',
-          style: AppTextStyles.titleSmall.copyWith(
+          style: AppTextStyles.titleMedium.copyWith(
             fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w500,
             color: AppColors.onSurface(context),
           ),
@@ -220,7 +243,7 @@ class _ConversationTileState extends State<ConversationTile> {
             ],
           ),
         ),
-        onTap: widget.onTap,
+        onTap: _handleTap,
       ),
     );
   }
