@@ -90,7 +90,7 @@ class AppRouter {
             final conversationId = state.pathParameters['conversationId']!;
             final extra = state.extra as Map<String, dynamic>?;
 
-            // todo: Handle case where extra is null later
+            // todo: Handle case where extra is null later...
             final otherUid = extra?['otherUid'] as String? ?? '';
 
             return ChatPage(conversationId: conversationId, otherUid: otherUid);
