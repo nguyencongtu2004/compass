@@ -1150,67 +1150,67 @@ abstract class AppLocalizations {
   /// **'Unable to load the home page'**
   String get unableToLoadTheHomePage;
 
-  /// No description provided for @emailIsRequired.
+  /// Error message indicating that the email field is required
   ///
   /// In en, this message translates to:
   /// **'Email is required'**
   String get emailIsRequired;
 
-  /// No description provided for @passwordIsRequired.
+  /// Error message indicating that the password field is required
   ///
   /// In en, this message translates to:
   /// **'Password is required'**
   String get passwordIsRequired;
 
-  /// No description provided for @passwordMustBeAtLeast6CharactersLong.
+  /// Error message indicating that the password must be at least 6 characters long
   ///
   /// In en, this message translates to:
   /// **'Password must be at least 6 characters long'**
   String get passwordMustBeAtLeast6CharactersLong;
 
-  /// No description provided for @confirmPasswordIsRequired.
+  /// Error message indicating that the confirm password field is required
   ///
   /// In en, this message translates to:
   /// **'Confirm password is required'**
   String get confirmPasswordIsRequired;
 
-  /// No description provided for @displayNameIsRequired.
+  /// Error message indicating that the display name field is required
   ///
   /// In en, this message translates to:
   /// **'Display name is required'**
   String get displayNameIsRequired;
 
-  /// No description provided for @displayNameMustBeAtLeast2CharactersLong.
+  /// Error message indicating that the display name must be at least 2 characters long
   ///
   /// In en, this message translates to:
   /// **'Display name must be at least 2 characters long'**
   String get displayNameMustBeAtLeast2CharactersLong;
 
-  /// No description provided for @usernameMustBeAtLeast3CharactersLong.
+  /// Error message indicating that the username must be at least 3 characters long
   ///
   /// In en, this message translates to:
   /// **'Username must be at least 3 characters long'**
   String get usernameMustBeAtLeast3CharactersLong;
 
-  /// No description provided for @usernameCannotExceed20Characters.
+  /// Error message indicating that the username cannot exceed 20 characters
   ///
   /// In en, this message translates to:
   /// **'Username cannot exceed 20 characters.'**
   String get usernameCannotExceed20Characters;
 
-  /// No description provided for @usernamesCanOnlyContainLettersNumbersAndUnderscores.
+  /// Error message indicating that usernames can only contain letters, numbers, and underscores
   ///
   /// In en, this message translates to:
   /// **'Usernames can only contain letters, numbers, and underscores.'**
   String get usernamesCanOnlyContainLettersNumbersAndUnderscores;
 
-  /// No description provided for @location.
+  /// Label for the user's location
   ///
   /// In en, this message translates to:
   /// **'Location'**
   String get location;
 
-  /// No description provided for @explore.
+  /// Label for the explore section of the app
   ///
   /// In en, this message translates to:
   /// **'Explore'**
