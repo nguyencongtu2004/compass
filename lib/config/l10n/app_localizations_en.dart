@@ -18,7 +18,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signOut => 'Sign Out';
 
   @override
-  String get signUp => 'Sign Up';
+  String get signUp => 'Sign up';
 
   @override
   String get email => 'Email';
@@ -27,10 +27,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get password => 'Password';
 
   @override
-  String get confirmPassword => 'Confirm Password';
+  String get confirmPassword => 'Confirm password';
 
   @override
-  String get forgotPassword => 'Forgot Password?';
+  String get forgotPassword => 'Forgot password';
 
   @override
   String get createAccount => 'Create Account';
@@ -153,7 +153,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get friendsTitle => 'Friends';
 
   @override
-  String get addFriend => 'Add Friend';
+  String get addFriend => 'Add friend';
 
   @override
   String get removeFriend => 'Remove Friend';
@@ -189,10 +189,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileTitle => 'Profile';
 
   @override
-  String get editProfile => 'Edit Profile';
+  String get editProfile => 'Edit profile';
 
   @override
-  String get displayName => 'Display Name';
+  String get displayName => 'Display name';
 
   @override
   String get phoneNumber => 'Phone Number';
@@ -337,4 +337,285 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appWillRestart => 'The app will restart to apply the new language';
+
+  @override
+  String get enterYourPassword => 'Enter your password';
+
+  @override
+  String get enterYourEmail => 'Enter your email';
+
+  @override
+  String get logIn => 'Log in';
+
+  @override
+  String get forgotYourPassword => 'Forgot your password?';
+
+  @override
+  String get or => 'or';
+
+  @override
+  String get donTHaveAnAccountSignUpNow =>
+      'Don\'t have an account? Sign up now';
+
+  @override
+  String aPasswordResetEmailHasBeenSentToStateEmail(String email) {
+    return 'A password reset email has been sent to $email.';
+  }
+
+  @override
+  String get createAnAccount => 'Create an account';
+
+  @override
+  String get fillInTheInformationToRegister =>
+      'Fill in the information to register';
+
+  @override
+  String get enterYourDisplayName => 'Enter your display name';
+
+  @override
+  String get enterPasswordAtLeast6Characters =>
+      'Enter password (at least 6 characters)';
+
+  @override
+  String get reEnterPassword => 'Re-enter password';
+
+  @override
+  String get alreadyHaveAnAccountLogInNow =>
+      'Already have an account? Log in now';
+
+  @override
+  String get enterYourEmailAddressToReceiveAPasswordResetLink =>
+      'Enter your email address to receive a password reset link:';
+
+  @override
+  String aPasswordResetEmailHasBeenSentToEmail(String email) {
+    return 'A password reset email has been sent to $email.';
+  }
+
+  @override
+  String displaynameHasNoLocationInformation(String displayName) {
+    return '$displayName has no location information';
+  }
+
+  @override
+  String errorMessage(String message) {
+    return 'Lỗi: $message';
+  }
+
+  @override
+  String get tryAgain => 'Try again';
+
+  @override
+  String get youCannotSendMessagesToYourself =>
+      'You cannot send messages to yourself.';
+
+  @override
+  String unableToCreateConversation(String e) {
+    return 'Unable to create conversation: $e';
+  }
+
+  @override
+  String get postDetails => 'Post details';
+
+  @override
+  String get availablePositions => 'Available positions';
+
+  @override
+  String get noPositionAvailable => 'No position available';
+
+  @override
+  String get noFriendsYet => 'No friends yet';
+
+  @override
+  String get noMessagesYet => 'No messages yet';
+
+  @override
+  String get startChattingWithYourFriendsFromYourFriendsPage =>
+      'Start chatting with your friends from your friends page';
+
+  @override
+  String get goToFriendsPage => 'Go to friends page';
+
+  @override
+  String get deleteConversation => 'Delete conversation';
+
+  @override
+  String get areYouSureYouWantToDeleteThisConversation =>
+      'Are you sure you want to delete this conversation?';
+
+  @override
+  String get thisActionCannotBeUndone => 'This action cannot be undone.';
+
+  @override
+  String get deletedConversation => 'Deleted conversation';
+
+  @override
+  String get unknownUser => 'Unknown User';
+
+  @override
+  String get unknown => 'Unknown';
+
+  @override
+  String get anErrorHasOccurred => 'An error has occurred';
+
+  @override
+  String get loadingConversation => 'Loading conversation...';
+
+  @override
+  String get sendTheFirstMessageToStartAConversation =>
+      'Send the first message to start a conversation';
+
+  @override
+  String chatWithDisplayname(String displayName) {
+    return 'Chat with $displayName';
+  }
+
+  @override
+  String get profilePicture => 'Profile picture';
+
+  @override
+  String get selectPhotosFromTheLibrary => 'Select photos from the library';
+
+  @override
+  String get deleteProfilePicture => 'Delete profile picture';
+
+  @override
+  String get profileUpdatedSuccessfully => 'Profile updated successfully!';
+
+  @override
+  String get theUsernameHasAlreadyBeenUsed =>
+      'The username has already been used.';
+
+  @override
+  String get userName => 'User name';
+
+  @override
+  String get enterYourUsernameEGNguoidep123 =>
+      'Enter your username (e.g., nguoidep_123)';
+
+  @override
+  String get updateProfile => 'Update profile';
+
+  @override
+  String get enterMessage => 'Enter message...';
+
+  @override
+  String get friendsList => 'Friends list';
+
+  @override
+  String get friendRequestSent => 'Friend request sent';
+
+  @override
+  String get youCannotAddYourselfAsAFriend =>
+      'You cannot add yourself as a friend.';
+
+  @override
+  String displaynameIsNowYourFriend(String displayName) {
+    return '$displayName is now your friend.';
+  }
+
+  @override
+  String youHaveAFriendRequestFromDisplayname(String displayName) {
+    return 'You have a friend request from $displayName';
+  }
+
+  @override
+  String get acceptedFriendRequest => 'Accepted friend request';
+
+  @override
+  String get friendRequestDeclined => 'Friend request declined';
+
+  @override
+  String get wouldYouLikeToSendAFriendRequest =>
+      'Would you like to send a friend request?';
+
+  @override
+  String get sendInvitation => 'Send invitation';
+
+  @override
+  String get searchForFriendsViaEmail => 'Search for friends via email...';
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get reject => 'Reject';
+
+  @override
+  String get textMessage => 'Text message';
+
+  @override
+  String get deleteFriends => 'Delete friends';
+
+  @override
+  String friendRequestLength(int length) {
+    return 'Friend request ($length)';
+  }
+
+  @override
+  String friendsLength(int length) {
+    return 'Friends ($length)';
+  }
+
+  @override
+  String get noFriendsYetNaddFriendsByEmail =>
+      'No friends yet\\nAdd friends by email';
+
+  @override
+  String areYouSureYouWantToRemoveDisplaynameFromYourFriendsList(
+    String displayName,
+  ) {
+    return 'Are you sure you want to remove $displayName from your friends list?';
+  }
+
+  @override
+  String get thisActionWillRemoveYouFromEachOtherSFriendsList =>
+      'This action will remove you from each other\'s friends list.';
+
+  @override
+  String get deletedFriends => 'Deleted friends';
+
+  @override
+  String get message => 'Message';
+
+  @override
+  String get unableToLoadTheHomePage => 'Unable to load the home page';
+
+  @override
+  String get emailIsRequired => 'Email is required';
+
+  @override
+  String get passwordIsRequired => 'Password is required';
+
+  @override
+  String get passwordMustBeAtLeast6CharactersLong =>
+      'Password must be at least 6 characters long';
+
+  @override
+  String get confirmPasswordIsRequired => 'Confirm password is required';
+
+  @override
+  String get displayNameIsRequired => 'Display name is required';
+
+  @override
+  String get displayNameMustBeAtLeast2CharactersLong =>
+      'Display name must be at least 2 characters long';
+
+  @override
+  String get usernameMustBeAtLeast3CharactersLong =>
+      'Username must be at least 3 characters long';
+
+  @override
+  String get usernameCannotExceed20Characters =>
+      'Username cannot exceed 20 characters.';
+
+  @override
+  String get usernamesCanOnlyContainLettersNumbersAndUnderscores =>
+      'Usernames can only contain letters, numbers, and underscores.';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get explore => 'Explore';
 }

@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../models/user_model.dart';
 import '../../core/widgets/common_avatar.dart';
@@ -68,7 +69,7 @@ class FriendRequestTile extends StatelessWidget {
                 child: IconButton(
                   icon: const Icon(Icons.check, color: Colors.white),
                   onPressed: onAccept,
-                  tooltip: 'Chấp nhận',
+                  tooltip: context.l10n.accept,
                 ),
               ),
               const SizedBox(width: AppSpacing.xs),
@@ -80,7 +81,7 @@ class FriendRequestTile extends StatelessWidget {
                 child: IconButton(
                   icon: const Icon(Icons.close, color: Colors.white),
                   onPressed: onDecline,
-                  tooltip: 'Từ chối',
+                  tooltip: context.l10n.reject,
                 ),
               ),
             ],

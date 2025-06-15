@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_spacing.dart';
@@ -85,7 +86,7 @@ class QuickMessageBar extends StatelessWidget {
                       // Hint text
                       Expanded(
                         child: Text(
-                          'Gửi tin nhắn...',
+                          context.l10n.sendMessage,
                           style: TextStyle(
                             color: AppColors.onSurface(
                               context,

@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -93,7 +94,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Text(
-                      'Tạo tài khoản',
+                      context.l10n.createAnAccount,
                       style: AppTextStyles.headlineLarge.copyWith(
                         color: AppColors.onBackground(context),
                       ),
@@ -101,7 +102,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: AppSpacing.xs2),
                     Text(
-                      'Điền thông tin để đăng ký',
+                      context.l10n.fillInTheInformationToRegister,
                       style: AppTextStyles.bodyLarge.copyWith(
                         color: AppColors.onSurfaceVariant(context),
                       ),
@@ -111,30 +112,31 @@ class _RegisterPageState extends State<RegisterPage> {
 
                     // Display Name field
                     CommonTextField(
-                      labelText: 'Tên hiển thị',
-                      hintText: 'Nhập tên hiển thị của bạn',
+                      labelText: context.l10n.displayName,
+                      hintText: context.l10n.enterYourDisplayName,
                       controller: _displayNameController,
                       prefixIcon: Icons.person_outlined,
                       validator: (value) =>
-                          Validator.validateDisplayName(value),
+                          Validator.validateDisplayName(value, context),
                     ),
                     const SizedBox(height: 16),
 
                     // Email field
                     CommonTextField(
-                      labelText: 'Email',
-                      hintText: 'Nhập email của bạn',
+                      labelText: context.l10n.email,
+                      hintText: context.l10n.enterYourEmail,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       prefixIcon: Icons.email_outlined,
-                      validator: (value) => Validator.validateEmail(value),
+                      validator: (value) =>
+                          Validator.validateEmail(value, context),
                     ),
                     const SizedBox(height: 16),
 
                     // Password field
                     CommonTextField(
-                      labelText: 'Mật khẩu',
-                      hintText: 'Nhập mật khẩu (ít nhất 6 ký tự)',
+                      labelText: context.l10n.password,
+                      hintText: context.l10n.enterPasswordAtLeast6Characters,
                       controller: _passwordController,
                       obscureText: _obscurePassword,
                       prefixIcon: Icons.lock_outlined,
@@ -148,14 +150,15 @@ class _RegisterPageState extends State<RegisterPage> {
                           () => _obscurePassword = !_obscurePassword,
                         ),
                       ),
-                      validator: (value) => Validator.validatePassword(value),
+                      validator: (value) =>
+                          Validator.validatePassword(value, context),
                     ),
                     const SizedBox(height: 16),
 
                     // Confirm Password field
                     CommonTextField(
-                      labelText: 'Xác nhận mật khẩu',
-                      hintText: 'Nhập lại mật khẩu',
+                      labelText: context.l10n.confirmPassword,
+                      hintText: context.l10n.reEnterPassword,
                       controller: _confirmPasswordController,
                       obscureText: _obscureConfirmPassword,
                       prefixIcon: Icons.lock_outlined,
@@ -170,15 +173,11 @@ class _RegisterPageState extends State<RegisterPage> {
                               !_obscureConfirmPassword,
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Vui lòng xác nhận mật khẩu';
-                        }
-                        if (value != _passwordController.text) {
-                          return 'Mật khẩu xác nhận không khớp';
-                        }
-                        return null;
-                      },
+                      validator: (value) => Validator.validateConfirmPassword(
+                        value,
+                        _passwordController.text,
+                        context,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.md4),
 
@@ -186,7 +185,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return CommonButton(
-                          text: 'Đăng ký',
+                          text: context.l10n.signUp,
                           onPressed: _register,
                           isLoading: state is AuthLoading,
                         );
@@ -198,7 +197,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     TextButton(
                       onPressed: () => context.go(AppRoutes.loginRoute),
                       child: Text(
-                        'Đã có tài khoản? Đăng nhập ngay',
+                        context.l10n.alreadyHaveAnAccountLogInNow,
                         style: AppTextStyles.labelLarge.copyWith(
                           color: AppColors.primary(context),
                         ),

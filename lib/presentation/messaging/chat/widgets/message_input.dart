@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -87,7 +88,7 @@ class _MessageInputState extends State<MessageInput> {
                 textInputAction: TextInputAction.newline,
                 style: TextStyle(color: AppColors.onSurface(context)),
                 decoration: InputDecoration(
-                  hintText: 'Nhập tin nhắn...',
+                  hintText: context.l10n.enterMessage,
                   hintStyle: TextStyle(
                     color: AppColors.onSurface(context).withValues(alpha: 0.6),
                   ),

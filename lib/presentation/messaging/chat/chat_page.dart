@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -164,7 +165,7 @@ class _ChatPageContentState extends State<_ChatPageContent>
   void _scrollToBottom() {
     scrollToBottom();
   }
-  
+
   void _loadData() {
     loadData();
   }
@@ -207,7 +208,7 @@ class _ChatPageContentState extends State<_ChatPageContent>
                       _previousMessages.length != state.messages.length;
                   if (hasNewMessages) {
                     _scrollToBottom();
-                    
+
                     // Kiểm tra nếu có tin nhắn mới từ người khác và đánh dấu đã đọc
                     final myUid = getCurrentUserId();
                     if (myUid.isNotEmpty && state.messages.isNotEmpty) {
@@ -249,7 +250,7 @@ class _ChatPageContentState extends State<_ChatPageContent>
               if (state is ConversationDeleted) {
                 context.pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Đã xóa cuộc trò chuyện')),
+                  SnackBar(content: Text(context.l10n.deletedConversation)),
                 );
               }
             },

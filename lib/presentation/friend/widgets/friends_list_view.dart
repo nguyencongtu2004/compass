@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../models/user_model.dart';
 import '../bloc/friend_bloc.dart';
@@ -40,7 +41,7 @@ class FriendsListView extends StatelessWidget {
                   AppSpacing.sm,
                 ),
                 child: Text(
-                  'Lời mời kết bạn (${state.friendRequests.length})',
+                  context.l10n.friendRequestLength(state.friendRequests.length),
                   style: AppTextStyles.headlineSmall.copyWith(
                     color: AppColors.onSurface(context),
                     fontWeight: FontWeight.w600,
@@ -70,8 +71,8 @@ class FriendsListView extends StatelessWidget {
               ),
               child: Text(
                 state.friends.isEmpty
-                    ? 'Chưa có bạn bè nào'
-                    : 'Bạn bè (${state.friends.length})',
+                    ? context.l10n.noFriendsYet
+                    : context.l10n.friendsLength(state.friends.length),
                 style: AppTextStyles.headlineSmall.copyWith(
                   color: AppColors.onSurface(context),
                   fontWeight: FontWeight.w600,
@@ -85,7 +86,7 @@ class FriendsListView extends StatelessWidget {
             SliverFillRemaining(
               child: Center(
                 child: Text(
-                  'Chưa có bạn bè nào\nHãy thêm bạn bằng email',
+                  context.l10n.noFriendsYetNaddFriendsByEmail,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyLarge.copyWith(
                     color: AppColors.onSurfaceVariant(context),

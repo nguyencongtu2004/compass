@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -57,13 +58,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Ảnh đại diện'),
+          title: Text(context.l10n.profilePicture),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Chọn ảnh từ thư viện'),
+                title: Text(context.l10n.selectPhotosFromTheLibrary),
                 onTap: () {
                   Navigator.pop(context);
                   _pickImage();
@@ -71,7 +72,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               ListTile(
                 leading: const Icon(Icons.delete),
-                title: const Text('Xóa ảnh đại diện'),
+                title: Text(context.l10n.deleteProfilePicture),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -158,7 +159,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return CommonScaffold(
       appBar: CommonAppbar(
-        title: 'Chỉnh sửa hồ sơ',
+        title: context.l10n.editProfile,
         leftWidget: GestureDetector(
           onTap: () => Navigator.of(context).pop(),
           child: const Icon(Icons.arrow_back, size: AppSpacing.md4),
@@ -169,10 +170,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
           if (state is ProfileLoaded && _isUpdating) {
             // Profile updated successfully - now showing updated data
             setState(() => _isUpdating = false);
-            
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: const Text('Cập nhật hồ sơ thành công!'),
+                content: Text(context.l10n.profileUpdatedSuccessfully),
                 backgroundColor: AppColors.success(context),
               ),
             );
@@ -244,18 +245,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                 // Display Name field
                 CommonTextField(
-                  labelText: 'Tên hiển thị',
-                  hintText: 'Nhập tên hiển thị của bạn',
+                  labelText: context.l10n.displayName,
+                  hintText: context.l10n.enterYourDisplayName,
                   controller: _displayNameController,
                   prefixIcon: Icons.person_outlined,
-                  validator: (value) => Validator.validateDisplayName(value),
+                  validator: (value) =>
+                      Validator.validateDisplayName(value, context),
                 ),
                 const SizedBox(height: AppSpacing.md),
 
                 // Username field
                 CommonTextField(
-                  labelText: 'Tên người dùng',
-                  hintText: 'Nhập tên người dùng (ví dụ: congtu123)',
+                  labelText: context.l10n.userName,
+                  hintText: context.l10n.enterYourUsernameEGNguoidep123,
                   controller: _usernameController,
                   prefixIcon: Icons.alternate_email,
                   suffixIcon: _isCheckingUsername
@@ -278,14 +280,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       }
                     });
                   },
-                  validator: (value) => Validator.validateUsername(value),
+                  validator: (value) =>
+                      Validator.validateUsername(value, context),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 if (!_isUsernameAvailable)
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Tên người dùng đã được sử dụng',
+                      context.l10n.theUsernameHasAlreadyBeenUsed,
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.error(context),
                       ),
@@ -295,7 +298,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                 // Email field (readonly)
                 CommonTextField(
-                  labelText: 'Email',
+                  labelText: context.l10n.email,
                   controller: TextEditingController(text: widget.user.email),
                   prefixIcon: Icons.email_outlined,
                   enabled: false,
@@ -306,7 +309,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 BlocBuilder<ProfileBloc, ProfileState>(
                   builder: (context, state) {
                     return CommonButton(
-                      text: 'Cập nhật hồ sơ',
+                      text: context.l10n.updateProfile,
                       onPressed: _updateProfile,
                       isLoading: state is ProfileUpdateLoading,
                     );

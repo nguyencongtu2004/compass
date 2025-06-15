@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
@@ -46,7 +47,7 @@ class MapCreatePostButton extends StatelessWidget {
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Text(
-                    'Đăng bài',
+                    context.l10n.post,
                     style: TextStyle(
                       color: AppColors.onPrimary(context),
                       fontWeight: FontWeight.w600,

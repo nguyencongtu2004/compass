@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +38,11 @@ class FriendActionPopup extends StatelessWidget {
       // Hiển thị thông báo lỗi nếu không có tọa độ
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${friend.displayName} chưa có thông tin vị trí'),
+          content: Text(
+            context.l10n.displaynameHasNoLocationInformation(
+              friend.displayName,
+            ),
+          ),
           backgroundColor: AppColors.error(context),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -169,14 +174,14 @@ class FriendActionPopup extends StatelessWidget {
                       if (friend.currentLocation?.latitude != null &&
                           friend.currentLocation?.longitude != null)
                         Text(
-                          'Vị trí có sẵn',
+                          context.l10n.availablePositions,
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.primary(context),
                           ),
                         )
                       else
                         Text(
-                          'Chưa có vị trí',
+                          context.l10n.noPositionAvailable,
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.error(context),
                           ),
@@ -246,7 +251,7 @@ class FriendActionPopup extends StatelessWidget {
                   vertical: AppSpacing.sm,
                 ),
               ),
-              child: Text('Đóng', style: AppTextStyles.bodyMedium),
+              child: Text(context.l10n.close, style: AppTextStyles.bodyMedium),
             ),
           ],
         ),

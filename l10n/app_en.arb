@@ -1,287 +1,673 @@
 {
-    "@@locale": "en",
-    "appTitle": "Minecraft Compass",
-    "@appTitle": {
-        "description": "The title of the application"
-    },
-    "signIn": "Sign In",
-    "@signIn": {
-        "description": "The sign in button"
-    },
-    "signOut": "Sign Out",
-    "@signOut": {
-        "description": "The sign out button"
-    },
-    "signUp": "Sign Up",
-    "@signUp": {
-        "description": "The sign up button"
-    },
-    "email": "Email",
-    "@email": {
-        "description": "The email input field"
-    },
-    "password": "Password",
-    "@password": {
-        "description": "The password input field"
-    },
-    "confirmPassword": "Confirm Password",
-    "@confirmPassword": {
-        "description": "The confirm password input field"
-    },
-    "forgotPassword": "Forgot Password?",
-    "@forgotPassword": {
-        "description": "Link to reset password"
-    },
-    "createAccount": "Create Account",
-    "@createAccount": {
-        "description": "Button to create a new account"
-    },
-    "alreadyHaveAccount": "Already have an account?",
-    "@alreadyHaveAccount": {
-        "description": "Text for users who already have an account"
-    },
-    "dontHaveAccount": "Don't have an account?",
-    "@dontHaveAccount": {
-        "description": "Text for users who do not have an account"
-    },
-    "signInWithGoogle": "Sign in with Google",
-    "@signInWithGoogle": {
-        "description": "Button to sign in using Google account"
-    },
-    "home": "Home",
-    "@home": {
-        "description": "The home screen of the app"
-    },
-    "compass": "Compass",
-    "@compass": {
-        "description": "The compass feature of the app"
-    },
-    "map": "Map",
-    "@map": {
-        "description": "The map feature of the app"
-    },
-    "profile": "Profile",
-    "@profile": {
-        "description": "User profile section"
-    },
-    "friends": "Friends",
-    "@friends": {
-        "description": "Friends section in the app"
-    },
-    "messages": "Messages",
-    "@messages": {
-        "description": "Messages section in the app"
-    },
-    "newsfeed": "Newsfeed",
-    "@newsfeed": {
-        "description": "Newsfeed section in the app"
-    },
-    "settings": "Settings",
-    "@settings": {
-        "description": "Settings section in the app"
-    },
-    "save": "Save",
-    "@save": {
-        "description": "Button to save changes"
-    },
-    "cancel": "Cancel",
-    "@cancel": {
-        "description": "Button to cancel an action"
-    },
-    "delete": "Delete",
-    "@delete": {
-        "description": "Button to delete an item"
-    },
-    "edit": "Edit",
-    "@edit": {
-        "description": "Button to edit an item"
-    },
-    "add": "Add",
-    "@add": {
-        "description": "Button to add a new item"
-    },
-    "remove": "Remove",
-    "@remove": {
-        "description": "Button to remove an item"
-    },
-    "confirm": "Confirm",
-    "@confirm": {
-        "description": "Button to confirm an action"
-    },
-    "loading": "Loading...",
-    "@loading": {
-        "description": "Text displayed while loading data"
-    },
-    "error": "Error",
-    "@error": {
-        "description": "Generic error message"
-    },
-    "success": "Success",
-    "@success": {
-        "description": "Generic success message"
-    },
-    "retry": "Retry",
-    "@retry": {
-        "description": "Button to retry an action"
-    },
-    "close": "Close",
-    "@close": {
-        "description": "Button to close a dialog or popup"
-    },
-    "ok": "OK",
-    "@ok": {
-        "description": "Button to acknowledge a message"
-    },
-    "yes": "Yes",
-    "@yes": {
-        "description": "Affirmative response button"
-    },
-    "no": "No",
-    "@no": {
-        "description": "Negative response button"
-    },
-    "compassTitle": "Compass",
-    "@compassTitle": {
-        "description": "Title for the compass feature"
-    },
-    "direction": "Direction",
-    "@direction": {
-        "description": "The direction displayed by the compass"
-    },
-    "coordinates": "Coordinates",
-    "@coordinates": {
-        "description": "The coordinates displayed on the compass"
-    },
-    "latitude": "Latitude",
-    "@latitude": {
-        "description": "Latitude coordinate"
-    },
-    "longitude": "Longitude",
-    "@longitude": {
-        "description": "Longitude coordinate"
-    },
-    "accuracy": "Accuracy",
-    "@accuracy": {
-        "description": "The accuracy of the location"
-    },
-    "meters": "meters",
-    "@meters": {
-        "description": "Unit of measurement for distance"
-    },
-    "mapTitle": "Map",
-    "@mapTitle": {
-        "description": "Title for the map feature"
-    },
-    "currentLocation": "Current Location",
-    "@currentLocation": {
-        "description": "Label for the user's current location on the map"
-    },
-    "searchLocation": "Search location...",
-    "@searchLocation": {
-        "description": "Placeholder text for the location search input"
-    },
-    "markers": "Markers",
-    "layers": "Layers",
-    "friendsTitle": "Friends",
-    "addFriend": "Add Friend",
-    "removeFriend": "Remove Friend",
-    "friendRequests": "Friend Requests",
-    "online": "Online",
-    "offline": "Offline",
-    "lastSeen": "Last seen",
-    "messagesTitle": "Messages",
-    "sendMessage": "Send message...",
-    "typeMessage": "Type a message...",
-    "send": "Send",
-    "conversation": "Conversation",
-    "profileTitle": "Profile",
-    "editProfile": "Edit Profile",
-    "displayName": "Display Name",
-    "phoneNumber": "Phone Number",
-    "bio": "Bio",
-    "changeProfilePicture": "Change Profile Picture",
-    "newsfeedTitle": "Newsfeed",
-    "createPost": "Create Post",
-    "whatsOnYourMind": "What's on your mind?",
-    "post": "Post",
-    "like": "Like",
-    "comment": "Comment",
-    "share": "Share",
-    "errorOccurred": "An error occurred",
-    "networkError": "Network error",
-    "invalidCredentials": "Invalid credentials",
-    "userNotFound": "User not found",
-    "emailInUse": "Email already in use",
-    "weakPassword": "Password is too weak",
-    "invalidEmail": "Invalid email address",
-    "locationPermissionDenied": "Location permission denied",
-    "locationServiceDisabled": "Location service disabled",
-    "loginSuccessful": "Login successful",
-    "signUpSuccessful": "Sign up successful",
-    "profileUpdated": "Profile updated successfully",
-    "postCreated": "Post created successfully",
-    "friendAdded": "Friend added successfully",
-    "messageSent": "Message sent",
-    "fieldRequired": "This field is required",
-    "invalidEmailFormat": "Invalid email format",
-    "passwordTooShort": "Password must be at least 6 characters",
-    "passwordsDoNotMatch": "Passwords do not match",
-    "now": "Now",
-    "minutesAgo": "{minutes} minutes ago",
-    "@minutesAgo": {
-        "placeholders": {
-            "minutes": {
-                "type": "int"
-            }
-        }
-    },
-    "hoursAgo": "{hours} hours ago",
-    "@hoursAgo": {
-        "placeholders": {
-            "hours": {
-                "type": "int"
-            }
-        }
-    },
-    "daysAgo": "{days} days ago",
-    "@daysAgo": {
-        "placeholders": {
-            "days": {
-                "type": "int"
-            }
-        }
-    },
-    "shareLocation": "Share Location",
-    "allowFriendsToSeeYourLocation": "Allow friends to see your location",
-    "language": "Language",
-    "aboutCompass": "About Compass",
-    "viewAppInformation": "View app information",
-    "compassAppDescription": "A compass app that connects with friends, helping you navigate to your loved ones' locations.",
-    "@compassAppDescription": {
-        "description": "Description of the compass app"
-    },
-    "yourLocationIsBeingShared": "Your location is being shared with friends",
-    "@yourLocationIsBeingShared": {
-        "description": "Message indicating that the user's location is being shared"
-    },
-    "locationSharingEnabled": "Location sharing enabled",
-    "@locationSharingEnabled": {
-        "description": "Message indicating that location sharing is enabled"
-    },
-    "signOutConfirmation": "Are you sure you want to sign out?",
-    "@signOutConfirmation": {
-        "description": "Confirmation message when signing out"
-    },
-    "user": "User",
-    "@user": {
-        "description": "Label for user information"
-    },
-    "cannotLoadUserInformation": "Cannot load user information",
-    "@cannotLoadUserInformation": {
-        "description": "Error message when user information cannot be loaded"
-    },
-    "appWillRestart": "The app will restart to apply the new language",
-    "@appWillRestart": {
-        "description": "Message indicating that the app will restart"
+  "@@locale": "en",
+  "appTitle": "Minecraft Compass",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "signIn": "Sign In",
+  "@signIn": {
+    "description": "The sign in button"
+  },
+  "signOut": "Sign Out",
+  "@signOut": {
+    "description": "The sign out button"
+  },
+  "signUp": "Sign up",
+  "@signUp": {
+    "description": "The sign up button"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "The email input field"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "The password input field"
+  },
+  "confirmPassword": "Confirm password",
+  "@confirmPassword": {
+    "description": "The confirm password input field"
+  },
+  "forgotPassword": "Forgot password",
+  "@forgotPassword": {
+    "description": "Link to reset password"
+  },
+  "createAccount": "Create Account",
+  "@createAccount": {
+    "description": "Button to create a new account"
+  },
+  "alreadyHaveAccount": "Already have an account?",
+  "@alreadyHaveAccount": {
+    "description": "Text for users who already have an account"
+  },
+  "dontHaveAccount": "Don't have an account?",
+  "@dontHaveAccount": {
+    "description": "Text for users who do not have an account"
+  },
+  "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {
+    "description": "Button to sign in using Google account"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "The home screen of the app"
+  },
+  "compass": "Compass",
+  "@compass": {
+    "description": "The compass feature of the app"
+  },
+  "map": "Map",
+  "@map": {
+    "description": "The map feature of the app"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "User profile section"
+  },
+  "friends": "Friends",
+  "@friends": {
+    "description": "Friends section in the app"
+  },
+  "messages": "Messages",
+  "@messages": {
+    "description": "Messages section in the app"
+  },
+  "newsfeed": "Newsfeed",
+  "@newsfeed": {
+    "description": "Newsfeed section in the app"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings section in the app"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Button to save changes"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Button to cancel an action"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Button to delete an item"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Button to edit an item"
+  },
+  "add": "Add",
+  "@add": {
+    "description": "Button to add a new item"
+  },
+  "remove": "Remove",
+  "@remove": {
+    "description": "Button to remove an item"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Button to confirm an action"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Text displayed while loading data"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Generic error message"
+  },
+  "success": "Success",
+  "@success": {
+    "description": "Generic success message"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Button to retry an action"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Button to close a dialog or popup"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "Button to acknowledge a message"
+  },
+  "yes": "Yes",
+  "@yes": {
+    "description": "Affirmative response button"
+  },
+  "no": "No",
+  "@no": {
+    "description": "Negative response button"
+  },
+  "compassTitle": "Compass",
+  "@compassTitle": {
+    "description": "Title for the compass feature"
+  },
+  "direction": "Direction",
+  "@direction": {
+    "description": "The direction displayed by the compass"
+  },
+  "coordinates": "Coordinates",
+  "@coordinates": {
+    "description": "The coordinates displayed on the compass"
+  },
+  "latitude": "Latitude",
+  "@latitude": {
+    "description": "Latitude coordinate"
+  },
+  "longitude": "Longitude",
+  "@longitude": {
+    "description": "Longitude coordinate"
+  },
+  "accuracy": "Accuracy",
+  "@accuracy": {
+    "description": "The accuracy of the location"
+  },
+  "meters": "meters",
+  "@meters": {
+    "description": "Unit of measurement for distance"
+  },
+  "mapTitle": "Map",
+  "@mapTitle": {
+    "description": "Title for the map feature"
+  },
+  "currentLocation": "Current Location",
+  "@currentLocation": {
+    "description": "Label for the user's current location on the map"
+  },
+  "searchLocation": "Search location...",
+  "@searchLocation": {
+    "description": "Placeholder text for the location search input"
+  },
+  "markers": "Markers",
+  "layers": "Layers",
+  "friendsTitle": "Friends",
+  "addFriend": "Add friend",
+  "removeFriend": "Remove Friend",
+  "friendRequests": "Friend Requests",
+  "online": "Online",
+  "offline": "Offline",
+  "lastSeen": "Last seen",
+  "messagesTitle": "Messages",
+  "sendMessage": "Send message...",
+  "typeMessage": "Type a message...",
+  "send": "Send",
+  "conversation": "Conversation",
+  "profileTitle": "Profile",
+  "editProfile": "Edit profile",
+  "displayName": "Display name",
+  "phoneNumber": "Phone Number",
+  "bio": "Bio",
+  "changeProfilePicture": "Change Profile Picture",
+  "newsfeedTitle": "Newsfeed",
+  "createPost": "Create Post",
+  "whatsOnYourMind": "What's on your mind?",
+  "post": "Post",
+  "like": "Like",
+  "comment": "Comment",
+  "share": "Share",
+  "errorOccurred": "An error occurred",
+  "networkError": "Network error",
+  "invalidCredentials": "Invalid credentials",
+  "userNotFound": "User not found",
+  "emailInUse": "Email already in use",
+  "weakPassword": "Password is too weak",
+  "invalidEmail": "Invalid email address",
+  "locationPermissionDenied": "Location permission denied",
+  "locationServiceDisabled": "Location service disabled",
+  "loginSuccessful": "Login successful",
+  "signUpSuccessful": "Sign up successful",
+  "profileUpdated": "Profile updated successfully",
+  "postCreated": "Post created successfully",
+  "friendAdded": "Friend added successfully",
+  "messageSent": "Message sent",
+  "fieldRequired": "This field is required",
+  "invalidEmailFormat": "Invalid email format",
+  "passwordTooShort": "Password must be at least 6 characters",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "now": "Now",
+  "minutesAgo": "{minutes} minutes ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
     }
+  },
+  "hoursAgo": "{hours} hours ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{days} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "shareLocation": "Share Location",
+  "@shareLocation": {
+    "description": "Button to share the user's location with friends"
+  },
+  "allowFriendsToSeeYourLocation": "Allow friends to see your location",
+  "@allowFriendsToSeeYourLocation": {
+    "description": "Message indicating that friends can see the user's location"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Label for the language selection"
+  },
+  "aboutCompass": "About Compass",
+  "@aboutCompass": {
+    "description": "Title for the about section of the compass app"
+  },
+  "viewAppInformation": "View app information",
+  "@viewAppInformation": {
+    "description": "Button to view information about the app"
+  },
+  "compassAppDescription": "A compass app that connects with friends, helping you navigate to your loved ones' locations.",
+  "@compassAppDescription": {
+    "description": "Description of the compass app"
+  },
+  "yourLocationIsBeingShared": "Your location is being shared with friends",
+  "@yourLocationIsBeingShared": {
+    "description": "Message indicating that the user's location is being shared"
+  },
+  "locationSharingEnabled": "Location sharing enabled",
+  "@locationSharingEnabled": {
+    "description": "Message indicating that location sharing is enabled"
+  },
+  "signOutConfirmation": "Are you sure you want to sign out?",
+  "@signOutConfirmation": {
+    "description": "Confirmation message when signing out"
+  },
+  "user": "User",
+  "@user": {
+    "description": "Label for user information"
+  },
+  "cannotLoadUserInformation": "Cannot load user information",
+  "@cannotLoadUserInformation": {
+    "description": "Error message when user information cannot be loaded"
+  },
+  "appWillRestart": "The app will restart to apply the new language",
+  "@appWillRestart": {
+    "description": "Message indicating that the app will restart"
+  },
+  "enterYourPassword": "Enter your password",
+  "@enterYourPassword": {
+    "description": "Placeholder text for entering the user's password"
+  },
+  "enterYourEmail": "Enter your email",
+  "@enterYourEmail": {
+    "description": "Placeholder text for entering the user's email"
+  },
+  "logIn": "Log in",
+  "@logIn": {
+    "description": "Button to log in to the application"
+  },
+  "forgotYourPassword": "Forgot your password?",
+  "@forgotYourPassword": {
+    "description": "Link to reset the user's password"
+  },
+  "or": "or",
+  "@or": {
+    "description": "Separator for alternative actions"
+  },
+  "donTHaveAnAccountSignUpNow": "Don't have an account? Sign up now",
+  "@donTHaveAnAccountSignUpNow": {
+    "description": "Message prompting the user to sign up if they do not have an account"
+  },
+  "aPasswordResetEmailHasBeenSentToStateEmail": "A password reset email has been sent to {email}.",
+  "@aPasswordResetEmailHasBeenSentToStateEmail": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    },
+    "description": "Message indicating that a password reset email has been sent"
+  },
+  "createAnAccount": "Create an account",
+  "@createAnAccount": {
+    "description": "Button to create a new account"
+  },
+  "fillInTheInformationToRegister": "Fill in the information to register",
+  "@fillInTheInformationToRegister": {
+    "description": "Instructions for filling in registration information"
+  },
+  "enterYourDisplayName": "Enter your display name",
+  "@enterYourDisplayName": {
+    "description": "Placeholder text for entering the user's display name"
+  },
+  "enterPasswordAtLeast6Characters": "Enter password (at least 6 characters)",
+  "@enterPasswordAtLeast6Characters": {
+    "description": "Placeholder text for entering a password with a minimum length"
+  },
+  "reEnterPassword": "Re-enter password",
+  "@reEnterPassword": {
+    "description": "Placeholder text for re-entering the password"
+  },
+  "alreadyHaveAnAccountLogInNow": "Already have an account? Log in now",
+  "@alreadyHaveAnAccountLogInNow": {
+    "description": "Message prompting the user to log in if they already have an account"
+  },
+  "enterYourEmailAddressToReceiveAPasswordResetLink": "Enter your email address to receive a password reset link:",
+  "@enterYourEmailAddressToReceiveAPasswordResetLink": {
+    "description": "Instructions for entering an email address to receive a password reset link"
+  },
+  "aPasswordResetEmailHasBeenSentToEmail": "A password reset email has been sent to {email}.",
+  "@aPasswordResetEmailHasBeenSentToEmail": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    },
+    "description": "Message indicating that a password reset email has been sent to the provided email address"
+  },
+  "displaynameHasNoLocationInformation": "{displayName} has no location information",
+  "@displaynameHasNoLocationInformation": {
+    "placeholders": {
+      "displayName": {
+        "type": "String"
+      }
+    },
+    "description": "Message indicating that a user has no location information"
+  },
+  "errorMessage": "Lỗi: {message}",
+  "@errorMessage": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    },
+    "description": "Error message with a placeholder for the specific error message"
+  },
+  "tryAgain": "Try again",
+  "@tryAgain": {
+    "description": "Message prompting the user to try again after an error"
+  },
+  "youCannotSendMessagesToYourself": "You cannot send messages to yourself.",
+  "@youCannotSendMessagesToYourself": {
+    "description": "Error message when a user tries to send a message to themselves"
+  },
+  "unableToCreateConversation": "Unable to create conversation: {e}",
+  "@unableToCreateConversation": {
+    "placeholders": {
+      "e": {
+        "type": "String"
+      }
+    },
+    "description": "Error message when unable to create a conversation"
+  },
+  "postDetails": "Post details",
+  "@postDetails": {
+    "description": "Title for the details of a post"
+  },
+  "availablePositions": "Available positions",
+  "@availablePositions": {
+    "description": "Label for available positions in a post"
+  },
+  "noPositionAvailable": "No position available",
+  "@noPositionAvailable": {
+    "description": "Message indicating that there are no available positions"
+  },
+  "noFriendsYet": "No friends yet",
+  "@noFriendsYet": {
+    "description": "Message indicating that there are no friends yet"
+  },
+  "noMessagesYet": "No messages yet",
+  "@noMessagesYet": {
+    "description": "Message indicating that there are no messages in the conversation"
+  },
+  "startChattingWithYourFriendsFromYourFriendsPage": "Start chatting with your friends from your friends page",
+  "@startChattingWithYourFriendsFromYourFriendsPage": {
+    "description": "Message prompting the user to start chatting with friends"
+  },
+  "goToFriendsPage": "Go to friends page",
+  "@goToFriendsPage": {
+    "description": "Button to navigate to the friends page"
+  },
+  "deleteConversation": "Delete conversation",
+  "@deleteConversation": {
+    "description": "Button to delete a conversation"
+  },
+  "areYouSureYouWantToDeleteThisConversation": "Are you sure you want to delete this conversation?",
+  "@areYouSureYouWantToDeleteThisConversation": {
+    "description": "Confirmation message when deleting a conversation"
+  },
+  "thisActionCannotBeUndone": "This action cannot be undone.",
+  "@thisActionCannotBeUndone": {
+    "description": "Message indicating that the action cannot be undone"
+  },
+  "deletedConversation": "Deleted conversation",
+  "@deletedConversation": {
+    "description": "Message indicating that a conversation has been deleted"
+  },
+  "unknownUser": "Unknown User",
+  "@unknownUser": {
+    "description": "Label for an unknown user"
+  },
+  "unknown": "Unknown",
+  "@unknown": {
+    "description": "Label for an unknown"
+  },
+  "anErrorHasOccurred": "An error has occurred",
+  "@anErrorHasOccurred": {
+    "description": "Generic error message displayed when an error occurs"
+  },
+  "loadingConversation": "Loading conversation...",
+  "@loadingConversation": {
+    "description": "Message displayed while a conversation is being loaded"
+  },
+  "sendTheFirstMessageToStartAConversation": "Send the first message to start a conversation",
+  "@sendTheFirstMessageToStartAConversation": {
+    "description": "Message prompting the user to send a message to start a conversation"
+  },
+  "chatWithDisplayname": "Chat with {displayName}",
+  "@chatWithDisplayname": {
+    "placeholders": {
+      "displayName": {
+        "type": "String"
+      }
+    },
+    "description": "Chat with a specific user"
+  },
+  "profilePicture": "Profile picture",
+  "@profilePicture": {
+    "description": "Label for the user's profile picture"
+  },
+  "selectPhotosFromTheLibrary": "Select photos from the library",
+  "@selectPhotosFromTheLibrary": {
+    "description": "Button to select photos for the profile picture"
+  },
+  "deleteProfilePicture": "Delete profile picture",
+  "@deleteProfilePicture": {
+    "description": "Button to delete the user's profile picture"
+  },
+  "profileUpdatedSuccessfully": "Profile updated successfully!",
+  "@profileUpdatedSuccessfully": {
+    "description": "Message indicating that the profile has been updated successfully"
+  },
+  "theUsernameHasAlreadyBeenUsed": "The username has already been used.",
+  "@theUsernameHasAlreadyBeenUsed": {
+    "description": "Error message when the username is already taken"
+  },
+  "userName": "User name",
+  "@userName": {
+    "description": "Label for the username input field"
+  },
+  "enterYourUsernameEGNguoidep123": "Enter your username (e.g., nguoidep_123)",
+  "@enterYourUsernameEGNguoidep123": {
+    "description": "Placeholder text for entering a username"
+  },
+  "updateProfile": "Update profile",
+  "@updateProfile": {
+    "description": "Button to update the user's profile"
+  },
+  "enterMessage": "Enter message...",
+  "@enterMessage": {
+    "description": "Placeholder text for entering a message"
+  },
+  "friendsList": "Friends list",
+  "@friendsList": {
+    "description": "Title for the friends list section"
+  },
+  "friendRequestSent": "Friend request sent",
+  "@friendRequestSent": {
+    "description": "Message indicating that a friend request has been sent"
+  },
+  "youCannotAddYourselfAsAFriend": "You cannot add yourself as a friend.",
+  "@youCannotAddYourselfAsAFriend": {
+    "description": "Message indicating that a user cannot add themselves as a friend"
+  },
+  "displaynameIsNowYourFriend": "{displayName} is now your friend.",
+  "@displaynameIsNowYourFriend": {
+    "placeholders": {
+      "displayName": {
+        "type": "String"
+      }
+    },
+    "description": "Message indicating that a user has become a friend"
+  },
+  "youHaveAFriendRequestFromDisplayname": "You have a friend request from {displayName}",
+  "@youHaveAFriendRequestFromDisplayname": {
+    "placeholders": {
+      "displayName": {
+        "type": "String"
+      }
+    },
+    "description": "Message indicating that a user has received a friend request"
+  },
+  "acceptedFriendRequest": "Accepted friend request",
+  "@acceptedFriendRequest": {
+    "description": "Message indicating that a friend request has been accepted"
+  },
+  "friendRequestDeclined": "Friend request declined",
+  "@friendRequestDeclined": {
+    "description": "Message indicating that a friend request has been declined"
+  },
+  "wouldYouLikeToSendAFriendRequest": "Would you like to send a friend request?",
+  "@wouldYouLikeToSendAFriendRequest": {
+    "description": "Message asking if the user wants to send a friend request"
+  },
+  "sendInvitation": "Send invitation",
+  "@sendInvitation": {
+    "description": "Button to send a friend request"
+  },
+  "searchForFriendsViaEmail": "Search for friends via email...",
+  "@searchForFriendsViaEmail": {
+    "description": "Placeholder text for searching friends by email"
+  },
+  "accept": "Accept",
+  "@accept": {
+    "description": "Button to accept a friend request"
+  },
+  "reject": "Reject",
+  "@reject": {
+    "description": "Button to reject a friend request"
+  },
+  "textMessage": "Text message",
+  "@textMessage": {
+    "description": "Label for a text message"
+  },
+  "deleteFriends": "Delete friends",
+  "@deleteFriends": {
+    "description": "Button to delete friends"
+  },
+  "friendRequestLength": "Friend request ({length})",
+  "@friendRequestLength": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    },
+    "description": "Label for the number of friend requests"
+  },
+  "friendsLength": "Friends ({length})",
+  "@friendsLength": {
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    },
+    "description": "Label for the number of friends"
+  },
+  "noFriendsYetNaddFriendsByEmail": "No friends yet\\nAdd friends by email",
+  "@noFriendsYetNaddFriendsByEmail": {
+    "description": "Message indicating that there are no friends yet and suggesting to add friends by email"
+  },
+  "areYouSureYouWantToRemoveDisplaynameFromYourFriendsList": "Are you sure you want to remove {displayName} from your friends list?",
+  "@areYouSureYouWantToRemoveDisplaynameFromYourFriendsList": {
+    "placeholders": {
+      "displayName": {
+        "type": "String"
+      }
+    },
+    "description": "Confirmation message when removing a friend"
+  },
+  "thisActionWillRemoveYouFromEachOtherSFriendsList": "This action will remove you from each other's friends list.",
+  "@thisActionWillRemoveYouFromEachOtherSFriendsList": {
+    "description": "Message indicating that removing a friend will also remove them from your friends list"
+  },
+  "deletedFriends": "Deleted friends",
+  "@deletedFriends": {
+    "description": "Message indicating that friends have been deleted"
+  },
+  "message": "Message",
+  "@message": {
+    "description": "Label for a message"
+  },
+  "unableToLoadTheHomePage": "Unable to load the home page",
+  "@unableToLoadTheHomePage": {
+    "description": "Error message when the home page cannot be loaded"
+  },
+  "emailIsRequired": "Email is required",
+  "@emailIsRequired": {
+    "description": "Error message indicating that the email field is required"
+  },
+  "passwordIsRequired": "Password is required",
+  "@passwordIsRequired": {
+    "description": "Error message indicating that the password field is required"
+  },
+  "passwordMustBeAtLeast6CharactersLong": "Password must be at least 6 characters long",
+  "@passwordMustBeAtLeast6CharactersLong": {
+    "description": "Error message indicating that the password must be at least 6 characters long"
+  },
+  "confirmPasswordIsRequired": "Confirm password is required",
+  "@confirmPasswordIsRequired": {
+    "description": "Error message indicating that the confirm password field is required"
+  },
+  "displayNameIsRequired": "Display name is required",
+  "@displayNameIsRequired": {
+    "description": "Error message indicating that the display name field is required"
+  },
+  "displayNameMustBeAtLeast2CharactersLong": "Display name must be at least 2 characters long",
+  "@displayNameMustBeAtLeast2CharactersLong": {
+    "description": "Error message indicating that the display name must be at least 2 characters long"
+  },
+  "usernameMustBeAtLeast3CharactersLong": "Username must be at least 3 characters long",
+  "@usernameMustBeAtLeast3CharactersLong": {
+    "description": "Error message indicating that the username must be at least 3 characters long"
+  },
+  "usernameCannotExceed20Characters": "Username cannot exceed 20 characters.",
+  "@usernameCannotExceed20Characters": {
+    "description": "Error message indicating that the username cannot exceed 20 characters"
+  },
+  "usernamesCanOnlyContainLettersNumbersAndUnderscores": "Usernames can only contain letters, numbers, and underscores.",
+  "@usernamesCanOnlyContainLettersNumbersAndUnderscores": {
+    "description": "Error message indicating that usernames can only contain letters, numbers, and underscores"
+  },
+  "location": "Location",
+  "@location": {
+    "description": "Label for the user's location"
+  },
+  "explore": "Explore",
+  "@explore": {
+    "description": "Label for the explore section of the app"
+  }
 }

@@ -4,3 +4,24 @@ output-localization-file: app_localizations.dart
 output-class: AppLocalizations
 output-dir: lib/config/l10n
 # flutter gen-l10n
+
+
+# l10n.yaml (extension specific options)
+# Enable translation 
+translate: true              
+
+# Auto run flutter gen-l10n               
+generate : true     
+
+# Key prefix for translation             
+key-prefix: context.l10n.  
+
+# Generate key name 
+# "ask" : prompt with pre-filled text | true : infer from text | false : prompt  
+auto-name-key: true       
+
+# Language to use for key name                  
+key-name-language: en       
+
+# Import line if needed                
+import-line: "import 'package:minecraft_compass/config/l10n/localization_extensions.dart';" 

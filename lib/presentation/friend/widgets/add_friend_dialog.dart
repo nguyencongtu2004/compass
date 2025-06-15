@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/user_model.dart';
@@ -19,7 +20,7 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Thêm bạn'),
+      title: Text(context.l10n.addFriend),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,13 +28,13 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
           Text('Tên: ${widget.user.displayName}'),
           Text('Email: ${widget.user.email}'),
           const SizedBox(height: 8),
-          const Text('Bạn có muốn gửi lời mời kết bạn?'),
+          Text(context.l10n.wouldYouLikeToSendAFriendRequest),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Hủy'),
+          child: Text(context.l10n.cancel),
         ),
         ElevatedButton(
           onPressed: _isSendingRequest ? null : _sendFriendRequest,
@@ -43,7 +44,7 @@ class _AddFriendDialogState extends State<AddFriendDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Gửi lời mời'),
+              : Text(context.l10n.sendInvitation),
         ),
       ],
     );

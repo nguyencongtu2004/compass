@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../di/injection.dart';
@@ -124,7 +125,7 @@ class _ConversationTileState extends State<ConversationTile> {
                 color: AppColors.error(context),
               ),
               title: Text(
-                'Xóa cuộc trò chuyện',
+                context.l10n.deleteConversation,
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: AppColors.error(context),
                 ),
@@ -182,10 +183,10 @@ class _ConversationTileState extends State<ConversationTile> {
         leading: CommonAvatar(
           radius: 28,
           avatarUrl: _otherUser?.avatarUrl ?? '',
-          displayName: _otherUser?.displayName ?? 'Unknown',
+          displayName: _otherUser?.displayName ?? context.l10n.unknown,
         ),
         title: Text(
-          _otherUser?.displayName ?? 'Unknown User',
+          _otherUser?.displayName ?? context.l10n.unknownUser,
           style: AppTextStyles.titleMedium.copyWith(
             fontWeight: hasUnread ? FontWeight.w600 : FontWeight.w500,
             color: AppColors.onSurface(context),

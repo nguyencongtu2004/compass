@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:minecraft_compass/models/user_model.dart';
 import 'package:minecraft_compass/presentation/core/theme/app_colors.dart';
@@ -49,7 +50,7 @@ class _FriendListState extends State<FriendList> {
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
-                'Chưa có bạn bè nào',
+                context.l10n.noFriendsYet,
                 style: AppTextStyles.bodyMedium.copyWith(
                   color: AppColors.onSurfaceVariant(context),
                 ),

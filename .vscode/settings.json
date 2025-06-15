@@ -1,3 +1,4 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "flutter.deeplApiKey": "69389145-c062-41dd-b7c0-c0e0d07c7407:fx"
 }

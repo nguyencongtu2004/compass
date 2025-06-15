@@ -1,13 +1,12 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_back_button.dart';
-import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/presentation/core/widgets/widgets.dart';
 import 'bloc/friend_bloc.dart';
 import '../auth/bloc/auth_bloc.dart';
 import '../../models/user_model.dart';
 import '../core/theme/app_colors.dart';
-import '../core/widgets/loading_indicator.dart';
 import 'widgets/add_friend_section.dart';
 import 'widgets/friends_list_view.dart';
 import 'widgets/add_friend_dialog.dart';
@@ -67,7 +66,7 @@ class _FriendListPageState extends State<FriendListPage> {
   Widget build(BuildContext context) {
     return CommonScaffold(
       appBar: CommonAppbar(
-        title: 'Danh sách bạn bè',
+        title: context.l10n.friendsList,
         leftWidget: CommonBackButton(),
       ),
       body: Column(
@@ -104,9 +103,7 @@ class _FriendListPageState extends State<FriendListPage> {
                     _showAddFriendDialog(state.user!);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Không tìm thấy người dùng'),
-                      ),
+                      SnackBar(content: Text(context.l10n.userNotFound)),
                     );
                   }
                   context.read<FriendBloc>().add(const ClearSearchResults());
@@ -115,7 +112,7 @@ class _FriendListPageState extends State<FriendListPage> {
                 if (state is FriendRequestSent) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Đã gửi lời mời kết bạn'),
+                      content: Text(context.l10n.friendRequestSent),
                       backgroundColor: AppColors.success(context),
                     ),
                   );
@@ -174,7 +171,7 @@ class _FriendListPageState extends State<FriendListPage> {
                   );
                 }
 
-                return const Center(child: Text('Có lỗi xảy ra'));
+                return Center(child: Text(context.l10n.anErrorHasOccurred));
               },
             ),
           ),
@@ -190,9 +187,7 @@ class _FriendListPageState extends State<FriendListPage> {
     // Kiểm tra nếu đó là chính mình
     if (user.uid == authState.user.uid) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Bạn không thể thêm chính mình làm bạn bè'),
-        ),
+        SnackBar(content: Text(context.l10n.youCannotAddYourselfAsAFriend)),
       );
       return;
     }
@@ -201,7 +196,11 @@ class _FriendListPageState extends State<FriendListPage> {
     if (_lastSuccessState?.friends.any((friend) => friend.uid == user.uid) ==
         true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${user.displayName} đã là bạn bè của bạn')),
+        SnackBar(
+          content: Text(
+            context.l10n.displaynameIsNowYourFriend(user.displayName),
+          ),
+        ),
       );
       return;
     }
@@ -213,7 +212,9 @@ class _FriendListPageState extends State<FriendListPage> {
         true) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Bạn đã có lời mời kết bạn từ ${user.displayName}'),
+          content: Text(
+            context.l10n.youHaveAFriendRequestFromDisplayname(user.displayName),
+          ),
         ),
       );
       return;
@@ -244,7 +245,7 @@ class _FriendListPageState extends State<FriendListPage> {
       // Hiển thị thông báo thành công
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Đã chấp nhận lời mời kết bạn'),
+          content: Text(context.l10n.acceptedFriendRequest),
           backgroundColor: AppColors.success(context),
         ),
       );
@@ -263,7 +264,7 @@ class _FriendListPageState extends State<FriendListPage> {
       // Hiển thị thông báo
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Đã từ chối lời mời kết bạn'),
+          content: Text(context.l10n.friendRequestDeclined),
           backgroundColor: AppColors.primary(context),
         ),
       );

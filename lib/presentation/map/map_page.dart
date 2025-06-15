@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -100,7 +101,11 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
     if (friend.currentLocation == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${friend.displayName} chưa có thông tin vị trí'),
+          content: Text(
+            context.l10n.displaynameHasNoLocationInformation(
+              friend.displayName,
+            ),
+          ),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -203,13 +208,13 @@ class _MapPageState extends State<MapPage> with TickerProviderStateMixin {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Lỗi: ${mapState.message}'),
+                  Text(context.l10n.errorMessage(mapState.message)),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
                       context.read<MapBloc>().add(const MapInitialized());
                     },
-                    child: const Text('Thử lại'),
+                    child: Text(context.l10n.tryAgain),
                   ),
                 ],
               ),

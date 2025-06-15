@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minecraft_compass/presentation/auth/bloc/auth_bloc.dart';
@@ -14,25 +15,25 @@ class ForgotPasswordDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Quên mật khẩu'),
+      title: Text(context.l10n.forgotPassword),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Nhập email để nhận liên kết đặt lại mật khẩu:'),
+          Text(context.l10n.enterYourEmailAddressToReceiveAPasswordResetLink),
           const SizedBox(height: AppSpacing.md),
           CommonTextField(
             controller: emailController,
-            labelText: 'Email',
-            hintText: 'Nhập email của bạn',
+            labelText: context.l10n.email,
+            hintText: context.l10n.enterYourEmail,
             keyboardType: TextInputType.emailAddress,
-            validator: (value) => Validator.validateEmail(value),
+            validator: (value) => Validator.validateEmail(value, context),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Hủy'),
+          child: Text(context.l10n.cancel),
         ),
         BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
@@ -41,7 +42,9 @@ class ForgotPasswordDialog extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    'Email đặt lại mật khẩu đã được gửi đến ${state.email}',
+                    context.l10n.aPasswordResetEmailHasBeenSentToEmail(
+                      state.email,
+                    ),
                   ),
                   backgroundColor: AppColors.primary(context),
                 ),
@@ -63,6 +66,7 @@ class ForgotPasswordDialog extends StatelessWidget {
                       if (emailController.text.trim().isNotEmpty &&
                           Validator.validateEmail(
                                 emailController.text.trim(),
+                                context,
                               ) ==
                               null) {
                         context.read<AuthBloc>().add(
@@ -78,12 +82,11 @@ class ForgotPasswordDialog extends StatelessWidget {
                       height: 16,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Gửi'),
+                  : Text(context.l10n.send),
             );
           },
         ),
       ],
     );
   }
-  
 }

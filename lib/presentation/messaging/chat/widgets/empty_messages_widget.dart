@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -30,7 +31,10 @@ class EmptyMessagesWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
-            'Trò chuyện với ${otherUser?.displayName ?? (isLoading ? 'đang tải...' : 'bạn bè')}',
+            context.l10n.chatWithDisplayname(
+              otherUser?.displayName ??
+                  (isLoading ? context.l10n.loading : context.l10n.friends),
+            ),
             style: AppTextStyles.titleLarge.copyWith(
               color: AppColors.onSurface(context),
             ),
@@ -38,8 +42,8 @@ class EmptyMessagesWidget extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Text(
             isLoading
-                ? 'Đang tải cuộc trò chuyện...'
-                : 'Gửi tin nhắn đầu tiên để bắt đầu cuộc trò chuyện',
+                ? context.l10n.loadingConversation
+                : context.l10n.sendTheFirstMessageToStartAConversation,
             style: AppTextStyles.bodyMedium.copyWith(
               color: AppColors.onSurfaceVariant(context),
             ),

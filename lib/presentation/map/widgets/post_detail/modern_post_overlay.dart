@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:minecraft_compass/di/injection.dart';
@@ -90,7 +91,7 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
       if (myUid == postAuthorUid) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Bạn không thể gửi tin nhắn cho chính mình'),
+            content: Text(context.l10n.youCannotSendMessagesToYourself),
             backgroundColor: AppColors.error(context),
           ),
         );
@@ -148,7 +149,7 @@ class _ModernPostOverlayState extends State<ModernPostOverlay> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Không thể tạo cuộc trò chuyện: $e'),
+          content: Text(context.l10n.unableToCreateConversation(e.toString())),
           backgroundColor: AppColors.error(context),
         ),
       );

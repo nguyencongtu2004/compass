@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -82,8 +83,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final authState = context.read<AuthBloc>().state;
     if (authState is! AuthAuthenticated) {
-      return const Scaffold(
-        body: Center(child: Text('Không thể tải trang chủ')),
+      return Scaffold(
+        body: Center(child: Text(context.l10n.unableToLoadTheHomePage)),
       );
     }
     return Scaffold(
@@ -94,7 +95,7 @@ class _HomePageState extends State<HomePage> {
           KeepAliveWrapper(
             child: CommonScaffold(
               appBar: CommonAppbar(
-                title: 'Hồ sơ',
+                title: context.l10n.profile,
                 rightWidget: CommonBackButton(
                   isArrowRight: true,
                   onPressed: () => _goToPage(1),
@@ -110,7 +111,7 @@ class _HomePageState extends State<HomePage> {
               isAppBarOverlay: true,
               resizeToAvoidBottomInset: false,
               appBar: CommonAppbar(
-                title: 'Bản đồ',
+                title: context.l10n.map,
                 isBackgroudTransparentGradient: true,
                 leftWidget: GestureDetector(
                   onTap: () => _goToPage(0),
@@ -144,7 +145,7 @@ class _HomePageState extends State<HomePage> {
           KeepAliveWrapper(
             child: CommonScaffold(
               appBar: CommonAppbar(
-                title: 'Tin nhắn',
+                title: context.l10n.message,
                 leftWidget: CommonBackButton(onPressed: () => _goToPage(1)),
                 rightWidget: IconButton(
                   icon: const Icon(Icons.people),

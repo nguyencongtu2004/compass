@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -75,7 +76,7 @@ class _ConversationListPageState extends State<ConversationListPage> {
         } else if (state is ConversationDeleted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Đã xóa cuộc trò chuyện'),
+              content: Text(context.l10n.deletedConversation),
               backgroundColor: AppColors.success(context),
             ),
           );
@@ -102,14 +103,16 @@ class _ConversationListPageState extends State<ConversationListPage> {
                   ),
                   const SizedBox(height: AppSpacing.md),
                   Text(
-                    'Chưa có tin nhắn nào',
+                    context.l10n.noMessagesYet,
                     style: AppTextStyles.headlineSmall.copyWith(
                       color: AppColors.onSurfaceVariant(context),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    'Bắt đầu trò chuyện với bạn bè từ trang bạn bè',
+                    context
+                        .l10n
+                        .startChattingWithYourFriendsFromYourFriendsPage,
                     style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.onSurfaceVariant(context),
                     ),
@@ -122,7 +125,7 @@ class _ConversationListPageState extends State<ConversationListPage> {
                       backgroundColor: AppColors.primary(context),
                       foregroundColor: Colors.white,
                     ),
-                    child: const Text('Đi đến bạn bè'),
+                    child: Text(context.l10n.goToFriendsPage),
                   ),
                 ],
               ),
@@ -172,15 +175,14 @@ class _ConversationListPageState extends State<ConversationListPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xóa cuộc trò chuyện'),
-        content: const Text(
-          'Bạn có chắc chắn muốn xóa cuộc trò chuyện này? '
-          'Hành động này không thể hoàn tác.',
+        title: Text(context.l10n.deleteConversation),
+        content: Text(
+          '${context.l10n.areYouSureYouWantToDeleteThisConversation} \n ${context.l10n.thisActionCannotBeUndone}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -193,7 +195,7 @@ class _ConversationListPageState extends State<ConversationListPage> {
               backgroundColor: AppColors.error(context),
               foregroundColor: Colors.white,
             ),
-            child: const Text('Xóa'),
+            child: Text(context.l10n.delete),
           ),
         ],
       ),

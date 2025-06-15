@@ -27,8 +27,8 @@ class MarkerClusteringUtils {
     final List<MarkerCluster> clusters = [];
     final List<NewsfeedPost> remainingPosts = List.from(posts);
     final double clusterDistance = getClusterDistance(zoomLevel);
-    debugPrint('[MarkerClusteringUtils] Cluster distance: $clusterDistance');
-    debugPrint('[MarkerClusteringUtils] Zoom level: $zoomLevel');
+    // debugPrint('[MarkerClusteringUtils] Cluster distance: $clusterDistance');
+    // debugPrint('[MarkerClusteringUtils] Zoom level: $zoomLevel');
 
     while (remainingPosts.isNotEmpty) {
       final NewsfeedPost centerPost = remainingPosts.removeAt(0);

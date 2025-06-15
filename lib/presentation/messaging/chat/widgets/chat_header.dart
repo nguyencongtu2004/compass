@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -44,7 +45,7 @@ class ChatHeader extends StatelessWidget {
               Expanded(
                 child: Text(
                   otherUser?.displayName ??
-                      (isLoading ? 'Đang tải...' : 'Người dùng'),
+                      (isLoading ? context.l10n.loading : context.l10n.user),
                   style: AppTextStyles.titleMedium.copyWith(
                     color: AppColors.onSurface(context),
                     fontWeight: FontWeight.w600,

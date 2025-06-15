@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../models/user_model.dart';
@@ -13,17 +14,20 @@ class RemoveFriendDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Xóa bạn bè'),
+      title: Text(context.l10n.deleteFriends),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Bạn có chắc chắn muốn xóa ${friend.displayName} khỏi danh sách bạn bè?',
+            context.l10n
+                .areYouSureYouWantToRemoveDisplaynameFromYourFriendsList(
+                  friend.displayName,
+                ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Hành động này sẽ xóa bạn khỏi danh sách bạn bè của nhau.',
+          Text(
+            context.l10n.thisActionWillRemoveYouFromEachOtherSFriendsList,
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
@@ -31,7 +35,7 @@ class RemoveFriendDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Hủy'),
+          child: Text(context.l10n.cancel),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -42,7 +46,7 @@ class RemoveFriendDialog extends StatelessWidget {
             Navigator.pop(context);
             _removeFriend(context);
           },
-          child: const Text('Xóa'),
+          child: Text(context.l10n.delete),
         ),
       ],
     );
@@ -58,7 +62,7 @@ class RemoveFriendDialog extends StatelessWidget {
       // Hiển thị thông báo
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Đã xóa bạn bè'),
+          content: Text(context.l10n.deletedFriends),
           backgroundColor: AppColors.primary(context),
         ),
       );

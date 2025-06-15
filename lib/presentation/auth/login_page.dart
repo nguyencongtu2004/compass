@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:minecraft_compass/presentation/auth/forgot_password_dialog.dart';
 import 'package:minecraft_compass/presentation/core/widgets/common_scaffold.dart';
 import 'package:minecraft_compass/utils/validator.dart';
@@ -83,7 +84,9 @@ class _LoginPageState extends State<LoginPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    'Email đặt lại mật khẩu đã được gửi đến ${state.email}',
+                    context.l10n.aPasswordResetEmailHasBeenSentToStateEmail(
+                      state.email,
+                    ),
                   ),
                   backgroundColor: AppColors.primary(context),
                 ),
@@ -125,20 +128,20 @@ class _LoginPageState extends State<LoginPage> {
 
                     // Email field
                     CommonTextField(
-                      labelText: 'Email',
-                      hintText: 'Nhập email của bạn',
+                      labelText: context.l10n.email,
+                      hintText: context.l10n.enterYourEmail,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       prefixIcon: Icons.email_outlined,
                       textInputAction: TextInputAction.next,
-                      validator: (value) => Validator.validateEmail(value),
+                      validator: (value) => Validator.validateEmail(value, context),
                     ),
                     const SizedBox(height: AppSpacing.md),
 
                     // Password field
                     CommonTextField(
-                      labelText: 'Mật khẩu',
-                      hintText: 'Nhập mật khẩu của bạn',
+                      labelText: context.l10n.password,
+                      hintText: context.l10n.enterYourPassword,
                       controller: _passwordController,
                       obscureText: _obscurePassword,
                       prefixIcon: Icons.lock_outlined,
@@ -152,13 +155,13 @@ class _LoginPageState extends State<LoginPage> {
                           () => _obscurePassword = !_obscurePassword,
                         ),
                       ),
-                      validator: (value) => Validator.validatePassword(value),
+                      validator: (value) => Validator.validatePassword(value, context),
                     ),
                     const SizedBox(height: AppSpacing.md), // Login button
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return CommonButton(
-                          text: 'Đăng nhập',
+                          text: context.l10n.logIn,
                           onPressed: _login,
                           isLoading: state is AuthLoading,
                         );
@@ -170,7 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: _showForgotPasswordDialog,
                       child: Text(
-                        'Quên mật khẩu?',
+                        context.l10n.forgotYourPassword,
                         style: AppTextStyles.labelMedium.copyWith(
                           color: AppColors.primary(context),
                         ),
@@ -187,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                             horizontal: AppSpacing.md,
                           ),
                           child: Text(
-                            'hoặc',
+                            context.l10n.or,
                             style: AppTextStyles.bodyMedium.copyWith(
                               color: AppColors.onSurfaceVariant(context),
                             ),
@@ -202,7 +205,7 @@ class _LoginPageState extends State<LoginPage> {
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return CommonButton(
-                          text: 'Đăng nhập với Google',
+                          text: context.l10n.signInWithGoogle,
                           onPressed: state is AuthLoading
                               ? null
                               : _loginWithGoogle,
@@ -223,7 +226,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: () => context.go(AppRoutes.registerRoute),
                       child: Text(
-                        'Chưa có tài khoản? Đăng ký ngay',
+                        context.l10n.donTHaveAnAccountSignUpNow,
                         style: AppTextStyles.labelLarge.copyWith(
                           color: AppColors.primary(context),
                         ),

@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 
@@ -37,19 +38,19 @@ class MapToggleSwitch extends StatelessWidget {
         children: [
           _MapToggleOption(
             icon: Icons.location_on,
-            label: 'Vị trí',
+            label: context.l10n.location,
             isSelected: currentMode == MapDisplayMode.locations,
             onTap: onToggleToLocations,
           ),
           _MapToggleOption(
             icon: Icons.group,
-            label: 'Bạn bè',
+            label: context.l10n.friends,
             isSelected: currentMode == MapDisplayMode.friends,
             onTap: onToggleToFriends,
           ),
           _MapToggleOption(
             icon: Icons.explore,
-            label: 'Khám phá',
+            label: context.l10n.explore,
             isSelected: currentMode == MapDisplayMode.explore,
             onTap: onToggleToExplore,
           ),

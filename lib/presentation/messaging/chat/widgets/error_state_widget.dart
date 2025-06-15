@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -26,7 +27,7 @@ class ErrorStateWidget extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
-            'Có lỗi xảy ra',
+            context.l10n.anErrorHasOccurred,
             style: AppTextStyles.titleLarge.copyWith(
               color: AppColors.error(context),
             ),
@@ -43,7 +44,7 @@ class ErrorStateWidget extends StatelessWidget {
           TextButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('Thử lại'),
+            label: Text(context.l10n.tryAgain),
           ),
         ],
       ),

@@ -1,49 +1,66 @@
+import 'package:flutter/material.dart';
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
+
 abstract class Validator {
-  static String? validateEmail(String? value) {
+  static String? validateEmail(String? value, BuildContext context) {
     if (value == null || value.isEmpty) {
-      return 'Email is required';
+      return context.l10n.emailIsRequired;
     }
     const emailPattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
     if (!RegExp(emailPattern).hasMatch(value)) {
-      return 'Invalid email format';
+      return context.l10n.invalidEmailFormat;
     }
     return null;
   }
 
-  static String? validatePassword(String? value) {
+  static String? validatePassword(String? value, BuildContext context) {
     if (value == null || value.isEmpty) {
-      return 'Password is required';
+      return context.l10n.passwordIsRequired;
     }
     if (value.length < 6) {
-      return 'Password must be at least 6 characters long';
+      return context.l10n.passwordMustBeAtLeast6CharactersLong;
     }
     return null;
   }
 
-  static String? validateDisplayName(String? value) {
+  static String? validateConfirmPassword(
+    String? value,
+    String? password,
+    BuildContext context,
+  ) {
     if (value == null || value.isEmpty) {
-      return 'Display name is required';
+      return context.l10n.confirmPasswordIsRequired;
+    }
+    if (value != password) {
+      return context.l10n.passwordsDoNotMatch;
+    }
+    return null;
+  }
+
+  static String? validateDisplayName(String? value, BuildContext context) {
+    if (value == null || value.isEmpty) {
+      return context.l10n.displayNameIsRequired;
     }
     if (value.trim().length < 2) {
-      return 'Display name must be at least 2 characters long';
+      return context.l10n.displayNameMustBeAtLeast2CharactersLong;
     }
     return null;
   }
 
-  static String? validateUsername(String? value) {
+  static String? validateUsername(String? value, BuildContext context) {
     if (value == null || value.isEmpty) {
       return null; // Không cần thông báo lỗi nếu không có giá trị
     }
     if (value.trim().length < 3) {
-      return 'Username phải có ít nhất 3 ký tự';
+      return context.l10n.usernameMustBeAtLeast3CharactersLong;
     }
     if (value.trim().length > 20) {
-      return 'Username không được vượt quá 20 ký tự';
+      return context.l10n.usernameCannotExceed20Characters;
     }
     // Kiểm tra format: chỉ chữ cái, số và gạch dưới
     const usernamePattern = r'^[a-zA-Z0-9_]+$';
     if (!RegExp(usernamePattern).hasMatch(value)) {
-      return 'Username chỉ được chứa chữ cái, số và dấu gạch dưới';
+      return context.l10n.usernamesCanOnlyContainLettersNumbersAndUnderscores;
     }
     return null;
   }

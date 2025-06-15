@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -59,7 +60,7 @@ class _AddFriendSectionState extends State<AddFriendSection> {
         child: TextField(
           controller: widget.emailController,
           decoration: InputDecoration(
-            hintText: 'Tìm kiếm bạn bè qua email...',
+            hintText: context.l10n.searchForFriendsViaEmail,
             hintStyle: TextStyle(
               color: AppColors.onSurfaceVariant(context).withValues(alpha: 0.7),
             ),

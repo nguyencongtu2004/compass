@@ -119,7 +119,7 @@ abstract class AppLocalizations {
   /// The sign up button
   ///
   /// In en, this message translates to:
-  /// **'Sign Up'**
+  /// **'Sign up'**
   String get signUp;
 
   /// The email input field
@@ -137,13 +137,13 @@ abstract class AppLocalizations {
   /// The confirm password input field
   ///
   /// In en, this message translates to:
-  /// **'Confirm Password'**
+  /// **'Confirm password'**
   String get confirmPassword;
 
   /// Link to reset password
   ///
   /// In en, this message translates to:
-  /// **'Forgot Password?'**
+  /// **'Forgot password'**
   String get forgotPassword;
 
   /// Button to create a new account
@@ -389,7 +389,7 @@ abstract class AppLocalizations {
   /// No description provided for @addFriend.
   ///
   /// In en, this message translates to:
-  /// **'Add Friend'**
+  /// **'Add friend'**
   String get addFriend;
 
   /// No description provided for @removeFriend.
@@ -461,13 +461,13 @@ abstract class AppLocalizations {
   /// No description provided for @editProfile.
   ///
   /// In en, this message translates to:
-  /// **'Edit Profile'**
+  /// **'Edit profile'**
   String get editProfile;
 
   /// No description provided for @displayName.
   ///
   /// In en, this message translates to:
-  /// **'Display Name'**
+  /// **'Display name'**
   String get displayName;
 
   /// No description provided for @phoneNumber.
@@ -668,31 +668,31 @@ abstract class AppLocalizations {
   /// **'{days} days ago'**
   String daysAgo(int days);
 
-  /// No description provided for @shareLocation.
+  /// Button to share the user's location with friends
   ///
   /// In en, this message translates to:
   /// **'Share Location'**
   String get shareLocation;
 
-  /// No description provided for @allowFriendsToSeeYourLocation.
+  /// Message indicating that friends can see the user's location
   ///
   /// In en, this message translates to:
   /// **'Allow friends to see your location'**
   String get allowFriendsToSeeYourLocation;
 
-  /// No description provided for @language.
+  /// Label for the language selection
   ///
   /// In en, this message translates to:
   /// **'Language'**
   String get language;
 
-  /// No description provided for @aboutCompass.
+  /// Title for the about section of the compass app
   ///
   /// In en, this message translates to:
   /// **'About Compass'**
   String get aboutCompass;
 
-  /// No description provided for @viewAppInformation.
+  /// Button to view information about the app
   ///
   /// In en, this message translates to:
   /// **'View app information'**
@@ -739,6 +739,482 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The app will restart to apply the new language'**
   String get appWillRestart;
+
+  /// Placeholder text for entering the user's password
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get enterYourPassword;
+
+  /// Placeholder text for entering the user's email
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get enterYourEmail;
+
+  /// Button to log in to the application
+  ///
+  /// In en, this message translates to:
+  /// **'Log in'**
+  String get logIn;
+
+  /// Link to reset the user's password
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password?'**
+  String get forgotYourPassword;
+
+  /// Separator for alternative actions
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get or;
+
+  /// Message prompting the user to sign up if they do not have an account
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? Sign up now'**
+  String get donTHaveAnAccountSignUpNow;
+
+  /// Message indicating that a password reset email has been sent
+  ///
+  /// In en, this message translates to:
+  /// **'A password reset email has been sent to {email}.'**
+  String aPasswordResetEmailHasBeenSentToStateEmail(String email);
+
+  /// Button to create a new account
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account'**
+  String get createAnAccount;
+
+  /// Instructions for filling in registration information
+  ///
+  /// In en, this message translates to:
+  /// **'Fill in the information to register'**
+  String get fillInTheInformationToRegister;
+
+  /// Placeholder text for entering the user's display name
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your display name'**
+  String get enterYourDisplayName;
+
+  /// Placeholder text for entering a password with a minimum length
+  ///
+  /// In en, this message translates to:
+  /// **'Enter password (at least 6 characters)'**
+  String get enterPasswordAtLeast6Characters;
+
+  /// Placeholder text for re-entering the password
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter password'**
+  String get reEnterPassword;
+
+  /// Message prompting the user to log in if they already have an account
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account? Log in now'**
+  String get alreadyHaveAnAccountLogInNow;
+
+  /// Instructions for entering an email address to receive a password reset link
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address to receive a password reset link:'**
+  String get enterYourEmailAddressToReceiveAPasswordResetLink;
+
+  /// Message indicating that a password reset email has been sent to the provided email address
+  ///
+  /// In en, this message translates to:
+  /// **'A password reset email has been sent to {email}.'**
+  String aPasswordResetEmailHasBeenSentToEmail(String email);
+
+  /// Message indicating that a user has no location information
+  ///
+  /// In en, this message translates to:
+  /// **'{displayName} has no location information'**
+  String displaynameHasNoLocationInformation(String displayName);
+
+  /// Error message with a placeholder for the specific error message
+  ///
+  /// In en, this message translates to:
+  /// **'Lỗi: {message}'**
+  String errorMessage(String message);
+
+  /// Message prompting the user to try again after an error
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
+
+  /// Error message when a user tries to send a message to themselves
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot send messages to yourself.'**
+  String get youCannotSendMessagesToYourself;
+
+  /// Error message when unable to create a conversation
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to create conversation: {e}'**
+  String unableToCreateConversation(String e);
+
+  /// Title for the details of a post
+  ///
+  /// In en, this message translates to:
+  /// **'Post details'**
+  String get postDetails;
+
+  /// Label for available positions in a post
+  ///
+  /// In en, this message translates to:
+  /// **'Available positions'**
+  String get availablePositions;
+
+  /// Message indicating that there are no available positions
+  ///
+  /// In en, this message translates to:
+  /// **'No position available'**
+  String get noPositionAvailable;
+
+  /// Message indicating that there are no friends yet
+  ///
+  /// In en, this message translates to:
+  /// **'No friends yet'**
+  String get noFriendsYet;
+
+  /// Message indicating that there are no messages in the conversation
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet'**
+  String get noMessagesYet;
+
+  /// Message prompting the user to start chatting with friends
+  ///
+  /// In en, this message translates to:
+  /// **'Start chatting with your friends from your friends page'**
+  String get startChattingWithYourFriendsFromYourFriendsPage;
+
+  /// Button to navigate to the friends page
+  ///
+  /// In en, this message translates to:
+  /// **'Go to friends page'**
+  String get goToFriendsPage;
+
+  /// Button to delete a conversation
+  ///
+  /// In en, this message translates to:
+  /// **'Delete conversation'**
+  String get deleteConversation;
+
+  /// Confirmation message when deleting a conversation
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this conversation?'**
+  String get areYouSureYouWantToDeleteThisConversation;
+
+  /// Message indicating that the action cannot be undone
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get thisActionCannotBeUndone;
+
+  /// Message indicating that a conversation has been deleted
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted conversation'**
+  String get deletedConversation;
+
+  /// Label for an unknown user
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown User'**
+  String get unknownUser;
+
+  /// Label for an unknown
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
+
+  /// Generic error message displayed when an error occurs
+  ///
+  /// In en, this message translates to:
+  /// **'An error has occurred'**
+  String get anErrorHasOccurred;
+
+  /// Message displayed while a conversation is being loaded
+  ///
+  /// In en, this message translates to:
+  /// **'Loading conversation...'**
+  String get loadingConversation;
+
+  /// Message prompting the user to send a message to start a conversation
+  ///
+  /// In en, this message translates to:
+  /// **'Send the first message to start a conversation'**
+  String get sendTheFirstMessageToStartAConversation;
+
+  /// Chat with a specific user
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with {displayName}'**
+  String chatWithDisplayname(String displayName);
+
+  /// Label for the user's profile picture
+  ///
+  /// In en, this message translates to:
+  /// **'Profile picture'**
+  String get profilePicture;
+
+  /// Button to select photos for the profile picture
+  ///
+  /// In en, this message translates to:
+  /// **'Select photos from the library'**
+  String get selectPhotosFromTheLibrary;
+
+  /// Button to delete the user's profile picture
+  ///
+  /// In en, this message translates to:
+  /// **'Delete profile picture'**
+  String get deleteProfilePicture;
+
+  /// Message indicating that the profile has been updated successfully
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully!'**
+  String get profileUpdatedSuccessfully;
+
+  /// Error message when the username is already taken
+  ///
+  /// In en, this message translates to:
+  /// **'The username has already been used.'**
+  String get theUsernameHasAlreadyBeenUsed;
+
+  /// Label for the username input field
+  ///
+  /// In en, this message translates to:
+  /// **'User name'**
+  String get userName;
+
+  /// Placeholder text for entering a username
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your username (e.g., nguoidep_123)'**
+  String get enterYourUsernameEGNguoidep123;
+
+  /// Button to update the user's profile
+  ///
+  /// In en, this message translates to:
+  /// **'Update profile'**
+  String get updateProfile;
+
+  /// Placeholder text for entering a message
+  ///
+  /// In en, this message translates to:
+  /// **'Enter message...'**
+  String get enterMessage;
+
+  /// Title for the friends list section
+  ///
+  /// In en, this message translates to:
+  /// **'Friends list'**
+  String get friendsList;
+
+  /// Message indicating that a friend request has been sent
+  ///
+  /// In en, this message translates to:
+  /// **'Friend request sent'**
+  String get friendRequestSent;
+
+  /// Message indicating that a user cannot add themselves as a friend
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot add yourself as a friend.'**
+  String get youCannotAddYourselfAsAFriend;
+
+  /// Message indicating that a user has become a friend
+  ///
+  /// In en, this message translates to:
+  /// **'{displayName} is now your friend.'**
+  String displaynameIsNowYourFriend(String displayName);
+
+  /// Message indicating that a user has received a friend request
+  ///
+  /// In en, this message translates to:
+  /// **'You have a friend request from {displayName}'**
+  String youHaveAFriendRequestFromDisplayname(String displayName);
+
+  /// Message indicating that a friend request has been accepted
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted friend request'**
+  String get acceptedFriendRequest;
+
+  /// Message indicating that a friend request has been declined
+  ///
+  /// In en, this message translates to:
+  /// **'Friend request declined'**
+  String get friendRequestDeclined;
+
+  /// Message asking if the user wants to send a friend request
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to send a friend request?'**
+  String get wouldYouLikeToSendAFriendRequest;
+
+  /// Button to send a friend request
+  ///
+  /// In en, this message translates to:
+  /// **'Send invitation'**
+  String get sendInvitation;
+
+  /// Placeholder text for searching friends by email
+  ///
+  /// In en, this message translates to:
+  /// **'Search for friends via email...'**
+  String get searchForFriendsViaEmail;
+
+  /// Button to accept a friend request
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// Button to reject a friend request
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get reject;
+
+  /// Label for a text message
+  ///
+  /// In en, this message translates to:
+  /// **'Text message'**
+  String get textMessage;
+
+  /// Button to delete friends
+  ///
+  /// In en, this message translates to:
+  /// **'Delete friends'**
+  String get deleteFriends;
+
+  /// Label for the number of friend requests
+  ///
+  /// In en, this message translates to:
+  /// **'Friend request ({length})'**
+  String friendRequestLength(int length);
+
+  /// Label for the number of friends
+  ///
+  /// In en, this message translates to:
+  /// **'Friends ({length})'**
+  String friendsLength(int length);
+
+  /// Message indicating that there are no friends yet and suggesting to add friends by email
+  ///
+  /// In en, this message translates to:
+  /// **'No friends yet\\nAdd friends by email'**
+  String get noFriendsYetNaddFriendsByEmail;
+
+  /// Confirmation message when removing a friend
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove {displayName} from your friends list?'**
+  String areYouSureYouWantToRemoveDisplaynameFromYourFriendsList(
+    String displayName,
+  );
+
+  /// Message indicating that removing a friend will also remove them from your friends list
+  ///
+  /// In en, this message translates to:
+  /// **'This action will remove you from each other\'s friends list.'**
+  String get thisActionWillRemoveYouFromEachOtherSFriendsList;
+
+  /// Message indicating that friends have been deleted
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted friends'**
+  String get deletedFriends;
+
+  /// Label for a message
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get message;
+
+  /// Error message when the home page cannot be loaded
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load the home page'**
+  String get unableToLoadTheHomePage;
+
+  /// No description provided for @emailIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get emailIsRequired;
+
+  /// No description provided for @passwordIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get passwordIsRequired;
+
+  /// No description provided for @passwordMustBeAtLeast6CharactersLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters long'**
+  String get passwordMustBeAtLeast6CharactersLong;
+
+  /// No description provided for @confirmPasswordIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password is required'**
+  String get confirmPasswordIsRequired;
+
+  /// No description provided for @displayNameIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name is required'**
+  String get displayNameIsRequired;
+
+  /// No description provided for @displayNameMustBeAtLeast2CharactersLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name must be at least 2 characters long'**
+  String get displayNameMustBeAtLeast2CharactersLong;
+
+  /// No description provided for @usernameMustBeAtLeast3CharactersLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be at least 3 characters long'**
+  String get usernameMustBeAtLeast3CharactersLong;
+
+  /// No description provided for @usernameCannotExceed20Characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Username cannot exceed 20 characters.'**
+  String get usernameCannotExceed20Characters;
+
+  /// No description provided for @usernamesCanOnlyContainLettersNumbersAndUnderscores.
+  ///
+  /// In en, this message translates to:
+  /// **'Usernames can only contain letters, numbers, and underscores.'**
+  String get usernamesCanOnlyContainLettersNumbersAndUnderscores;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @explore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get explore;
 }
 
 class _AppLocalizationsDelegate

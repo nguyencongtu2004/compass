@@ -1,3 +1,4 @@
+import 'package:minecraft_compass/config/l10n/localization_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -93,7 +94,7 @@ class FriendTile extends StatelessWidget {
                 size: 20,
               ),
               onPressed: () => _startConversation(context),
-              tooltip: 'Nhắn tin',
+              tooltip: context.l10n.textMessage,
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -112,7 +113,7 @@ class FriendTile extends StatelessWidget {
                 size: 20,
               ),
               onPressed: onRemove,
-              tooltip: 'Xóa bạn bè',
+              tooltip: context.l10n.deleteFriends,
             ),
           ),
         ],
